@@ -90,6 +90,9 @@
        <property name="text">
         <string/>
        </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
       </widget>
       <widget class="QLabel" name="picAvatar">
        <property name="geometry">
@@ -105,6 +108,9 @@
        </property>
        <property name="text">
         <string/>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
       <widget class="QLineEdit" name="edSimilarity">
@@ -125,13 +131,16 @@
        <property name="alignment">
         <set>Qt::AlignCenter</set>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QLabel" name="textSimilarity">
        <property name="geometry">
         <rect>
          <x>280</x>
          <y>70</y>
-         <width>41</width>
+         <width>51</width>
          <height>16</height>
         </rect>
        </property>
@@ -142,31 +151,40 @@
       <widget class="QLineEdit" name="edName">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>70</x>
          <y>228</y>
          <width>137</width>
          <height>20</height>
         </rect>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QLineEdit" name="edSex">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>70</x>
          <y>254</y>
          <width>137</width>
          <height>20</height>
         </rect>
        </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
       </widget>
       <widget class="QLineEdit" name="edId">
        <property name="geometry">
         <rect>
-         <x>50</x>
+         <x>70</x>
          <y>280</y>
          <width>137</width>
          <height>20</height>
         </rect>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="QLabel" name="textName">
@@ -174,7 +192,7 @@
         <rect>
          <x>20</x>
          <y>228</y>
-         <width>24</width>
+         <width>31</width>
          <height>16</height>
         </rect>
        </property>
@@ -187,7 +205,7 @@
         <rect>
          <x>20</x>
          <y>254</y>
-         <width>24</width>
+         <width>31</width>
          <height>16</height>
         </rect>
        </property>
@@ -200,7 +218,7 @@
         <rect>
          <x>20</x>
          <y>280</y>
-         <width>24</width>
+         <width>31</width>
          <height>16</height>
         </rect>
        </property>

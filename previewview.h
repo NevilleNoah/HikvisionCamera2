@@ -66,6 +66,7 @@ public:
     static QString currentAlarmInfo;
 
     static int currentRow;
+    static double Similarity;
 
     void loadPreview();
 
@@ -78,9 +79,11 @@ public:
 signals:
     void toShowPersonInfo();
     void toAddAlarmItem();
+    void toStranger();
 public slots:
     void showPersonInfo();
     void addAlarmItem();
+    void stranger();
 private slots:
     void on_alarmList_itemDoubleClicked(QListWidgetItem *item);
 

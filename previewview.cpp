@@ -29,6 +29,7 @@ DWORD PreviewView::captureLen;
 //相似度
 float PreviewView::similarity;
 int PreviewView::currentRow;
+double PreviewView::Similarity = 0.1;
 //信息列表
 QList<NET_VCA_FACESNAP_MATCH_ALARM> PreviewView::alarmList;
 QList<char*> PreviewView::avatarList;
@@ -47,7 +48,7 @@ PreviewView::PreviewView(QWidget *parent) :
 
     connect(this, SIGNAL(toShowPersonInfo()), this, SLOT(showPersonInfo()));
     connect(this, SIGNAL(toAddAlarmItem()), this, SLOT(addAlarmItem()));
-
+    connect(this, SIGNAL(toStranger()), this, SLOT(stranger()));
     ui->setupUi(this);
     loadPreview();
 
@@ -79,21 +80,9 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
     {
     case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
     {
-        qDebug("Detected face");
+        qDebug() << "PreviewView: Detected face";
+
         memcpy(&struFaceMatchAlarm, pAlarmInfo, sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
-
-        //人脸库头像图
-        DWORD avatarLenTemp = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
-        char* avatarTemp = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
-        memcpy(avatarTemp, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLenTemp);
-        avatarList.append(avatarTemp);
-        //抓拍图
-        DWORD captureLenTemp = struFaceMatchAlarm.dwSnapPicLen;
-        char* captureTemp = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-        memcpy(captureTemp, struFaceMatchAlarm.pSnapPicBuffer, captureLenTemp);
-        captureList.append(captureTemp);
-
-        alarmList.append(struFaceMatchAlarm);
 
         NET_DVR_TIME struAbsTime = {0};
         struAbsTime.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -102,6 +91,22 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
         struAbsTime.dwHour = GET_HOUR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
         struAbsTime.dwMinute = GET_MINUTE(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
         struAbsTime.dwSecond = GET_SECOND(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
+
+        //人脸库头像图
+        DWORD avatarLenTemp = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
+        char* avatarTemp = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
+        memcpy(avatarTemp, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLenTemp);
+        avatarList.append(avatarTemp);
+
+        //抓拍图
+        DWORD captureLenTemp = struFaceMatchAlarm.dwSnapPicLen;
+        char* captureTemp = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+        memcpy(captureTemp, struFaceMatchAlarm.pSnapPicBuffer, captureLenTemp);
+        captureList.append(captureTemp);
+
+        alarmList.append(struFaceMatchAlarm);
+
+        if(struFaceMatchAlarm.fSimilarity>Similarity) {
 
         printf("人脸比对结果上传[0x%x]：[%4.4d%2.2d%2.2d%2.2d%2.2d%2.2d]fSimilarity[%f]FaceID[%d]BlackListID[%d]"
                "Sex[%d]Glasses[%d]Age[%d]MatchPicNum[%d]PicTransType[%d]\n", lCommand,
@@ -117,7 +122,7 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 
         //报警信息
         currentAlarmInfo = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d ",struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
-                                            struAbsTime.dwSecond);
+                                             struAbsTime.dwSecond);
         currentAlarmInfo.append(QString::fromLocal8Bit(name));
         emit previewView->toAddAlarmItem();
 
@@ -147,10 +152,46 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
             qDebug()<<"closed";
             hFile = INVALID_HANDLE_VALUE;
         }*/
+        } else {
+            setPersonInfo(struFaceMatchAlarm, 0, 0);
+            emit previewView->toStranger();
+            //报警信息
+            currentAlarmInfo = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d ",struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
+                                                 struAbsTime.dwSecond);
+            currentAlarmInfo.append(QString::fromLocal8Bit("陌生人"));
+            emit previewView->toAddAlarmItem();
+        }
         break;
         }
         return TRUE;
     }
+}
+
+void PreviewView::stranger() {
+    qDebug() << "PreviewView: stranger exec";
+
+    if(captureLen>0){
+        QByteArray bytearray = QByteArray(capture, captureLen);
+
+        QBuffer buffer(&bytearray);
+        buffer.open(QIODevice::ReadOnly);
+
+        QImageReader reader(&buffer, "JPG");
+        QImage img = reader.read();
+
+        QPixmap pix = QPixmap::fromImage(img);
+        ui->picCapture->setPixmap(pix.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    }
+    else {
+        ui->picCapture->setText(QString::fromLocal8Bit("图片缺失"));
+    }
+
+    ui->picAvatar->setText(QString::fromLocal8Bit("陌生人"));
+
+    ui->edName->setText(QString::fromLocal8Bit("未知"));
+    ui->edSex->setText(QString::fromLocal8Bit("未知"));
+    ui->edId->setText(QString::fromLocal8Bit("未知"));
+    ui->edSimilarity->setText(QString::fromLocal8Bit(""));
 }
 
 void PreviewView::loadPreview() {
@@ -278,14 +319,22 @@ void PreviewView::setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm,
         memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
         break;
     case 1://双击条目显示相关图像信息
-        //人脸库头像图
-        avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
-        avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
-        memcpy(avatar, avatarList[index], avatarLen);
-        //抓拍图
-        captureLen = struFaceMatchAlarm.dwSnapPicLen;
-        capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-        memcpy(capture, captureList[index], captureLen);
+        if(struFaceMatchAlarm.fSimilarity>Similarity) {
+            //人脸库头像图
+            avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
+            avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
+            memcpy(avatar, avatarList[index], avatarLen);
+
+            //抓拍图
+            captureLen = struFaceMatchAlarm.dwSnapPicLen;
+            capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+            memcpy(capture, captureList[index], captureLen);
+        } else {
+            //抓拍图
+            captureLen = struFaceMatchAlarm.dwSnapPicLen;
+            capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+            memcpy(capture, captureList[index], captureLen);
+        }
         break;
     }
     //姓名
@@ -410,6 +459,11 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
     NET_VCA_FACESNAP_MATCH_ALARM alarm = {0};
     memcpy(&alarm, &alarmList[currentRow], sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
 
-    setPersonInfo(alarm, 1, currentRow);
-    emit previewView->toShowPersonInfo();
+    if(alarm.fSimilarity>Similarity) {
+        setPersonInfo(alarm, 1, currentRow);
+        emit previewView->toShowPersonInfo();
+    } else {
+        setPersonInfo(alarm, 1, currentRow);
+        emit previewView->toStranger();
+    }
 }
