@@ -78,8 +78,10 @@ signals:
     void toAddAlarmItem();
 public slots:
     void showPersonInfo();
-    void changePersonInfo(QListWidgetItem *item);
     void addAlarmItem();
+private slots:
+    void on_alarmList_itemDoubleClicked(QListWidgetItem *item);
+
 private:
     Ui::PreviewView *ui;
 };

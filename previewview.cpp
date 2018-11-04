@@ -72,7 +72,7 @@ void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG 
 //报警回调函数
 BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser)
 {
-    qDebug("Callback start");
+    qDebug() << "PreviewView: Callback start";
     switch(lCommand)
     {
     case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
@@ -244,6 +244,8 @@ void PreviewView::loadPreview() {
 }
 
 void PreviewView::setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
+    qDebug() << "PreviewView: setPersonInfo";
+
     /*********************************************设置个人信息******************************************/
     //人脸库头像图
     avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
@@ -330,19 +332,11 @@ void PreviewView::showPersonInfo() {
 
 }
 
-//点击列表条目后更改个人信息
-void PreviewView::changePersonInfo(QListWidgetItem* item) {
-    currentRow = ui->alarmList->currentRow();
-    NET_VCA_FACESNAP_MATCH_ALARM alarm = {0};
-    memcpy(&alarm, &alarmList[currentRow], sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
 
-    setPersonInfo(alarm);
-}
 
 void PreviewView::addAlarmItem() {
     qDebug() << "PreviweView: addAlarmItem exec";
     QListWidgetItem* item = new QListWidgetItem(PreviewView::currentAlarmInfo, ui->alarmList, 0);
-    connect(ui->alarmList, SIGNAL(itemDoubleClicked(item)), this, SLOT(changePersonInfo(item)));
 }
 
 void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int len)
@@ -364,4 +358,16 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
         i++;
     }
     str[i]=0;
+}
+
+void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
+{
+    qDebug() << "PreviewView: on_alarmList_itemDoubleClicked exec";
+
+    currentRow = ui->alarmList->currentRow();
+    NET_VCA_FACESNAP_MATCH_ALARM alarm = {0};
+    memcpy(&alarm, &alarmList[currentRow], sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
+
+    setPersonInfo(alarm);
+    emit previewView->toShowPersonInfo();
 }
