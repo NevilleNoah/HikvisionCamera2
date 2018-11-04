@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-
+QT += core gui
+QT += sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HikvisionCamera2
@@ -26,22 +26,51 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    main.cpp \
+    mainwindow.cpp \
+    previewview.cpp \
+    historyview.cpp \
+    settingsview.cpp \
+    settingsthread.cpp
 
 HEADERS += \
         mainwindow.h \
     DataType.h \
     DecodeCardSdk.h \
     HCNetSDK.h \
-    plaympeg4.h
+    plaympeg4.h \
+    DataType.h \
+    DecodeCardSdk.h \
+    HCNetSDK.h \
+    mainwindow.h \
+    plaympeg4.h \
+    previewview.h \
+    historyview.h \
+    settingsview.h \
+    settingsthread.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+    previewview.ui \
+    historyview.ui \
+    settingsview.ui
+# Hikvision Camera SDK
 LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/GdiPlus.lib"
 LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/HCCore.lib"
 LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/HCNetSDK.lib"
 LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/PlayCtrl.lib"
+# Qt Tools
+INCLUDEPATH += E:/Qt/5.11.2/winrt_x86_msvc2017/include/QtUiTools
+# Config
+CONFIG += uitools
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    config.ini
+
+RESOURCES += \
+    configResource.qrc

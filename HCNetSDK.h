@@ -1,3 +1,6 @@
+#include <QMetaType>
+#include <QVariant>
+
 #ifndef _HC_NET_SDK_H_
 #define _HC_NET_SDK_H_
 
@@ -24190,6 +24193,7 @@ typedef struct tagNET_VCA_FACESNAP_MATCH_ALARM
     BYTE  byContrastStatus;      //比对结果，0-保留，1-比对成功，2-比对失败
     BYTE  byBrokenNetHttp;     //断网续传标志位，0-不是重传数据，1-重传数据
 }NET_VCA_FACESNAP_MATCH_ALARM, *LPNET_VCA_FACESNAP_MATCH_ALARM;
+Q_DECLARE_METATYPE(tagNET_VCA_FACESNAP_MATCH_ALARM) 
 
 typedef struct tagNET_VCA_BLACKLIST_INFO_ALARM_LOG
 {

@@ -6,363 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1166</width>
-    <height>428</height>
+    <width>1080</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonTextBesideIcon</enum>
+  </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QGroupBox" name="boxLogin">
+   <widget class="QTabWidget" name="tabView">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>30</y>
-      <width>241</width>
-      <height>141</height>
+      <x>0</x>
+      <y>0</y>
+      <width>1080</width>
+      <height>680</height>
      </rect>
     </property>
-    <property name="title">
-     <string>登录</string>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
-    <widget class="QLabel" name="textIP">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>20</y>
-       <width>41</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>设备IP</string>
-     </property>
+    <widget class="QWidget" name="tab1">
+     <attribute name="title">
+      <string>Tab 1</string>
+     </attribute>
     </widget>
-    <widget class="QLineEdit" name="edIP">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>20</y>
-       <width>111</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edPort">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>20</y>
-       <width>41</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textUsername">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>50</y>
-       <width>41</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>用户名</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textPassword">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>80</y>
-       <width>31</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>密码</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edUsername">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>50</y>
-       <width>161</width>
-       <height>20</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edPassword">
-     <property name="geometry">
-      <rect>
-       <x>70</x>
-       <y>80</y>
-       <width>161</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="btnLogin">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>110</y>
-       <width>75</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>登录</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="groupBox_2">
-    <property name="geometry">
-     <rect>
-      <x>280</x>
-      <y>30</y>
-      <width>341</width>
-      <height>301</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>预览</string>
-    </property>
-    <widget class="QGraphicsView" name="picCamera">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>30</y>
-       <width>301</width>
-       <height>261</height>
-      </rect>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QGroupBox" name="groupBox">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>30</y>
-      <width>421</width>
-      <height>331</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string>信息</string>
-    </property>
-    <widget class="QLineEdit" name="edName">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>140</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textName">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>140</y>
-       <width>31</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>姓名</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textSex">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>170</y>
-       <width>31</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>性别</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edSex">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>170</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edId">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>230</y>
-       <width>321</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textAgeGroup">
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>170</y>
-       <width>51</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>年龄段</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textBirthDate">
-     <property name="geometry">
-      <rect>
-       <x>200</x>
-       <y>140</y>
-       <width>61</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>出生年月</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edBirthDate">
-     <property name="geometry">
-      <rect>
-       <x>270</x>
-       <y>140</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edAgeGroup">
-     <property name="geometry">
-      <rect>
-       <x>270</x>
-       <y>170</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edNativePlace">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>260</y>
-       <width>321</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textId">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>230</y>
-       <width>54</width>
-       <height>12</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>身份证号</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textNativePlace">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>260</y>
-       <width>31</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>籍贯</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="textCardType">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>200</y>
-       <width>54</width>
-       <height>12</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>证件类型</string>
-     </property>
-    </widget>
-    <widget class="QLineEdit" name="edCertificateType">
-     <property name="geometry">
-      <rect>
-       <x>60</x>
-       <y>200</y>
-       <width>113</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="labAvatar">
-     <property name="geometry">
-      <rect>
-       <x>160</x>
-       <y>10</y>
-       <width>111</width>
-       <height>121</height>
-      </rect>
-     </property>
-     <property name="autoFillBackground">
-      <bool>false</bool>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Box</enum>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
+    <widget class="QWidget" name="tab2">
+     <attribute name="title">
+      <string>Tab 2</string>
+     </attribute>
     </widget>
    </widget>
   </widget>
@@ -371,10 +46,19 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1166</width>
+     <width>1080</width>
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>视图</string>
+    </property>
+    <addaction name="showPreview"/>
+    <addaction name="showHistory"/>
+    <addaction name="showSettings"/>
+   </widget>
+   <addaction name="menu_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -385,6 +69,21 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="showPreview">
+   <property name="text">
+    <string>预览</string>
+   </property>
+  </action>
+  <action name="showHistory">
+   <property name="text">
+    <string>历史纪录</string>
+   </property>
+  </action>
+  <action name="showSettings">
+   <property name="text">
+    <string>设置</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
