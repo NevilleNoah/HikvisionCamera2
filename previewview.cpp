@@ -43,9 +43,6 @@ PreviewView::PreviewView(QWidget *parent) :
 {
     previewView = this;
 
-    //注册结构体为元数据
-    qRegisterMetaType<NET_VCA_FACESNAP_MATCH_ALARM>("NET_VCA_FACESNAP_MATCH_ALARM");
-
     connect(this, SIGNAL(toShowPersonInfo()), this, SLOT(showPersonInfo()));
     connect(this, SIGNAL(toAddAlarmItem()), this, SLOT(addAlarmItem()));
 
