@@ -31,6 +31,8 @@ float PreviewView::similarity;
 int PreviewView::currentRow;
 //信息列表
 QList<NET_VCA_FACESNAP_MATCH_ALARM> PreviewView::alarmList;
+QList<char*> PreviewView::avatarList;
+QList<char*> PreviewView::captureList;
 QString PreviewView::currentAlarmInfo;
 
 NET_VCA_FACESNAP_MATCH_ALARM PreviewView::struFaceMatchAlarm = {0};
@@ -80,6 +82,17 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
         qDebug("Detected face");
         memcpy(&struFaceMatchAlarm, pAlarmInfo, sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
 
+        //人脸库头像图
+        DWORD avatarLenTemp = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
+        char* avatarTemp = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
+        memcpy(avatarTemp, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLenTemp);
+        avatarList.append(avatarTemp);
+        //抓拍图
+        DWORD captureLenTemp = struFaceMatchAlarm.dwSnapPicLen;
+        char* captureTemp = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+        memcpy(captureTemp, struFaceMatchAlarm.pSnapPicBuffer, captureLenTemp);
+        captureList.append(captureTemp);
+
         alarmList.append(struFaceMatchAlarm);
 
         NET_DVR_TIME struAbsTime = {0};
@@ -99,7 +112,7 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
                struFaceMatchAlarm.byMatchPicNum, struFaceMatchAlarm.byPicTransType);
 
         //个人信息
-        setPersonInfo(struFaceMatchAlarm);
+        setPersonInfo(struFaceMatchAlarm, 0, 0);
         emit previewView->toShowPersonInfo();
 
         //报警信息
@@ -243,18 +256,38 @@ void PreviewView::loadPreview() {
 
 }
 
-void PreviewView::setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
+/**
+ * @brief PreviewView::setPersonInfo
+ * @param struFaceMatchAlarm
+ * @param choose 0-当前图像信息，1-双击条目显示的图像信息
+ * @param index 数据列表索引，如果choose = 0，则无需考虑；若choose = 1，则需考虑所需显示列表项的位置
+ */
+void PreviewView::setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, int choose, int index) {
     qDebug() << "PreviewView: setPersonInfo";
 
     /*********************************************设置个人信息******************************************/
-    //人脸库头像图
-    avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
-    avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
-    memcpy(avatar, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLen);
-    //抓拍图
-    captureLen = struFaceMatchAlarm.dwSnapPicLen;
-    capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-    memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
+    switch(choose) {
+    case 0://显示当前的图像信息
+        //人脸库头像图
+        avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
+        avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
+        memcpy(avatar, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLen);
+        //抓拍图
+        captureLen = struFaceMatchAlarm.dwSnapPicLen;
+        capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+        memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
+        break;
+    case 1://双击条目显示相关图像信息
+        //人脸库头像图
+        avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
+        avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
+        memcpy(avatar, avatarList[index], avatarLen);
+        //抓拍图
+        captureLen = struFaceMatchAlarm.dwSnapPicLen;
+        capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+        memcpy(capture, captureList[index], captureLen);
+        break;
+    }
     //姓名
     char nameHexStr[32];
     BYTE nameBytes[NAME_LEN];
@@ -333,12 +366,21 @@ void PreviewView::showPersonInfo() {
 }
 
 
-
+/**
+ * @brief PreviewView::addAlarmItem 在报警列表中添加报警信息
+ */
 void PreviewView::addAlarmItem() {
     qDebug() << "PreviweView: addAlarmItem exec";
     QListWidgetItem* item = new QListWidgetItem(PreviewView::currentAlarmInfo, ui->alarmList, 0);
 }
 
+/**
+ * @brief PreviewView::convertUnCharToStr 16进制字符串转字符串
+ * @param UnChar 16进制数字
+ * @param hexStr 16进制字符串
+ * @param str 字符串
+ * @param len 长度
+ */
 void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int len)
 {
     //将16进制数据转化为对应的16进制字符
@@ -368,6 +410,6 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
     NET_VCA_FACESNAP_MATCH_ALARM alarm = {0};
     memcpy(&alarm, &alarmList[currentRow], sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
 
-    setPersonInfo(alarm);
+    setPersonInfo(alarm, 1, currentRow);
     emit previewView->toShowPersonInfo();
 }

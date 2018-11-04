@@ -61,8 +61,10 @@ public:
     static float similarity;
     //列表
     static QList<NET_VCA_FACESNAP_MATCH_ALARM> alarmList;
+    static QList<char*> avatarList;
+    static QList<char*> captureList;
     static QString currentAlarmInfo;
-    static QMap<QString, QString> namesMap;
+
     static int currentRow;
 
     void loadPreview();
@@ -71,7 +73,7 @@ public:
     static BOOL CALLBACK MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
     static void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser);
     static void convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int len);
-    static void setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm);
+    static void setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, int choose, int index);
 
 signals:
     void toShowPersonInfo();
