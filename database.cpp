@@ -48,17 +48,25 @@ bool Database::closeConnect(){
 }
 
 //增加记录
-bool Database::addRecord(char* name, char* sex, QString id, QString dirAvatar, QString idAvatar, QString dirCapture, QString idCapture)
+bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAvatar)
 {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
-            QString qName  = QString::fromLocal8Bit(name);
+            QString mName  = QString::fromLocal8Bit(name);
+            QString mSex = QString::fromLocal8Bit(sex);
+            QString mIdCapture = idCapture;
+            QString mIdAvatar = idAvatar;
 
-            query.prepare("INSERT INTO record(name) "
-                          "VALUES(:name)");
-            query.bindValue(":name",qName);
+            query.prepare("INSERT INTO record(name, sex, idCapture, idAvatar) "
+                          "VALUES(:name, :sex, :idCapture, :idAvatar)");
+
+            query.bindValue(":name", mName);
+            query.bindValue(":sex", mSex);
+            query.bindValue(":idCapture", mIdCapture);
+            query.bindValue(":idAvatar", mIdCapture);
+
             query.exec();
             return true;
         }

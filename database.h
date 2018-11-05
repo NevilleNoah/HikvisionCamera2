@@ -17,7 +17,7 @@ public:
 
     bool openConnect(QString hostName, int port, QString databaseName, QString userName, QString password);
     bool closeConnect();
-    bool addRecord(char* name, char* sex, QString id, QString dirAvatar, QString idAvatar, QString dirCapture, QString idCapture);
+    bool addRecord(char* name, char* sex, QString idCapture, QString idAvatar);
     void setQSqlDatabase(QSqlDatabase db);
 private:
     static QSqlDatabase db;
