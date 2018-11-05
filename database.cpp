@@ -48,14 +48,14 @@ bool Database::closeConnect(){
 }
 
 //增加记录
-bool Database::addRecord(char* name)
+bool Database::addRecord(char* name, char* sex, QString id, QString dirAvatar, QString idAvatar, QString dirCapture, QString idCapture)
 {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
             QString qName  = QString::fromLocal8Bit(name);
-            qDebug()<<qName;
+
             query.prepare("INSERT INTO record(name) "
                           "VALUES(:name)");
             query.bindValue(":name",qName);

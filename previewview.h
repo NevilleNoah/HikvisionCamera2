@@ -43,8 +43,8 @@ typedef struct tagALARM_INFO{
     QString id;
     float similarity;
 
-    QString avatarId;
-    QString captureId;
+    QString idAvatar;
+    QString idCapture;
 
     bool isStranger;
 }ALARM_INFO;

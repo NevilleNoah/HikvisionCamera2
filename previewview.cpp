@@ -147,7 +147,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
             //--------------------
             //抓拍图
             //TAD：添加抓拍图id
-            alarmInfo.captureId = "";
+            alarmInfo.idCapture = "";
             captureLen = struFaceMatchAlarm.dwSnapPicLen;
             capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
             memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
@@ -155,7 +155,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
             //--------------------
             //人脸库头像图
             //TAD:添加人脸头像图id
-            alarmInfo.avatarId = "";
+            alarmInfo.idAvatar = "";
             avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
             avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
             memcpy(avatar, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLen);
@@ -212,7 +212,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
             //--------------------
             //抓拍图
             //TAD：添加抓拍图id
-            alarmInfo.captureId = "";
+            alarmInfo.idCapture = "";
             captureLen = struFaceMatchAlarm.dwSnapPicLen;
             capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
             memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
@@ -519,7 +519,8 @@ void PreviewView::saveToDatabase() {
     database.setQSqlDatabase(db);
 
     database.openConnect(dbIp, dbPort, dbModel, dbUsername, dbPassword);
-    database.addRecord(alarmInfo.name);
+    //database.addRecord(alarmInfo.name);
+    database.closeConnect();
 
 }
 
