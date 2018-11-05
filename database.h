@@ -15,9 +15,12 @@ public:
     void addRecord();
     void selectRecord();
 
-    bool Database::createConnect(QSqlDatabase db, QString databaseType, QString hostName, int port, QString databaseName, QString userName, QString password);
-    bool Database::closeConnect(QSqlDatabase db);
-    bool Database::addRecord(QSqlDatabase db, char* name);
+    bool openConnect(QString hostName, int port, QString databaseName, QString userName, QString password);
+    bool closeConnect();
+    bool addRecord(char* name);
+    void setQSqlDatabase(QSqlDatabase db);
+private:
+    static QSqlDatabase db;
 
 };
 

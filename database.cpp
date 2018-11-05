@@ -1,17 +1,16 @@
 ﻿#include "database.h"
 
-Database::Database()
-{
+QSqlDatabase Database::db;
 
+Database::Database() {
 
 }
 
 //创建数据库连接
-bool Database::createConnect(QSqlDatabase db, QString databaseType, QString hostName, int port, QString databaseName, QString userName, QString password)
+bool Database::openConnect(QString ip, int port, QString databaseName, QString userName, QString password)
 {
     try {
-        db = QSqlDatabase::addDatabase(databaseType);
-        db.setHostName(hostName);
+        db.setHostName(ip);
         db.setPort(port);
         db.setDatabaseName(databaseName);
         db.setUserName(userName);
@@ -35,7 +34,7 @@ bool Database::createConnect(QSqlDatabase db, QString databaseType, QString host
 }
 
 //关闭数据库连接
-bool Database::closeConnect(QSqlDatabase db){
+bool Database::closeConnect(){
     try {
         if(&db!=NULL) {
             db.close();
@@ -49,7 +48,7 @@ bool Database::closeConnect(QSqlDatabase db){
 }
 
 //增加记录
-bool Database::addRecord(QSqlDatabase db, char* name)
+bool Database::addRecord(char* name)
 {
     try{
         if(&db!=NULL) {
@@ -68,4 +67,8 @@ bool Database::addRecord(QSqlDatabase db, char* name)
         qDebug()<<"# ERR: SQLException:" <<e.what();
         //TAD：进行ui提示
     }
+}
+
+void Database::setQSqlDatabase(QSqlDatabase db) {
+    this->db = db;
 }

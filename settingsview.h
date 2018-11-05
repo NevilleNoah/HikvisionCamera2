@@ -25,7 +25,7 @@ public:
 
 public slots:
     void loadCameraSettings(QString ip, int port, QString username, QString password);
-    void loadDatabaseSettings(QString ip, int port, QString username, QString password);
+    void loadDatabaseSettings(QString ip, int port, QString model, QString username, QString password);
     void setBtnDetermineEnable();
 signals:
 

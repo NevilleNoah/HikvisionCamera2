@@ -20,8 +20,8 @@ void SettingsView::runReadSettingsThread() {
 
     connect(settingsThread, SIGNAL(readedCameraSettings(QString, int, QString, QString)),
             this, SLOT(loadCameraSettings(QString, int, QString, QString)));
-    connect(settingsThread, SIGNAL(readedDatabaseSettings(QString, int, QString, QString)),
-            this, SLOT(loadDatabaseSettings(QString, int, QString, QString)));
+    connect(settingsThread, SIGNAL(readedDatabaseSettings(QString, int, QString, QString, QString)),
+            this, SLOT(loadDatabaseSettings(QString, int, QString, QString, QString)));
     connect(settingsThread, SIGNAL(readedSettings()),
             this, SLOT(setBtnDetermineEnable()));
     //connect(settingsThread, SIGNAL(writedSettings()),
@@ -47,9 +47,10 @@ void SettingsView::loadCameraSettings(QString ip, int port, QString username, QS
 }
 
 //更新Ui：加载数据库配置
-void SettingsView::loadDatabaseSettings(QString ip, int port, QString username, QString password) {
+void SettingsView::loadDatabaseSettings(QString ip, int port, QString model, QString username, QString password) {
     ui->edDBIP->setText(ip);
     ui->edDBPort->setText(QString::number(port));
+    ui->edDBModel->setText(model);
     ui->edDBUsername->setText(username);
     ui->edDBPassword->setText(password);
 }
@@ -73,6 +74,7 @@ void SettingsView::changeDatabaseSettings() {
 
     SettingsThread::DBIp = ui->edDBIP->text();
     SettingsThread::DBPort = ui->edDBPort->text().toInt();
+    SettingsThread::DBModel = ui->edDBModel->text();
     SettingsThread::DBUsername = ui->edDBUsername->text();
     SettingsThread::DBPassword = ui->edDBPassword->text();
 

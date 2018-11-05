@@ -24,6 +24,7 @@ public:
 
     static QString DBIp;
     static int DBPort;
+    static QString DBModel;
     static QString DBUsername;
     static QString DBPassword;
 
@@ -43,7 +44,7 @@ signals:
     void readedSettings();
 
     void readedCameraSettings(QString ip, int port, QString username, QString password);
-    void readedDatabaseSettings(QString ip, int port, QString username, QString password);
+    void readedDatabaseSettings(QString ip, int port, QString model, QString username, QString password);
 
 public slots:
 

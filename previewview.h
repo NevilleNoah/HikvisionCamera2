@@ -28,6 +28,26 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QDir>
+#include "database.h"
+
+typedef struct tagALARM_INFO{
+    DWORD dwYear;
+    DWORD dwMonth;
+    DWORD dwDay;
+    DWORD dwHour;
+    DWORD dwMinute;
+    DWORD dwSecond;
+
+    char name[NAME_LEN];
+    char sex[2];
+    QString id;
+    float similarity;
+
+    QString avatarId;
+    QString captureId;
+
+    bool isStranger;
+}ALARM_INFO;
 
 namespace Ui {
     class PreviewView;
@@ -47,12 +67,11 @@ public:
     //画面设置
     static WORD m_wPicSize;//预览画面大小设置
     static WORD m_wPicQuality;//预览画面质量设置
-    //报警结构体
+    //报警信息
     static NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm;
-    //个人信息
-    static char name[32];
-    static char sex[2];
-    static QString id;
+    static ALARM_INFO alarmInfo;//存储当前报警信息
+    static QList<ALARM_INFO> alarmList;//报警信息列表
+    static QString alarmText;//打印输出的文本
     //人脸库图
     static char* avatar;
     static DWORD avatarLen;
@@ -60,15 +79,21 @@ public:
     static char* capture;
     static DWORD captureLen;
     //相似度
-    static float similarity;
-    //列表
-    static QList<NET_VCA_FACESNAP_MATCH_ALARM> alarmList;
+    static double similarity;
+    //数据库
+    static Database database;
+    static QString dbIp;
+    static int dbPort;
+    static QString dbModel;
+    static QString dbUsername;
+    static QString dbPassword;
+
     static QList<char*> avatarList;
     static QList<char*> captureList;
     static QString currentAlarmInfo;
 
     static int currentRow;
-    static double Similarity;
+    static double SIMILARITY;
     static QString dirAvatar;
     static QString dirCapture;
     static QString dirPicAvatar;
@@ -80,16 +105,16 @@ public:
     static BOOL CALLBACK MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
     static void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser);
     static void convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int len);
-    static void setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, int choose, int index);
-
+    static void setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, int option, int index);
+    static void setAlarmText();
+    static void savePicFile();
+    static void saveToDatabase();
 signals:
-    void toShowPersonInfo();
-    void toAddAlarmItem();
-    void toStranger();
+
 public slots:
     void showPersonInfo();
     void addAlarmItem();
-    void stranger();
+    void setDatabaseInfo();
 private slots:
     void on_alarmList_itemDoubleClicked(QListWidgetItem *item);
 

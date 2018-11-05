@@ -14,6 +14,7 @@ QString SettingsThread::CMPassword;
 
 QString SettingsThread::DBIp;
 int SettingsThread::DBPort;
+QString SettingsThread::DBModel;
 QString SettingsThread::DBUsername;
 QString SettingsThread::DBPassword;
 /***************************************成员变量 END***************************************/
@@ -91,12 +92,13 @@ bool SettingsThread::readDatabaseSettings() {
 
         DBIp = config->value("/Database/ip").toString();
         DBPort = config->value("/Database/port").toInt();
+        DBModel = config->value("/Database/model").toString();
         DBUsername = config->value("/Database/username").toString();
         DBPassword = config->value("/Database/password").toString();
 
         delete config;
 
-        emit readedDatabaseSettings(DBIp, DBPort, DBUsername, DBPassword);
+        emit readedDatabaseSettings(DBIp, DBPort, DBModel, DBUsername, DBPassword);
 
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readCameraSettings succeed");
     } catch(...) {
@@ -140,6 +142,7 @@ bool SettingsThread::writeDatabaseSettings() {
 
         config->setValue("/Database/ip", DBIp);
         config->setValue("/Database/port", DBPort);
+        config->setValue("/Database/model", DBModel);
         config->setValue("/Database/username", DBUsername);
         config->setValue("/Database/password", DBPassword);
 
