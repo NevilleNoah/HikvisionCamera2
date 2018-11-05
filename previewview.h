@@ -7,9 +7,9 @@
 #include "HCNetSDK.h"
 #include "plaympeg4.h"
 #include "Windows.h"
-#include <QtSql/QSqlError>
-#include <QtSql/QSqlDatabase>
-#include <QtSql/QSqlQuery>
+#include <QSqlError>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QTabWidget>
 #include <QtUiTools/QUiLoader>
 #include <QFile>
@@ -27,6 +27,7 @@
 #include <QString>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QDir>
 
 namespace Ui {
     class PreviewView;
@@ -51,6 +52,7 @@ public:
     //个人信息
     static char name[32];
     static char sex[2];
+    static QString id;
     //人脸库图
     static char* avatar;
     static DWORD avatarLen;
@@ -67,6 +69,10 @@ public:
 
     static int currentRow;
     static double Similarity;
+    static QString dirAvatar;
+    static QString dirCapture;
+    static QString dirPicAvatar;
+    static QString dirPicCapture;
 
     void loadPreview();
 
@@ -86,6 +92,8 @@ public slots:
     void stranger();
 private slots:
     void on_alarmList_itemDoubleClicked(QListWidgetItem *item);
+
+    void on_btnAlarmClear_clicked();
 
 private:
     Ui::PreviewView *ui;

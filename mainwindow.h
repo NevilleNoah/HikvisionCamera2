@@ -48,11 +48,6 @@ signals:
     void signalMenuLogin();
     void signalMenuDB();
 private slots:
-    void on_showPreview_triggered();
-
-    void on_showHistory_triggered();
-
-    void on_showSettings_triggered();
 
 private:
     /*************************************UI*****************************************/

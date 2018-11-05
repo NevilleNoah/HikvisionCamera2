@@ -47,18 +47,9 @@
      <x>0</x>
      <y>0</y>
      <width>1080</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>视图</string>
-    </property>
-    <addaction name="showPreview"/>
-    <addaction name="showHistory"/>
-    <addaction name="showSettings"/>
-   </widget>
-   <addaction name="menu_2"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -69,21 +60,6 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="showPreview">
-   <property name="text">
-    <string>预览</string>
-   </property>
-  </action>
-  <action name="showHistory">
-   <property name="text">
-    <string>历史纪录</string>
-   </property>
-  </action>
-  <action name="showSettings">
-   <property name="text">
-    <string>设置</string>
-   </property>
-  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

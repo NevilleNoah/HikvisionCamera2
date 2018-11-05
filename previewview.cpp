@@ -20,6 +20,7 @@ WORD PreviewView::m_wPicQuality;//预览画面质量设置
 //个人信息
 char PreviewView::name[32];
 char PreviewView::sex[2];
+QString PreviewView::id;
 //人脸库图
 char* PreviewView::avatar;
 DWORD PreviewView::avatarLen;
@@ -30,6 +31,11 @@ DWORD PreviewView::captureLen;
 float PreviewView::similarity;
 int PreviewView::currentRow;
 double PreviewView::Similarity = 0.1;
+//保存路径
+QString PreviewView::dirAvatar;
+QString PreviewView::dirCapture;
+QString PreviewView::dirPicAvatar;
+QString PreviewView::dirPicCapture;
 //信息列表
 QList<NET_VCA_FACESNAP_MATCH_ALARM> PreviewView::alarmList;
 QList<char*> PreviewView::avatarList;
@@ -108,61 +114,83 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 
         if(struFaceMatchAlarm.fSimilarity>Similarity) {
 
-        printf("人脸比对结果上传[0x%x]：[%4.4d%2.2d%2.2d%2.2d%2.2d%2.2d]fSimilarity[%f]FaceID[%d]BlackListID[%d]"
-               "Sex[%d]Glasses[%d]Age[%d]MatchPicNum[%d]PicTransType[%d]\n", lCommand,
-               struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
-               struAbsTime.dwSecond, struFaceMatchAlarm.fSimilarity, struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID,
-               struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.dwRegisterID, struFaceMatchAlarm.struSnapInfo.bySex,
-               struFaceMatchAlarm.struSnapInfo.byGlasses, struFaceMatchAlarm.struSnapInfo.byAge,
-               struFaceMatchAlarm.byMatchPicNum, struFaceMatchAlarm.byPicTransType);
 
-        //个人信息
-        setPersonInfo(struFaceMatchAlarm, 0, 0);
-        emit previewView->toShowPersonInfo();
+            //个人信息
+            setPersonInfo(struFaceMatchAlarm, 0, 0);
+            emit previewView->toShowPersonInfo();
 
-        //报警信息
-        currentAlarmInfo = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d ",struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
-                                             struAbsTime.dwSecond);
-        currentAlarmInfo.append(QString::fromLocal8Bit(name));
-        emit previewView->toAddAlarmItem();
-
-        //TAD：数据库操作
+            //报警信息
+            currentAlarmInfo = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",alarmList.length(), struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
+                                                 struAbsTime.dwSecond);
+            currentAlarmInfo.append(QString::fromLocal8Bit("   姓名："));
+            currentAlarmInfo.append(QString::fromLocal8Bit(name));
 
 
-        //保存抓拍图片
-        /*if (struFaceMatchAlarm.dwSnapPicLen > 0 && struFaceMatchAlarm.pSnapPicBuffer  != NULL && struFaceMatchAlarm.byPicTransType == 0)
-        {
-            qDebug()<<"capture";
-            LPCWSTR cFilename = L"D:\\Cloud\\HIKVISION\\SDK\\build-HikvisionCamera2-Desktop_Qt_5_11_2_MSVC2017_64bit-Debug\\debug\\test.jpg";
-            HANDLE hFile;
-            DWORD dwReturn;
+            currentAlarmInfo.append(QString::fromLocal8Bit("   性别："));
+            currentAlarmInfo.append(QString::fromLocal8Bit(sex));
 
-            char chTime[128];
+            currentAlarmInfo.append(QString::fromLocal8Bit("   编号："));
+            currentAlarmInfo.append(id);
 
 
-            hFile = CreateFileW(cFilename, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (hFile == INVALID_HANDLE_VALUE)
+            emit previewView->toAddAlarmItem();
+
+            //文件保存
+            if (struFaceMatchAlarm.dwSnapPicLen > 0 && struFaceMatchAlarm.pSnapPicBuffer  != NULL && struFaceMatchAlarm.byPicTransType == 0)
             {
-                break;
+
+                //检查路径，创建文件
+                QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+
+                dirCapture = config->value("/Dir/dirCapture").toString();
+
+                QDir qdirCapture(dirCapture);
+                if(!qdirCapture.exists(dirCapture)) {
+                    qdirCapture.mkpath(dirCapture);
+                }
+
+                dirPicCapture = dirCapture;
+                dirPicCapture.append("test");
+                dirPicCapture.append(".jpg");
+
+                QFile captureFile(dirPicCapture);
+                captureFile.open(QIODevice::WriteOnly);
+                captureFile.write(capture, captureLen);
+                captureFile.close();
             }
-            qDebug()<<"created";
-            WriteFile(hFile, struFaceMatchAlarm.pSnapPicBuffer, struFaceMatchAlarm.dwSnapPicLen, &dwReturn, NULL);
-            qDebug()<<"writed";
-            CloseHandle(hFile);
-            qDebug()<<"closed";
-            hFile = INVALID_HANDLE_VALUE;
-        }*/
+
+            //TAD：数据库操作
+
+
+            /*QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+
+                dirAvatar = config->value("/Dir/dirAvatar").toString();
+                QDir qdirAvatar(dirAvatar);
+                if(!qdirAvatar.exists(dirAvatar)) {
+                    qdirAvatar.mkpath(dirAvatar);
+                }
+
+                dirPicAvatar = dirAvatar;
+                dirPicAvatar.append("test");
+                dirPicAvatar.append(".jpg");
+
+                QFile avatarFile(dirPicAvatar);
+                avatarFile.open(QIODevice::WriteOnly);
+                avatarFile.write(avatar, avatarLen);
+                avatarFile.close();*/
+
+
         } else {
             setPersonInfo(struFaceMatchAlarm, 0, 0);
             emit previewView->toStranger();
             //报警信息
-            currentAlarmInfo = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d ",struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
+            currentAlarmInfo = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",alarmList.length(), struAbsTime.dwYear, struAbsTime.dwMonth, struAbsTime.dwDay, struAbsTime.dwHour, struAbsTime.dwMinute,
                                                  struAbsTime.dwSecond);
-            currentAlarmInfo.append(QString::fromLocal8Bit("陌生人"));
+            currentAlarmInfo.append(QString::fromLocal8Bit("   陌生人"));
             emit previewView->toAddAlarmItem();
         }
         break;
-        }
+    }
         return TRUE;
     }
 }
@@ -191,7 +219,7 @@ void PreviewView::stranger() {
     ui->edName->setText(QString::fromLocal8Bit("未知"));
     ui->edSex->setText(QString::fromLocal8Bit("未知"));
     ui->edId->setText(QString::fromLocal8Bit("未知"));
-    ui->edSimilarity->setText(QString::fromLocal8Bit(""));
+    ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
 }
 
 void PreviewView::loadPreview() {
@@ -252,7 +280,6 @@ void PreviewView::loadPreview() {
             return;
         }
 
-
         //---------------------------------------
         //启动预览并设置回调数据流
         HWND hWnd = (HWND)ui->picPreview->winId();
@@ -269,8 +296,6 @@ void PreviewView::loadPreview() {
             printf("NET_DVR_RealPlay_V40 error\n");
             NET_DVR_Logout(lUserID);
             NET_DVR_Cleanup();
-
-
             return;
         }
 
@@ -359,6 +384,27 @@ void PreviewView::setPersonInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm,
         break;
 
     }
+    //编号（不得以0结尾）
+    for(int i = 0; i < NAME_LEN; i++) {
+        QString strTmp;
+        bool zero = true;//当前元素的后续元素是否都为0
+        for(int j = 0;j < NAME_LEN-i;j++) {
+            //若存在后续元素不为0，则zero为false
+            if(struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber[i+j]!=0) {
+                bool zero = false;
+            }
+        }
+        //后续元素不全为0，则赋值
+        if(!zero) {
+            strTmp.sprintf("%d", struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber[i]);
+            id.append(strTmp);
+        }
+    }
+    if(id.length()==0) {
+        id = QString::fromLocal8Bit("未知");
+    }
+
+
     //相似度
     similarity = struFaceMatchAlarm.fSimilarity;
     /*********************************************设置个人信息 END******************************************/
@@ -403,6 +449,7 @@ void PreviewView::showPersonInfo() {
 
     ui->edName->setText(QString::fromLocal8Bit(name));
     ui->edSex->setText(QString::fromLocal8Bit(sex));
+    ui->edId->setText(id);
     ui->edSimilarity->setText(QString::number(similarity*100));
     /*********************************************显示个人信息 END******************************************/
 
@@ -466,4 +513,23 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
         setPersonInfo(alarm, 1, currentRow);
         emit previewView->toStranger();
     }
+}
+
+void PreviewView::on_btnAlarmClear_clicked()
+{
+    ui->alarmList->clear();
+    ui->edId->setText("");
+    ui->edName->setText("");
+    ui->edSex->setText("");
+    ui->edSimilarity->setText("");
+
+    QPixmap pixAvatar(ui->picAvatar->size());
+    ui->picAvatar->setPixmap(pixAvatar);
+
+    QPixmap pixCapture(ui->picCapture->size());
+    ui->picCapture->setPixmap(pixCapture);
+
+    alarmList.clear();
+    avatarList.clear();
+    captureList.clear();
 }
