@@ -22,10 +22,12 @@ public:
 
     void changeCameraSettings();
     void changeDatabaseSettings();
+    void changePicDirSettings();
 
 public slots:
     void loadCameraSettings(QString ip, int port, QString username, QString password);
     void loadDatabaseSettings(QString ip, int port, QString model, QString username, QString password);
+    void loadPicDirSettings(QString dirCapture, QString dirAvatar);
     void setBtnDetermineEnable();
 signals:
 

@@ -17,6 +17,9 @@ int SettingsThread::DBPort;
 QString SettingsThread::DBModel;
 QString SettingsThread::DBUsername;
 QString SettingsThread::DBPassword;
+
+QString SettingsThread::dirCapture;
+QString SettingsThread::dirAvatar;
 /***************************************成员变量 END***************************************/
 
 
@@ -36,6 +39,7 @@ void SettingsThread::run() {
 
         writeCameraSettings();
         writeDatabaseSettings();
+        writePicDirSettings();
 
         emit writedSettings();
         break;
@@ -53,7 +57,7 @@ void SettingsThread::setStatus(int status) {
 
 //读配置
 bool SettingsThread::readSettings() {
-    if(readCameraSettings()&&readDatabaseSettings()) {
+    if(readCameraSettings()&&readDatabaseSettings()&&readPicDirSettings()) {
         emit readedSettings();
         return true;
     }
@@ -108,6 +112,27 @@ bool SettingsThread::readDatabaseSettings() {
 
     return true;
 }
+
+bool SettingsThread::readPicDirSettings() {
+    try {
+        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+
+        dirCapture = config->value("/Dir/dirCapture").toString();
+        dirAvatar = config->value("/Dir/dirAvatar").toString();
+
+        delete config;
+
+        emit readedPicDirSettings(dirCapture, dirAvatar);
+
+        qDebug()<<QString::fromLocal8Bit("SettingsThread: readPicDirSettings succeed");
+    } catch(...) {
+        qDebug()<<QString::fromLocal8Bit("SettingsThread: readPicDirSettings fail");
+        return false;
+    }
+
+
+    return true;
+}
 /***************************************读配置 END***************************************/
 
 /*****************************************写配置*****************************************/
@@ -151,6 +176,26 @@ bool SettingsThread::writeDatabaseSettings() {
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeDatabaseSettings succeed");
     } catch(...) {
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeDatabaseSettings fail");
+        return false;
+    }
+
+    return true;
+}
+
+//写数据库配置
+bool SettingsThread::writePicDirSettings() {
+
+    try {
+        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+
+        config->setValue("/Dir/dirCapture", dirCapture);
+        config->setValue("/Dir/dirAvatar", dirAvatar);
+
+        delete config;
+
+        qDebug() << QString::fromLocal8Bit("SettingsThread: writePicDirSettings succeed");
+    } catch(...) {
+        qDebug() << QString::fromLocal8Bit("SettingsThread: writePicDirSettings fail");
         return false;
     }
 

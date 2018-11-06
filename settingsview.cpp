@@ -22,6 +22,8 @@ void SettingsView::runReadSettingsThread() {
             this, SLOT(loadCameraSettings(QString, int, QString, QString)));
     connect(settingsThread, SIGNAL(readedDatabaseSettings(QString, int, QString, QString, QString)),
             this, SLOT(loadDatabaseSettings(QString, int, QString, QString, QString)));
+    connect(settingsThread, SIGNAL(readedPicDirSettings(QString, QString)),
+            this, SLOT(loadPicDirSettings(QString, QString)));
     connect(settingsThread, SIGNAL(readedSettings()),
             this, SLOT(setBtnDetermineEnable()));
     //connect(settingsThread, SIGNAL(writedSettings()),
@@ -54,6 +56,13 @@ void SettingsView::loadDatabaseSettings(QString ip, int port, QString model, QSt
     ui->edDBUsername->setText(username);
     ui->edDBPassword->setText(password);
 }
+
+void SettingsView::loadPicDirSettings(QString dirCapture, QString dirAvatar) {
+
+    ui->edDirCapture->setText(dirCapture);
+    ui->edDirAvatar->setText(dirAvatar);
+
+}
 //更新Ui：按键生效
 void SettingsView::setBtnDetermineEnable() {
     ui->btnDetermine->setEnabled(true);
@@ -80,6 +89,13 @@ void SettingsView::changeDatabaseSettings() {
 
 }
 
+void SettingsView::changePicDirSettings() {
+
+    SettingsThread::dirCapture = ui->edDirCapture->text();
+    SettingsThread::dirAvatar = ui->edDirAvatar->text();
+
+}
+
 void SettingsView::on_btnDetermine_clicked()
 {
     qDebug() << "SettingsView: on_btnDetermine_clicked exec";
@@ -88,6 +104,7 @@ void SettingsView::on_btnDetermine_clicked()
 
     changeCameraSettings();
     changeDatabaseSettings();
+    changePicDirSettings();
 
     settingsThread = new SettingsThread(this);
     settingsThread->setStatus(SettingsThread::STATUS_WRITE);

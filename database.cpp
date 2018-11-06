@@ -65,7 +65,7 @@ bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAva
             query.bindValue(":name", mName);
             query.bindValue(":sex", mSex);
             query.bindValue(":idCapture", mIdCapture);
-            query.bindValue(":idAvatar", mIdCapture);
+            query.bindValue(":idAvatar", mIdAvatar);
 
             query.exec();
             return true;

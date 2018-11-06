@@ -28,6 +28,9 @@ public:
     static QString DBUsername;
     static QString DBPassword;
 
+    static QString dirCapture;
+    static QString dirAvatar;
+
     void run();
 
     void setStatus(int status);
@@ -35,9 +38,11 @@ public:
     bool readSettings();
     bool readCameraSettings();
     bool readDatabaseSettings();
+    bool readPicDirSettings();
 
     bool writeCameraSettings();
     bool writeDatabaseSettings();
+    bool writePicDirSettings();
 
 signals:
     void writedSettings();
@@ -45,6 +50,7 @@ signals:
 
     void readedCameraSettings(QString ip, int port, QString username, QString password);
     void readedDatabaseSettings(QString ip, int port, QString model, QString username, QString password);
+    bool readedPicDirSettings(QString dirCapture, QString dirAvatar);
 
 public slots:
 

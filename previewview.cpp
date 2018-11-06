@@ -23,6 +23,7 @@ WORD PreviewView::m_wPicQuality;//预览画面质量设置
 //人脸库图
 char* PreviewView::avatar;
 DWORD PreviewView::avatarLen;
+DWORD PreviewView::avatarIDLen;
 //抓拍图
 char* PreviewView::capture;
 DWORD PreviewView::captureLen;
@@ -104,7 +105,7 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
         setAlarmText();
         //保存报警的图片与人脸图
         savePicFile();
-        //TAD：数据库操作
+        //数据库操作
         saveToDatabase();
 
         break;
@@ -145,17 +146,9 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
             similarity = struFaceMatchAlarm.fSimilarity;
 
             //--------------------
-            //抓拍图
-            //TAD：添加抓拍图id
-            alarmInfo.idCapture = "";
-            captureLen = struFaceMatchAlarm.dwSnapPicLen;
-            capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-            memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
-
-            //--------------------
             //人脸库头像图
-            //TAD:添加人脸头像图id
-            alarmInfo.idAvatar = "";
+            alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
+            qDebug() << "idAvatar is "<<QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
             avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
             avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
             memcpy(avatar, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLen);
@@ -184,7 +177,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
 
             //--------------------
             //编号（不得以0结尾）
-            for(int i = 0; i < NAME_LEN; i++) {
+            /*for(int i = 0; i < NAME_LEN; i++) {
                 QString strTmp;
                 bool zero = true;//当前元素的后续元素是否都为0
                 for(int j = 0;j < NAME_LEN-i;j++) {
@@ -198,7 +191,10 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
                     strTmp.sprintf("%d", struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber[i]);
                     alarmInfo.id.append(strTmp);
                 }
-            }
+            }*/
+            BYTE idBytes[NAME_LEN];
+            memcpy(idBytes, struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber, NAME_LEN);
+            alarmInfo.id = QString::fromLocal8Bit((char*)idBytes);
             if(alarmInfo.id.length()==0) {
                 alarmInfo.id = QString::fromLocal8Bit("未知");
             }
@@ -209,14 +205,14 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
             //设置为陌生人
             alarmInfo.isStranger = true;
 
-            //--------------------
-            //抓拍图
-            //TAD：添加抓拍图id
-            alarmInfo.idCapture = "";
-            captureLen = struFaceMatchAlarm.dwSnapPicLen;
-            capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-            memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
         }
+
+        //--------------------
+        //抓拍图
+        alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
+        captureLen = struFaceMatchAlarm.dwSnapPicLen;
+        capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+        memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
 
         emit previewView->showPersonInfo();
 
@@ -250,13 +246,13 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, 
 void PreviewView::setAlarmText() {
     //报警信息
     alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
-                                         alarmList.length(),
-                                         alarmInfo.dwYear,
-                                         alarmInfo.dwMonth,
-                                         alarmInfo.dwDay,
-                                         alarmInfo.dwHour,
-                                         alarmInfo.dwMinute,
-                                         alarmInfo.dwSecond);
+                                  alarmList.length(),
+                                  alarmInfo.dwYear,
+                                  alarmInfo.dwMonth,
+                                  alarmInfo.dwDay,
+                                  alarmInfo.dwHour,
+                                  alarmInfo.dwMinute,
+                                  alarmInfo.dwSecond);
     if(!alarmInfo.isStranger) {
 
         alarmText.append(QString::fromLocal8Bit("   姓名："));
@@ -290,7 +286,7 @@ void PreviewView::savePicFile() {
     }
 
     dirPicCapture = dirCapture;
-    dirPicCapture.append("test");
+    dirPicCapture.append(alarmInfo.idCapture);
     dirPicCapture.append(".jpg");
 
     QFile captureFile(dirPicCapture);
@@ -307,13 +303,17 @@ void PreviewView::savePicFile() {
         }
 
         dirPicAvatar = dirAvatar;
-        dirPicAvatar.append("test");
+        dirPicAvatar.append(alarmInfo.idAvatar);
         dirPicAvatar.append(".jpg");
 
-        QFile captureFile(dirPicAvatar);
-        captureFile.open(QIODevice::WriteOnly);
-        captureFile.write(avatar, avatarLen);
-        captureFile.close();
+
+        QFile avatarFile(dirPicAvatar);
+        if(!avatarFile.exists()) {
+            avatarFile.open(QIODevice::WriteOnly);
+            avatarFile.write(avatar, avatarLen);
+            avatarFile.close();
+        }
+
     }else {
 
     }
@@ -519,7 +519,7 @@ void PreviewView::saveToDatabase() {
     database.setQSqlDatabase(db);
 
     database.openConnect(dbIp, dbPort, dbModel, dbUsername, dbPassword);
-    //database.addRecord(alarmInfo.name);
+    database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar);
     database.closeConnect();
 
 }
@@ -533,7 +533,6 @@ void PreviewView::setDatabaseInfo() {
     dbModel = config->value("/Database/model").toString();
     dbUsername = config->value("/Database/username").toString();
     dbPassword = config->value("/Database/password").toString();
-
 
     delete config;
 
@@ -564,11 +563,8 @@ void PreviewView::on_btnAlarmClear_clicked()
     ui->edSex->setText("");
     ui->edSimilarity->setText("");
 
-    QPixmap pixAvatar(ui->picAvatar->size());
-    ui->picAvatar->setPixmap(pixAvatar);
-
-    QPixmap pixCapture(ui->picCapture->size());
-    ui->picCapture->setPixmap(pixCapture);
+    ui->picAvatar->setText(" ");
+    ui->picCapture->setText(" ");
 
     alarmList.clear();
     avatarList.clear();

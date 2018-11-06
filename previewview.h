@@ -75,6 +75,7 @@ public:
     //人脸库图
     static char* avatar;
     static DWORD avatarLen;
+    static DWORD avatarIDLen;
     //抓拍图
     static char* capture;
     static DWORD captureLen;
