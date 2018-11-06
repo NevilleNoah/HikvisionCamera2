@@ -1,6 +1,6 @@
 ﻿#include "database.h"
 
-QSqlDatabase Database::db= QSqlDatabase::addDatabase("QMYSQL");
+QSqlDatabase Database::db;
 
 Database::Database() {
 
@@ -28,12 +28,12 @@ bool Database::openConnect()
         bool ok = db.open();//建立数据库连接
         if(!ok)
         {
-            qDebug() << QString::fromLocal8Bit("Database: connect to mysql succeed");
+            qDebug() << "Database: connect to succeed";
             return false;
         }
         else
         {
-            qDebug() << QString::fromLocal8Bit("Database: connect to mysql failed");
+            qDebug() << "Database: connect to failed";
             return true;
         }
     } catch(std::exception &e) {
@@ -57,7 +57,7 @@ bool Database::closeConnect(){
 }
 
 //增加记录
-bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAvatar)
+bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAvatar, bool isStranger)
 {
     try{
         if(&db!=NULL) {
@@ -67,14 +67,48 @@ bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAva
             QString mSex = QString::fromLocal8Bit(sex);
             QString mIdCapture = idCapture;
             QString mIdAvatar = idAvatar;
+            bool mIsStranger = isStranger;
 
-            query.prepare("INSERT INTO record(name, sex, idCapture, idAvatar) "
-                          "VALUES(:name, :sex, :idCapture, :idAvatar)");
+            query.prepare("INSERT INTO record(name, sex, idCapture, idAvatar, isStranger) "
+                          "VALUES(:name, :sex, :idCapture, :idAvatar, :isStranger)");
 
             query.bindValue(":name", mName);
             query.bindValue(":sex", mSex);
             query.bindValue(":idCapture", mIdCapture);
             query.bindValue(":idAvatar", mIdAvatar);
+            query.bindValue(":isStranger", mIsStranger);
+
+            query.exec();
+            return true;
+        }
+        return false;
+    }catch(std::exception &e) {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+}
+
+//增加记录
+bool Database::addRecord(QString name, QString sex, QString idCapture, QString idAvatar, bool isStranger)
+{
+    try{
+        if(&db!=NULL) {
+            //执行sql语句
+            QSqlQuery query;
+            QString mName  = name;
+            QString mSex = sex;
+            QString mIdCapture = idCapture;
+            QString mIdAvatar = idAvatar;
+            bool mIsStranger = isStranger;
+
+            query.prepare("INSERT INTO record(name, sex, idCapture, idAvatar, isStranger) "
+                          "VALUES(:name, :sex, :idCapture, :idAvatar, :isStranger)");
+
+            query.bindValue(":name", mName);
+            query.bindValue(":sex", mSex);
+            query.bindValue(":idCapture", mIdCapture);
+            query.bindValue(":idAvatar", mIdAvatar);
+            query.bindValue(":isStranger", mIsStranger);
 
             query.exec();
             return true;
@@ -92,4 +126,6 @@ QList<RECORD> selectRecord() {
     return records;
 }
 
-
+void Database::setQSqlDatabase(QSqlDatabase db) {
+    this->db = db;
+}

@@ -22,12 +22,13 @@ class Database
 public:
     Database();
 
-    void addRecord();
     QList<RECORD> selectRecord();
 
     bool openConnect();
     bool closeConnect();
-    bool addRecord(char* name, char* sex, QString idCapture, QString idAvatar);
+    bool addRecord(char* name, char* sex, QString idCapture, QString idAvatar, bool isStranger);
+    bool addRecord(QString name, QString sex, QString idCapture, QString idAvatar, bool isStranger);
+
     void setQSqlDatabase(QSqlDatabase db);
     static QSqlDatabase db;
 

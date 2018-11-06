@@ -196,6 +196,17 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //--------------------
         //设置为陌生人
         alarmInfo.isStranger = true;
+        switch(struFaceMatchAlarm.struSnapInfo.bySex) {
+        case 0x0:
+            strcpy(alarmInfo.sex, "男");
+            break;
+        case 0x1:
+            strcpy(alarmInfo.sex, "女");
+            break;
+        case 0xff:
+            strcpy(alarmInfo.sex, "未知");
+            break;
+        }
 
     }
 
@@ -472,7 +483,7 @@ void PreviewView::showPersonInfo(int option) {
             ui->picAvatar->setPixmap(pixAvatar);
 
             ui->edName->setText(QString::fromLocal8Bit("未知"));
-            ui->edSex->setText(QString::fromLocal8Bit("未知"));
+            ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
         }
@@ -569,9 +580,15 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 }
 
 void PreviewView::saveToDatabase() {
+    QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
+    database.setQSqlDatabase(qSqlDatabase);
 
     database.openConnect();
-    database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar);
+    if(!alarmInfo.isStranger) {
+        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
+    } else {
+        database.addRecord(QString::fromLocal8Bit(""), QString::fromLocal8Bit(alarmInfo.sex), alarmInfo.idCapture, QString::fromLocal8Bit(""), alarmInfo.isStranger);
+    }
     database.closeConnect();
 
 }
