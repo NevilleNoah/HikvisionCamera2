@@ -29,7 +29,9 @@
 #include <QListWidgetItem>
 #include <QDir>
 #include "database.h"
-
+#include <QTableWidget>
+#include <QTableWidgetItem>
+#include <QStringList>
 typedef struct tagALARM_INFO{
     DWORD dwYear;
     DWORD dwMonth;
@@ -39,7 +41,7 @@ typedef struct tagALARM_INFO{
     DWORD dwSecond;
 
     char name[NAME_LEN];
-    char sex[2];
+    char sex[4];
     QString id;
     float similarity;
 
@@ -101,19 +103,22 @@ public:
     static QString dirPicCapture;
 
     void loadPreview();
+    void initAlarmTable();
 
 
     static BOOL CALLBACK MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
     static void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser);
     static void convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int len);
-    static void setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm, int option, int index);
+    static void setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm);
+    static void setAlarmInfo();
     static void setAlarmText();
     static void savePicFile();
     static void saveToDatabase();
+
 signals:
 
 public slots:
-    void showPersonInfo();
+    void showPersonInfo(int option);
     void addAlarmItem();
     void setDatabaseInfo();
 private slots:
