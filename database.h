@@ -6,6 +6,16 @@
 #include <QDebug>
 #include <QSqlDatabase>
 #include <QSqlQuery>
+#include <QDateTime>
+#include <QList>
+
+typedef struct tagRECORD{
+    QString name;
+    QString sex;
+    QString idAvatar;
+    QString idCapture;
+    QDateTime timesamp;
+} RECORD;
 
 class Database
 {
@@ -13,14 +23,16 @@ public:
     Database();
 
     void addRecord();
-    void selectRecord();
+    QList<RECORD> selectRecord();
 
-    bool openConnect(QString hostName, int port, QString databaseName, QString userName, QString password);
+    bool openConnect();
     bool closeConnect();
     bool addRecord(char* name, char* sex, QString idCapture, QString idAvatar);
     void setQSqlDatabase(QSqlDatabase db);
-private:
     static QSqlDatabase db;
+
+private:
+
 
 };
 

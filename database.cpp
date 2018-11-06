@@ -1,30 +1,39 @@
 ﻿#include "database.h"
 
-QSqlDatabase Database::db;
+QSqlDatabase Database::db= QSqlDatabase::addDatabase("QMYSQL");
 
 Database::Database() {
 
 }
 
 //创建数据库连接
-bool Database::openConnect(QString ip, int port, QString databaseName, QString userName, QString password)
+bool Database::openConnect()
 {
     try {
+        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+
+        QString ip = config->value("/Database/ip").toString();
+        int port = config->value("/Database/port").toInt();
+        QString model = config->value("/Database/model").toString();
+        QString username = config->value("/Database/username").toString();
+        QString password = config->value("/Database/password").toString();
+
+        delete config;
         db.setHostName(ip);
         db.setPort(port);
-        db.setDatabaseName(databaseName);
-        db.setUserName(userName);
+        db.setDatabaseName(model);
+        db.setUserName(username);
         db.setPassword(password);
 
         bool ok = db.open();//建立数据库连接
         if(!ok)
         {
-            qDebug() << QString::fromLocal8Bit("连接数据库失败");
+            qDebug() << QString::fromLocal8Bit("Database: connect to mysql succeed");
             return false;
         }
         else
         {
-            qDebug() << QString::fromLocal8Bit("连接数据库成功");
+            qDebug() << QString::fromLocal8Bit("Database: connect to mysql failed");
             return true;
         }
     } catch(std::exception &e) {
@@ -77,6 +86,10 @@ bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAva
     }
 }
 
-void Database::setQSqlDatabase(QSqlDatabase db) {
-    this->db = db;
+//获取记录
+QList<RECORD> selectRecord() {
+    QList<RECORD> records;
+    return records;
 }
+
+

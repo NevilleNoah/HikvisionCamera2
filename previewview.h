@@ -85,11 +85,6 @@ public:
     static double similarity;
     //数据库
     static Database database;
-    static QString dbIp;
-    static int dbPort;
-    static QString dbModel;
-    static QString dbUsername;
-    static QString dbPassword;
 
     static QList<char*> avatarList;
     static QList<char*> captureList;
@@ -120,7 +115,7 @@ signals:
 public slots:
     void showPersonInfo(int option);
     void addAlarmItem();
-    void setDatabaseInfo();
+
 private slots:
     void on_alarmList_itemDoubleClicked(QListWidgetItem *item);
 

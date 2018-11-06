@@ -42,11 +42,6 @@ ALARM_INFO PreviewView::alarmInfo;
 QString PreviewView::alarmText;
 //数据库
 Database PreviewView::database;
-QString PreviewView::dbIp;
-int PreviewView::dbPort;
-QString PreviewView::dbModel;
-QString PreviewView::dbUsername;
-QString PreviewView::dbPassword;
 //信息列表
 QList<char*> PreviewView::avatarList;
 QList<char*> PreviewView::captureList;
@@ -61,7 +56,6 @@ PreviewView::PreviewView(QWidget *parent) :
     ui(new Ui::PreviewView)
 {
     previewView = this;
-    setDatabaseInfo();
 
     ui->setupUi(this);
     loadPreview();
@@ -575,28 +569,13 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 }
 
 void PreviewView::saveToDatabase() {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
-    database.setQSqlDatabase(db);
 
-    database.openConnect(dbIp, dbPort, dbModel, dbUsername, dbPassword);
+    database.openConnect();
     database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar);
     database.closeConnect();
 
 }
 
-void PreviewView::setDatabaseInfo() {
-
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
-
-    dbIp = config->value("/Database/ip").toString();
-    dbPort = config->value("/Database/port").toInt();
-    dbModel = config->value("/Database/model").toString();
-    dbUsername = config->value("/Database/username").toString();
-    dbPassword = config->value("/Database/password").toString();
-
-    delete config;
-
-}
 
 void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 {
