@@ -57,26 +57,24 @@ bool Database::closeConnect(){
 }
 
 //增加记录
-bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAvatar, bool isStranger)
+bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger)
 {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
-            QString mName  = QString::fromLocal8Bit(name);
+            QString mNameValue  = QString::fromLocal8Bit(nameValue);
             QString mSex = QString::fromLocal8Bit(sex);
-            QString mIdCapture = idCapture;
-            QString mIdAvatar = idAvatar;
-            bool mIsStranger = isStranger;
 
-            query.prepare("INSERT INTO record(name, sex, idCapture, idAvatar, isStranger) "
-                          "VALUES(:name, :sex, :idCapture, :idAvatar, :isStranger)");
+            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger) "
+                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger)");
 
-            query.bindValue(":name", mName);
+            query.bindValue(":nameValue", mNameValue);
             query.bindValue(":sex", mSex);
-            query.bindValue(":idCapture", mIdCapture);
-            query.bindValue(":idAvatar", mIdAvatar);
-            query.bindValue(":isStranger", mIsStranger);
+            query.bindValue(":idNo", idNo);
+            query.bindValue(":idCapture", idCapture);
+            query.bindValue(":idAvatar", idAvatar);
+            query.bindValue(":isStranger", isStranger);
 
             query.exec();
             return true;
@@ -89,26 +87,23 @@ bool Database::addRecord(char* name, char* sex, QString idCapture, QString idAva
 }
 
 //增加记录
-bool Database::addRecord(QString name, QString sex, QString idCapture, QString idAvatar, bool isStranger)
+bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger)
 {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
-            QString mName  = name;
-            QString mSex = sex;
-            QString mIdCapture = idCapture;
-            QString mIdAvatar = idAvatar;
-            bool mIsStranger = isStranger;
 
-            query.prepare("INSERT INTO record(name, sex, idCapture, idAvatar, isStranger) "
-                          "VALUES(:name, :sex, :idCapture, :idAvatar, :isStranger)");
 
-            query.bindValue(":name", mName);
-            query.bindValue(":sex", mSex);
-            query.bindValue(":idCapture", mIdCapture);
-            query.bindValue(":idAvatar", mIdAvatar);
-            query.bindValue(":isStranger", mIsStranger);
+            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger) "
+                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger)");
+
+            query.bindValue(":nameValue", nameValue);
+            query.bindValue(":sex", sex);
+            query.bindValue(":idNo", idNo);
+            query.bindValue(":idCapture", idCapture);
+            query.bindValue(":idAvatar", idAvatar);
+            query.bindValue(":isStranger", isStranger);
 
             query.exec();
             return true;
@@ -121,8 +116,23 @@ bool Database::addRecord(QString name, QString sex, QString idCapture, QString i
 }
 
 //获取记录
-QList<RECORD> selectRecord() {
+QList<RECORD> Database::selectRecord() {
     QList<RECORD> records;
+    QSqlQuery query;
+    query.exec("select * from record");
+    while(query.next()) {
+        RECORD record;
+        record.timesamp = query.value(1).toDateTime();
+        record.nameValue = query.value(2).toString();
+        record.sex = query.value(3).toString();
+        record.idNo = query.value(4).toString();
+        record.idAvatar = query.value(5).toString();
+        record.idCapture = query.value(6).toString();
+        record.isStranger = query.value(7).toBool();
+
+
+        records.append(record);
+    }
     return records;
 }
 

@@ -112,6 +112,32 @@
       <height>611</height>
      </rect>
     </property>
+    <property name="minimumSize">
+     <size>
+      <width>841</width>
+      <height>0</height>
+     </size>
+    </property>
+    <column>
+     <property name="text">
+      <string>时间</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>姓名</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>性别</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>编号</string>
+     </property>
+    </column>
    </widget>
   </widget>
  </widget>

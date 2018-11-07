@@ -585,9 +585,9 @@ void PreviewView::saveToDatabase() {
 
     database.openConnect();
     if(!alarmInfo.isStranger) {
-        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
+        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
     } else {
-        database.addRecord(QString::fromLocal8Bit(""), QString::fromLocal8Bit(alarmInfo.sex), alarmInfo.idCapture, QString::fromLocal8Bit(""), alarmInfo.isStranger);
+        database.addRecord("", QString::fromLocal8Bit(alarmInfo.sex), "", alarmInfo.idCapture, "", alarmInfo.isStranger);
     }
     database.closeConnect();
 

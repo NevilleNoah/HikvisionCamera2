@@ -10,11 +10,13 @@
 #include <QList>
 
 typedef struct tagRECORD{
-    QString name;
+    QDateTime timesamp;
+    QString nameValue;
     QString sex;
+    QString idNo;
     QString idAvatar;
     QString idCapture;
-    QDateTime timesamp;
+    bool isStranger;
 } RECORD;
 
 class Database
@@ -26,8 +28,8 @@ public:
 
     bool openConnect();
     bool closeConnect();
-    bool addRecord(char* name, char* sex, QString idCapture, QString idAvatar, bool isStranger);
-    bool addRecord(QString name, QString sex, QString idCapture, QString idAvatar, bool isStranger);
+    bool addRecord(char* nameValue, char* sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger);
+    bool addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger);
 
     void setQSqlDatabase(QSqlDatabase db);
     static QSqlDatabase db;

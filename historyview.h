@@ -2,7 +2,7 @@
 #define HISTORYVIEW_H
 
 #include <QWidget>
-
+#include "database.h"
 namespace  Ui{
 class HistoryView;
 }
@@ -13,6 +13,11 @@ class HistoryView : public QWidget
 public:
     explicit HistoryView(QWidget *parent = nullptr);
     ~HistoryView();
+
+    void initTable();
+    void allData();
+    static Database db;
+    static QList<RECORD> records;
 signals:
 
 public slots:
