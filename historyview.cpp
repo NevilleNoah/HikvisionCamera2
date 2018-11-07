@@ -30,7 +30,6 @@ void HistoryView::allData() {
 
     ui->recordTable->setRowCount(records.size());
 
-
     for(int i = 0; i < records.size(); i++) {
         //设置单元格内容
         QTableWidgetItem* timesampItem;
@@ -62,13 +61,10 @@ void HistoryView::allData() {
         sexItem->setTextAlignment(Qt::AlignCenter);
         idNoItem->setTextAlignment(Qt::AlignCenter);
 
-
-
         ui->recordTable->setItem(i, 0, timesampItem);
         ui->recordTable->setItem(i, 1, nameItem);
         ui->recordTable->setItem(i, 2, sexItem);
         ui->recordTable->setItem(i, 3, idNoItem);
-
 
     }
 }
@@ -81,7 +77,6 @@ void HistoryView::initTable() {
     ui->recordTable->horizontalHeader()->setStretchLastSection(true);
     //设置列宽
     ui->recordTable->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
-
 
 }
 
@@ -101,7 +96,9 @@ void HistoryView::on_pushButton_clicked()
 void HistoryView::showByDateTimeRange() {
     qDebug() << "HistoryView: showByDateTimeRange exec";
 
-    ui->recordTable->clear();
+
+    ui->recordTable->clearContents();
+
 
     for(int i = 0; i<records.size();i++) {
         qDebug() << records[i].nameValue;

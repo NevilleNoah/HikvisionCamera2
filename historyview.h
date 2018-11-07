@@ -20,6 +20,7 @@ public:
     static QList<RECORD> records;
     static QDateTime startDateTime;
     static QDateTime endDateTime;
+
 signals:
 
 public slots:
