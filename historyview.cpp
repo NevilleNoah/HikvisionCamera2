@@ -95,8 +95,8 @@ void HistoryView::initTimeEdit() {
     endDateTime.setDate(endDate);
     endDateTime.setTime(endTime);
 
-    ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm:ss");
-    ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm:ss");
+    ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
+    ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 
     ui->edStartTime->setDateTime(startDateTime);
     ui->edStartTime->setDateTime(endDateTime);
