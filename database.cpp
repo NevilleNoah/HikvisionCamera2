@@ -130,7 +130,6 @@ QList<RECORD> Database::selectRecord() {
         record.idCapture = query.value(6).toString();
         record.isStranger = query.value(7).toBool();
 
-
         records.append(record);
     }
     return records;
@@ -145,8 +144,8 @@ QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime
     QSqlQuery query;
 
     query.prepare("select * from record where timesamp>:startDateTime and timesamp<:endDateTime");
-    query.bindValue(":startDateTime", startDateTime);
-    query.bindValue(":endDateTime", endDateTime);
+    query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
 
     while(query.next()) {
         RECORD record;

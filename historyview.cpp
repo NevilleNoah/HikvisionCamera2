@@ -14,6 +14,7 @@ HistoryView::HistoryView(QWidget *parent) :
     ui->setupUi(this);
 
     initTable();
+    initTimeEdit();
     allData();
 
 }
@@ -79,6 +80,31 @@ void HistoryView::initTable() {
     ui->recordTable->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
 
 }
+
+//初始化时间编辑器
+void HistoryView::initTimeEdit() {
+    QDate startDate = QDate::currentDate();
+    QTime startTime;
+    startTime.setHMS(0, 0, 0);
+    startDateTime.setDate(startDate);
+    startDateTime.setTime(startTime);
+
+    QDate endDate = QDate::currentDate();
+    QTime endTime;
+    endTime.setHMS(23, 59, 59);
+    endDateTime.setDate(endDate);
+    endDateTime.setTime(endTime);
+
+    ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm:ss");
+    ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm:ss");
+
+    ui->edStartTime->setDateTime(startDateTime);
+    ui->edStartTime->setDateTime(endDateTime);
+
+}
+
+
+
 
 HistoryView::~HistoryView()
 {

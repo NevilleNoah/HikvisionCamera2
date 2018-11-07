@@ -16,6 +16,7 @@ public:
 
     void initTable();
     void allData();
+    void initTimeEdit();
     static Database db;
     static QList<RECORD> records;
     static QDateTime startDateTime;
