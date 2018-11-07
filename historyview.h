@@ -18,9 +18,14 @@ public:
     void allData();
     static Database db;
     static QList<RECORD> records;
+    static QDateTime startDateTime;
+    static QDateTime endDateTime;
 signals:
 
 public slots:
+    void showByDateTimeRange();
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::HistoryView *ui;

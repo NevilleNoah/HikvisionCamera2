@@ -25,6 +25,7 @@ public:
     Database();
 
     QList<RECORD> selectRecord();
+    QList<RECORD> selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime);
 
     bool openConnect();
     bool closeConnect();

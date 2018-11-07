@@ -26,7 +26,7 @@ bool Database::openConnect()
         db.setPassword(password);
 
         bool ok = db.open();//建立数据库连接
-        if(!ok)
+        if(ok)
         {
             qDebug() << "Database: connect to succeed";
             return false;
@@ -119,7 +119,7 @@ bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString i
 QList<RECORD> Database::selectRecord() {
     QList<RECORD> records;
     QSqlQuery query;
-    query.exec("select * from record");
+    query.exec("select * from record order by timesamp desc");
     while(query.next()) {
         RECORD record;
         record.timesamp = query.value(1).toDateTime();
@@ -138,4 +138,28 @@ QList<RECORD> Database::selectRecord() {
 
 void Database::setQSqlDatabase(QSqlDatabase db) {
     this->db = db;
+}
+
+QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime) {
+    QList<RECORD> records;
+    QSqlQuery query;
+
+    query.prepare("select * from record where timesamp>:startDateTime and timesamp<:endDateTime");
+    query.bindValue(":startDateTime", startDateTime);
+    query.bindValue(":endDateTime", endDateTime);
+
+    while(query.next()) {
+        RECORD record;
+        record.timesamp = query.value(1).toDateTime();
+        record.nameValue = query.value(2).toString();
+        record.sex = query.value(3).toString();
+        record.idNo = query.value(4).toString();
+        record.idAvatar = query.value(5).toString();
+        record.idCapture = query.value(6).toString();
+        record.isStranger = query.value(7).toBool();
+
+
+        records.append(record);
+    }
+    return records;
 }

@@ -4,6 +4,8 @@
 
 Database HistoryView::db;
 QList<RECORD> HistoryView::records;
+QDateTime HistoryView::startDateTime;
+QDateTime HistoryView::endDateTime;
 
 HistoryView::HistoryView(QWidget *parent) :
     QWidget(parent),
@@ -86,4 +88,22 @@ void HistoryView::initTable() {
 HistoryView::~HistoryView()
 {
     delete ui;
+}
+
+void HistoryView::on_pushButton_clicked()
+{
+    db.openConnect();
+    records = db.selectByDateTimeRange(startDateTime, endDateTime);
+    db.closeConnect();
+    emit showByDateTimeRange();
+}
+
+void HistoryView::showByDateTimeRange() {
+    qDebug() << "HistoryView: showByDateTimeRange exec";
+
+    ui->recordTable->clear();
+
+    for(int i = 0; i<records.size();i++) {
+        qDebug() << records[i].nameValue;
+    }
 }
