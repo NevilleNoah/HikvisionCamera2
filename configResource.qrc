@@ -1,5 +1,7 @@
 <RCC>
-    <qresource prefix="/config">
-        <file>config.ini</file>
+    <qresource prefix="/">
+        <file>config/config.ini</file>
+        <file>icon/info.png</file>
+        <file>icon/warn.png</file>
     </qresource>
 </RCC>

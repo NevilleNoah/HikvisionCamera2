@@ -548,7 +548,14 @@ void PreviewView::setAlarmInfo() {
 void PreviewView::addAlarmItem() {
     qDebug() << "PreviweView: addAlarmItem exec";
 
-    QListWidgetItem* item = new QListWidgetItem(alarmText, ui->alarmList, 0);
+    if(!alarmInfo.isStranger) {
+        QIcon icon(":/icon/info.png");
+        QListWidgetItem* item = new QListWidgetItem(icon, alarmText, ui->alarmList, 0);
+    }
+    else {
+        QIcon icon(":/icon/warn.png");
+        QListWidgetItem* item = new QListWidgetItem(icon, alarmText, ui->alarmList, 0);
+    }
 }
 
 /**
