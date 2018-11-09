@@ -58,8 +58,6 @@ PreviewView::PreviewView(QWidget *parent) :
     previewView = this;
 
     ui->setupUi(this);
-    ui->picAvatar->setScaledContents(true);
-    ui->picCapture->setScaledContents(true);
     loadPreview();
 
 }
@@ -390,12 +388,12 @@ void PreviewView::loadPreview() {
         HWND hWnd = (HWND)ui->picPreview->winId();
         NET_DVR_PREVIEWINFO struPlayInfo = {0};
         struPlayInfo.hPlayWnd = hWnd;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo.lChannel     = 34;       //预览通道号
+        struPlayInfo.lChannel     = 1;       //预览通道号
         struPlayInfo.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
 
-        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID  , &struPlayInfo, NULL, NULL);
+        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo, NULL, NULL);
         if (lRealPlayHandle < 0)
         {
             printf("NET_DVR_RealPlay_V40 error\n");
