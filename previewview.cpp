@@ -56,11 +56,16 @@ PreviewView::PreviewView(QWidget *parent) :
     ui(new Ui::PreviewView)
 {
     previewView = this;
-
     ui->setupUi(this);
+
+    ui->picCapture->setScaledContents(true);
+    ui->picAvatar->setScaledContents(true);
     loadPreview();
 
+
 }
+
+
 
 PreviewView::~PreviewView()
 {
@@ -86,6 +91,19 @@ void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG 
 BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser)
 {
     qDebug() << "PreviewView: Callback start";
+
+    QEventLoop eventLoop;
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QUrl url("http://10.129.2.85:80/picture/Streaming/tracks/203/?name=ch0002_01000000000013961318400173763&size=173763");
+    url.setUserName("admin");
+    url.setPassword("hik12345");
+    QNetworkReply* reply = manager->get(QNetworkRequest(url));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    eventLoop.exec();
+
+
+
     switch(lCommand)
     {
     case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
@@ -116,6 +134,8 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
 
+
+
     /***********************************************设置时间********************************************/
     alarmInfo.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
     alarmInfo.dwMonth = GET_MONTH(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -143,6 +163,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
         avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
         memcpy(avatar, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLen);
+
 
         //--------------------
         //姓名
@@ -217,6 +238,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
     memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
 
+
+
     emit previewView->showPersonInfo(OPTION_FACE_COMPARE);
 
     alarmList.append(alarmInfo);
@@ -248,6 +271,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
 
 void PreviewView::setAlarmText() {
+
+
     //报警信息
     alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
                                   alarmList.length(),
@@ -326,6 +351,7 @@ void PreviewView::savePicFile() {
 
 
 void PreviewView::loadPreview() {
+
     //---------------------------------------
     //关闭预览
     if (lRealPlayHandle >= 0) {
@@ -388,7 +414,7 @@ void PreviewView::loadPreview() {
         HWND hWnd = (HWND)ui->picPreview->winId();
         NET_DVR_PREVIEWINFO struPlayInfo = {0};
         struPlayInfo.hPlayWnd = hWnd;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo.lChannel     = 1;       //预览通道号
+        struPlayInfo.lChannel     = 34;       //预览通道号
         struPlayInfo.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
@@ -431,21 +457,13 @@ void PreviewView::loadPreview() {
 void PreviewView::showPersonInfo(int option) {
     qDebug() << "PreviewView: showPersonInfo exec";
 
+
     /*********************************************显示个人信息******************************************/
     switch(option) {
     case OPTION_FACE_COMPARE:
 
         if(captureLen>0){
-            QByteArray bytearray = QByteArray(capture, captureLen);
 
-            QBuffer buffer(&bytearray);
-            buffer.open(QIODevice::ReadOnly);
-
-            QImageReader reader(&buffer, "JPG");
-            QImage img = reader.read();
-
-            QPixmap pix = QPixmap::fromImage(img);
-            ui->picCapture->setPixmap(pix.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
 
 
@@ -525,6 +543,9 @@ void PreviewView::showPersonInfo(int option) {
 }
 
 void PreviewView::setAlarmInfo() {
+
+
+
     dirPicCapture = dirCapture;
     dirPicCapture.append(alarmInfo.idCapture);
     dirPicCapture.append(".jpg");
@@ -536,6 +557,8 @@ void PreviewView::setAlarmInfo() {
     } else {
 
     }
+
+
     emit previewView->showPersonInfo(OPTION_DOUBLE_CLICK);
 }
 
@@ -549,10 +572,13 @@ void PreviewView::addAlarmItem() {
     qDebug() << "PreviweView: addAlarmItem exec";
 
     if(!alarmInfo.isStranger) {
+        qDebug() << "is Stranger";
         QIcon icon(":/icon/info.png");
         QListWidgetItem* item = new QListWidgetItem(icon, alarmText, ui->alarmList, 0);
     }
     else {
+        qDebug() << "is Stranger";
+
         QIcon icon(":/icon/warn.png");
         QListWidgetItem* item = new QListWidgetItem(icon, alarmText, ui->alarmList, 0);
     }
@@ -587,6 +613,7 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 }
 
 void PreviewView::saveToDatabase() {
+
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     database.setQSqlDatabase(qSqlDatabase);
 
@@ -604,6 +631,7 @@ void PreviewView::saveToDatabase() {
 void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 {
     qDebug() << "PreviewView: on_alarmList_itemDoubleClicked exec";
+
 
     currentRow = ui->alarmList->currentRow();
     alarmInfo = alarmList[currentRow];
@@ -633,3 +661,26 @@ void PreviewView::on_btnAlarmClear_clicked()
     avatarList.clear();
     captureList.clear();
 }
+
+void PreviewView::provideAuthenication(QNetworkReply * reply, QAuthenticator * authenticator) {
+    qDebug() << "PreviewView:: provideAuthenication exec";
+
+    qDebug() << reply->readAll();
+
+    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QString username  = config->value("/Camera/username").toString();
+    QString password = config->value("/Camera/password").toString();
+
+
+    authenticator->setUser(username);
+    authenticator->setPassword(password);
+
+}
+
+void PreviewView::showCapturePic(QNetworkReply* reply) {
+    qDebug() << "PreviewView:: showCapturePic exec";
+    QPixmap pix;
+    pix.loadFromData(reply->readAll());
+    ui->picCapture->setPixmap(pix);
+}
+

@@ -32,6 +32,9 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QStringList>
+#include <QtNetwork>
+
+
 typedef struct tagALARM_INFO{
     DWORD dwYear;
     DWORD dwMonth;
@@ -97,6 +100,7 @@ public:
     static QString dirPicAvatar;
     static QString dirPicCapture;
 
+
     void loadPreview();
     void initAlarmTable();
 
@@ -114,6 +118,8 @@ signals:
 
 public slots:
     void showPersonInfo(int option);
+    void showCapturePic(QNetworkReply*);
+    void provideAuthenication(QNetworkReply*, QAuthenticator*);
     void addAlarmItem();
 
 private slots:
@@ -124,5 +130,7 @@ private slots:
 private:
     Ui::PreviewView *ui;
 };
+
+
 
 #endif // PREVIEWVIEW_H
