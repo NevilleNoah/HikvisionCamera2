@@ -99,6 +99,8 @@ public:
     static QString dirCapture;
     static QString dirPicAvatar;
     static QString dirPicCapture;
+    static QString urlCapture;
+    static QString urlAvatar;
 
 
     void loadPreview();
@@ -119,7 +121,7 @@ signals:
 public slots:
     void showPersonInfo(int option);
     void showCapturePic(QNetworkReply*);
-    void provideAuthenication(QNetworkReply*, QAuthenticator*);
+    void showAvatarPic(QNetworkReply*);
     void addAlarmItem();
 
 private slots:

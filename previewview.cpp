@@ -46,6 +46,9 @@ Database PreviewView::database;
 QList<char*> PreviewView::avatarList;
 QList<char*> PreviewView::captureList;
 QString PreviewView::currentAlarmInfo;
+//URL
+QString PreviewView::urlCapture;
+QString PreviewView::urlAvatar;
 
 NET_VCA_FACESNAP_MATCH_ALARM PreviewView::struFaceMatchAlarm = {0};
 
@@ -92,15 +95,7 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 {
     qDebug() << "PreviewView: Callback start";
 
-    QEventLoop eventLoop;
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
-    QUrl url("http://10.129.2.85:80/picture/Streaming/tracks/203/?name=ch0002_01000000000013961318400173763&size=173763");
-    url.setUserName("admin");
-    url.setPassword("hik12345");
-    QNetworkReply* reply = manager->get(QNetworkRequest(url));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
-    eventLoop.exec();
+
 
 
 
@@ -134,6 +129,9 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
 
+    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QString CMUsername = config->value("/Camera/username").toString();
+    QString CMPassword = config->value("/Camera/password").toString();
 
 
     /***********************************************设置时间********************************************/
@@ -160,10 +158,22 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //--------------------
         //人脸库头像图
         alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
-        avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
-        avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
-        memcpy(avatar, struFaceMatchAlarm.struBlackListInfo.pBuffer1, avatarLen);
+        avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
+        int avatarCutIndex = QString(avatar).indexOf("http://",1);
+        urlAvatar = QString(avatar).mid(0, avatarCutIndex);
+        qDebug() << "urlAvatar is " << urlAvatar;
 
+        QEventLoop eventLoop;
+        QNetworkAccessManager *manager = new QNetworkAccessManager();
+
+        QUrl url(urlAvatar);
+
+        url.setUserName(CMUsername);
+        url.setPassword(CMPassword);
+        QNetworkReply* reply = manager->get(QNetworkRequest(url));
+        connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showAvatarPic(QNetworkReply*)));
+        connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+        eventLoop.exec();
 
         //--------------------
         //姓名
@@ -234,12 +244,27 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     //--------------------
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
-    captureLen = struFaceMatchAlarm.dwSnapPicLen;
-    capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-    memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
+    //captureLen = struFaceMatchAlarm.dwSnapPicLen;
+    //capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
+    //memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
 
+    capture = (char*)struFaceMatchAlarm.pSnapPicBuffer;
+    int captureCutIndex = QString(capture).indexOf("SEl");
+    urlCapture = QString(capture).mid(0, captureCutIndex);
+    qDebug() << "urlCapture is " << urlCapture;
 
+    QEventLoop eventLoop;
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QUrl url(urlCapture);
 
+    url.setUserName(CMUsername);
+    url.setPassword(CMPassword);
+    QNetworkReply* reply = manager->get(QNetworkRequest(url));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    eventLoop.exec();
+
+    //显示个人信息
     emit previewView->showPersonInfo(OPTION_FACE_COMPARE);
 
     alarmList.append(alarmInfo);
@@ -662,25 +687,17 @@ void PreviewView::on_btnAlarmClear_clicked()
     captureList.clear();
 }
 
-void PreviewView::provideAuthenication(QNetworkReply * reply, QAuthenticator * authenticator) {
-    qDebug() << "PreviewView:: provideAuthenication exec";
-
-    qDebug() << reply->readAll();
-
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
-    QString username  = config->value("/Camera/username").toString();
-    QString password = config->value("/Camera/password").toString();
-
-
-    authenticator->setUser(username);
-    authenticator->setPassword(password);
-
-}
-
 void PreviewView::showCapturePic(QNetworkReply* reply) {
     qDebug() << "PreviewView:: showCapturePic exec";
     QPixmap pix;
     pix.loadFromData(reply->readAll());
     ui->picCapture->setPixmap(pix);
+}
+
+void PreviewView::showAvatarPic(QNetworkReply* reply) {
+    qDebug() << "PreviewView:: showAvatarPic exec";
+    QPixmap pix;
+    pix.loadFromData(reply->readAll());
+    ui->picAvatar->setPixmap(pix);
 }
 
