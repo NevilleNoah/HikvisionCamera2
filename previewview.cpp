@@ -111,8 +111,6 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
         setAlarmInfo(struFaceMatchAlarm);
         //设置报警文本，用于在下方列表区显示
         setAlarmText();
-        //保存报警的图片与人脸图
-        savePicFile();
         //数据库操作
         saveToDatabase();
 
@@ -327,53 +325,6 @@ void PreviewView::setAlarmText() {
 
 }
 
-void PreviewView::savePicFile() {
-
-    //保存抓拍图片
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
-
-    dirCapture = config->value("/Dir/dirCapture").toString();
-
-    QDir qdirCapture(dirCapture);
-    if(!qdirCapture.exists(dirCapture)) {
-        qdirCapture.mkpath(dirCapture);
-    }
-
-    dirPicCapture = dirCapture;
-    dirPicCapture.append(alarmInfo.idCapture);
-    dirPicCapture.append(".jpg");
-
-    QFile captureFile(dirPicCapture);
-    captureFile.open(QIODevice::WriteOnly);
-    captureFile.write(capture, captureLen);
-    captureFile.close();
-
-    if(!alarmInfo.isStranger) {
-        dirAvatar = config->value("/Dir/dirAvatar").toString();
-
-        QDir qdirAvatar(dirAvatar);
-        if(!qdirAvatar.exists(dirAvatar)) {
-            qdirAvatar.mkpath(dirAvatar);
-        }
-
-        dirPicAvatar = dirAvatar;
-        dirPicAvatar.append(alarmInfo.idAvatar);
-        dirPicAvatar.append(".jpg");
-
-
-        QFile avatarFile(dirPicAvatar);
-        if(!avatarFile.exists()) {
-            avatarFile.open(QIODevice::WriteOnly);
-            avatarFile.write(avatar, avatarLen);
-            avatarFile.close();
-        }
-
-    }else {
-
-    }
-    delete config;
-}
-
 
 void PreviewView::loadPreview() {
 
@@ -569,8 +520,6 @@ void PreviewView::showPersonInfo(int option) {
 
 void PreviewView::setAlarmInfo() {
 
-
-
     dirPicCapture = dirCapture;
     dirPicCapture.append(alarmInfo.idCapture);
     dirPicCapture.append(".jpg");
@@ -689,15 +638,71 @@ void PreviewView::on_btnAlarmClear_clicked()
 
 void PreviewView::showCapturePic(QNetworkReply* reply) {
     qDebug() << "PreviewView:: showCapturePic exec";
+
+    //显示抓拍图片
     QPixmap pix;
-    pix.loadFromData(reply->readAll());
+    QByteArray bytes = reply->readAll();
+    pix.loadFromData(bytes);
     ui->picCapture->setPixmap(pix);
+
+    //抓拍图片路径设置
+    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    dirCapture = config->value("/Dir/dirCapture").toString();
+
+    QDir qdirCapture(dirCapture);
+    if(!qdirCapture.exists(dirCapture)) {
+        qdirCapture.mkpath(dirCapture);
+    }
+
+    dirPicCapture = dirCapture;
+    dirPicCapture.append(alarmInfo.idCapture);
+    dirPicCapture.append(".jpg");
+
+    delete config;
+
+    //保存抓拍图片文件
+    QFile file(dirPicCapture);
+    if(file.open(QIODevice::WriteOnly)) {
+        file.write(bytes);
+        file.close();
+    }
+    qDebug() << "write over";
+
 }
 
 void PreviewView::showAvatarPic(QNetworkReply* reply) {
     qDebug() << "PreviewView:: showAvatarPic exec";
+
+
+    //显示人脸图片
     QPixmap pix;
-    pix.loadFromData(reply->readAll());
+    QByteArray bytes = reply->readAll();
+    pix.loadFromData(bytes);
     ui->picAvatar->setPixmap(pix);
+
+
+    //人脸图片路径设置
+    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    dirAvatar = config->value("/Dir/dirAvatar").toString();
+
+    QDir qdirAvatar(dirAvatar);
+    if(!qdirAvatar.exists(dirAvatar)) {
+        qdirAvatar.mkpath(dirAvatar);
+    }
+    dirPicAvatar = dirAvatar;
+    dirPicAvatar.append(QString::fromLocal8Bit(alarmInfo.name));
+    dirPicAvatar.append(".jpg");
+
+
+    qDebug() << "dirPicAvatar:" << dirPicAvatar;
+
+    delete config;
+
+    //保存人脸图片
+    QFile file(dirPicAvatar);
+    if(file.open(QIODevice::WriteOnly)) {
+        file.write(bytes);
+        file.close();
+    }
 }
 

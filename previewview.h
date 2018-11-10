@@ -113,7 +113,6 @@ public:
     static void setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm);
     static void setAlarmInfo();
     static void setAlarmText();
-    static void savePicFile();
     static void saveToDatabase();
 
 signals:
