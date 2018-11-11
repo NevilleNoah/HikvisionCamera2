@@ -1,5 +1,6 @@
 ﻿#include "settingsview.h"
 #include "ui_settingsview.h"
+#include "mainwindow.h"
 
 SettingsView::SettingsView(QWidget *parent) :
     QWidget(parent),
@@ -7,7 +8,6 @@ SettingsView::SettingsView(QWidget *parent) :
 {
     ui->setupUi(this);
 }
-
 
 SettingsView::~SettingsView()
 {
@@ -100,15 +100,13 @@ void SettingsView::on_btnDetermine_clicked()
 {
     qDebug() << "SettingsView: on_btnDetermine_clicked exec";
 
-    //ui->btnDetermine->setEnabled(false);
-
     changeCameraSettings();
     changeDatabaseSettings();
     changePicDirSettings();
 
     settingsThread = new SettingsThread(this);
     settingsThread->setStatus(SettingsThread::STATUS_WRITE);
-    settingsThread->run();
+    settingsThread->start();
 
 }
 /*************************************更新数据 END**************************************/

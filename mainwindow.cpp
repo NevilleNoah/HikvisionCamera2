@@ -1,9 +1,9 @@
 ﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-PreviewView *previewView = nullptr;
-HistoryView *historyView = nullptr;
-SettingsView *settingsView = nullptr;
+PreviewView *MainWindow::previewView = nullptr;
+HistoryView *MainWindow::historyView = nullptr;
+SettingsView *MainWindow::settingsView = nullptr;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

@@ -37,6 +37,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    static PreviewView* previewView;
+    static HistoryView* historyView;
+    static SettingsView* settingsView;
 
 public slots:
     //void clickBtnLogin();

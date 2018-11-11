@@ -1,4 +1,5 @@
 ﻿#include "settingsthread.h"
+#include "mainwindow.h"
 
 SettingsThread::SettingsThread(QObject *parent):
     QThread(parent)
@@ -42,6 +43,7 @@ void SettingsThread::run() {
         writePicDirSettings();
 
         emit writedSettings();
+        emit MainWindow::previewView->loadPreview();
         break;
     default:
         break;
