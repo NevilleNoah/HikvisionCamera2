@@ -30,7 +30,7 @@ DWORD PreviewView::captureLen;
 //相似度
 double PreviewView::similarity;
 int PreviewView::currentRow;
-double PreviewView::SIMILARITY = 0.1;
+double PreviewView::SIMILARITY = 0.8;
 //保存路径
 QString PreviewView::dirAvatar;
 QString PreviewView::dirCapture;
