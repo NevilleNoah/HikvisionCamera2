@@ -441,50 +441,23 @@ void PreviewView::showPersonInfo(int option) {
     switch(option) {
     case OPTION_FACE_COMPARE:
 
-        if(captureLen>0){
-
-        }
-
-
         if(!alarmInfo.isStranger) {
-            if(avatarLen>0){
-
-                QByteArray bytearray = QByteArray(avatar, avatarLen);
-
-                QBuffer buffer(&bytearray);
-                buffer.open(QIODevice::ReadOnly);
-
-                QImageReader reader(&buffer, "JPG");
-                QImage img = reader.read();
-
-                QPixmap pix = QPixmap::fromImage(img);
-
-                ui->picAvatar->setPixmap(pix.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            }
-            else {
-                QImage img("");
-                QPixmap pixAvatar = QPixmap::fromImage(img);
-                ui->picAvatar->setPixmap(pixAvatar);
-            }
-
-
 
             ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
             ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
             ui->edId->setText(alarmInfo.id);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
+
         } else {
 
-            QImage imgAvatar("");
-            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-            ui->picAvatar->setPixmap(pixAvatar);
-
             ui->edName->setText(QString::fromLocal8Bit("未知"));
-            ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
+            ui->edSex->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
+
         }
         break;
+
     case OPTION_DOUBLE_CLICK:
 
         QImage imgCapture(dirPicCapture, "JPG");
@@ -598,7 +571,7 @@ void PreviewView::saveToDatabase() {
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
     } else {
-        database.addRecord("", QString::fromLocal8Bit(alarmInfo.sex), "", alarmInfo.idCapture, "", alarmInfo.isStranger);
+        database.addRecord("", "", "", alarmInfo.idCapture, "", alarmInfo.isStranger);
     }
     database.closeConnect();
 
