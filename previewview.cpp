@@ -156,6 +156,9 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //--------------------
         //人脸库头像图
         alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
+        int idAvatarCutIndex = alarmInfo.idAvatar.indexOf("<FDDescription>");
+        alarmInfo.idAvatar = alarmInfo.idAvatar.mid(0, idAvatarCutIndex);
+
         avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
         int avatarCutIndex = QString(avatar).indexOf("http://",1);
         urlAvatar = QString(avatar).mid(0, avatarCutIndex);
@@ -690,7 +693,7 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
         qdirAvatar.mkpath(dirAvatar);
     }
     dirPicAvatar = dirAvatar;
-    dirPicAvatar.append(QString::fromLocal8Bit(alarmInfo.name));
+    dirPicAvatar.append(alarmInfo.idAvatar);
     dirPicAvatar.append(".jpg");
 
 
