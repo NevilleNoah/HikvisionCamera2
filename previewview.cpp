@@ -96,9 +96,6 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
     qDebug() << "PreviewView: Callback start";
 
 
-
-
-
     switch(lCommand)
     {
     case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
@@ -398,6 +395,7 @@ void PreviewView::loadPreview() {
         struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
 
+        //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo, NULL, NULL);
         if (lRealPlayHandle < 0)
         {

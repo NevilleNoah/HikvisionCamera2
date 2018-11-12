@@ -7,6 +7,7 @@
 QT += core gui
 QT += sql
 QT += network
+QT += uitools
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HikvisionCamera2
@@ -59,14 +60,14 @@ FORMS += \
     historyview.ui \
     settingsview.ui
 # Hikvision Camera SDK
-LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/GdiPlus.lib"
-LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/HCCore.lib"
-LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/HCNetSDK.lib"
-LIBS += "D:/Cloud/HIKVISION/SDK/HikvisionCamera2/Library/PlayCtrl.lib"
-# Qt Tools
-INCLUDEPATH += E:/Qt/5.11.2/winrt_x86_msvc2017/include/QtUiTools
+LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/GdiPlus.lib"
+LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/HCCore.lib"
+LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/HCNetSDK.lib"
+LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/PlayCtrl.lib"
+
 # Config
-CONFIG += uitools
+#CONFIG += uitools
+
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
