@@ -17,9 +17,9 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>20</y>
+     <y>10</y>
      <width>1001</width>
-     <height>171</height>
+     <height>191</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -34,7 +34,7 @@
       <property name="title">
        <string>摄像机连接配置</string>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>128</x>
