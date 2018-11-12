@@ -19,6 +19,7 @@ public:
 
     static QString CMIp;
     static int CMPort;
+    static int CMChannel;
     static QString CMUsername;
     static QString CMPassword;
 
@@ -48,7 +49,7 @@ signals:
     void writedSettings();
     void readedSettings();
 
-    void readedCameraSettings(QString ip, int port, QString username, QString password);
+    void readedCameraSettings(QString ip, int port, int channel, QString username, QString password);
     void readedDatabaseSettings(QString ip, int port, QString model, QString username, QString password);
     bool readedPicDirSettings(QString dirCapture, QString dirAvatar);
 

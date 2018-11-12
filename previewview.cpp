@@ -30,7 +30,7 @@ DWORD PreviewView::captureLen;
 //相似度
 double PreviewView::similarity;
 int PreviewView::currentRow;
-double PreviewView::SIMILARITY = 0.1;
+double PreviewView::SIMILARITY = 0.8;
 //保存路径
 QString PreviewView::dirAvatar;
 QString PreviewView::dirCapture;
@@ -343,6 +343,7 @@ void PreviewView::loadPreview() {
 
     QString ip = config->value("/Camera/ip").toString();
     int port = config->value("/Camera/port").toInt();
+    int channel = config->value("/Camera/channel").toInt();
     QString username = config->value("/Camera/username").toString();
     QString password = config->value("/Camera/password").toString();
 
@@ -390,7 +391,7 @@ void PreviewView::loadPreview() {
         HWND hWnd = (HWND)ui->picPreview->winId();
         NET_DVR_PREVIEWINFO struPlayInfo = {0};
         struPlayInfo.hPlayWnd = hWnd;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo.lChannel     = 34;       //预览通道号
+        struPlayInfo.lChannel     = channel;       //预览通道号
         struPlayInfo.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
@@ -439,50 +440,23 @@ void PreviewView::showPersonInfo(int option) {
     switch(option) {
     case OPTION_FACE_COMPARE:
 
-        if(captureLen>0){
-
-        }
-
-
         if(!alarmInfo.isStranger) {
-            if(avatarLen>0){
-
-                QByteArray bytearray = QByteArray(avatar, avatarLen);
-
-                QBuffer buffer(&bytearray);
-                buffer.open(QIODevice::ReadOnly);
-
-                QImageReader reader(&buffer, "JPG");
-                QImage img = reader.read();
-
-                QPixmap pix = QPixmap::fromImage(img);
-
-                ui->picAvatar->setPixmap(pix.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            }
-            else {
-                QImage img("");
-                QPixmap pixAvatar = QPixmap::fromImage(img);
-                ui->picAvatar->setPixmap(pixAvatar);
-            }
-
-
 
             ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
             ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
             ui->edId->setText(alarmInfo.id);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
+
         } else {
 
-            QImage imgAvatar("");
-            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-            ui->picAvatar->setPixmap(pixAvatar);
-
             ui->edName->setText(QString::fromLocal8Bit("未知"));
-            ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
+            ui->edSex->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
+
         }
         break;
+
     case OPTION_DOUBLE_CLICK:
 
         QImage imgCapture(dirPicCapture, "JPG");
@@ -596,7 +570,7 @@ void PreviewView::saveToDatabase() {
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
     } else {
-        database.addRecord("", QString::fromLocal8Bit(alarmInfo.sex), "", alarmInfo.idCapture, "", alarmInfo.isStranger);
+        database.addRecord("", "", "", alarmInfo.idCapture, "", alarmInfo.isStranger);
     }
     database.closeConnect();
 

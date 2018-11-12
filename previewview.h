@@ -102,10 +102,7 @@ public:
     static QString urlCapture;
     static QString urlAvatar;
 
-
-    void loadPreview();
     void initAlarmTable();
-
 
     static BOOL CALLBACK MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
     static void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser);
@@ -122,6 +119,8 @@ public slots:
     void showCapturePic(QNetworkReply*);
     void showAvatarPic(QNetworkReply*);
     void addAlarmItem();
+
+    void loadPreview();
 
 private slots:
     void on_alarmList_itemDoubleClicked(QListWidgetItem *item);

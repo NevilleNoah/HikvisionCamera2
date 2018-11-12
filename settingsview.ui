@@ -34,13 +34,13 @@
       <property name="title">
        <string>摄像机连接配置</string>
       </property>
-      <widget class="QWidget" name="layoutWidget">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
-         <x>130</x>
-         <y>30</y>
-         <width>211</width>
-         <height>107</height>
+         <x>128</x>
+         <y>31</y>
+         <width>177</width>
+         <height>126</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -65,23 +65,37 @@
          <widget class="QLineEdit" name="edCMPort"/>
         </item>
         <item row="2" column="0">
+         <widget class="QLabel" name="textCMChannel">
+          <property name="text">
+           <string>通道</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="edCMChannel">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
          <widget class="QLabel" name="textCMUsername">
           <property name="text">
            <string>用户名</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QLineEdit" name="edCMUsername"/>
         </item>
-        <item row="3" column="0">
+        <item row="4" column="0">
          <widget class="QLabel" name="textCMPassword">
           <property name="text">
            <string>密码</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1">
+        <item row="4" column="1">
          <widget class="QLineEdit" name="edCMPassword">
           <property name="echoMode">
            <enum>QLineEdit::Password</enum>

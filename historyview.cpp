@@ -95,11 +95,11 @@ void HistoryView::initTimeEdit() {
     endDateTime.setDate(endDate);
     endDateTime.setTime(endTime);
 
-    ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
     ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
+    ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 
     ui->edStartTime->setDateTime(startDateTime);
-    ui->edStartTime->setDateTime(endDateTime);
+    ui->edEndTime->setDateTime(endDateTime);
 
 }
 
