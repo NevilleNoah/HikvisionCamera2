@@ -6,6 +6,7 @@ Database HistoryView::db;
 QList<RECORD> HistoryView::records;
 QDateTime HistoryView::startDateTime;
 QDateTime HistoryView::endDateTime;
+int HistoryView::nowPage = 1;
 
 HistoryView::HistoryView(QWidget *parent) :
     QWidget(parent),
@@ -68,6 +69,13 @@ void HistoryView::allData() {
         ui->recordTable->setItem(i, 3, idNoItem);
 
     }
+    //totalRecordNum = records.size();//记录的条数
+    //pageNum = totalRecordNum / pageSize;//总的页码
+    //if(totalRecordNum % pageSize)
+        //pageNum += 1;
+    qDebug() << "totalRecordNum: " << totalRecordNum;
+    qDebug() << "pageSize: "<< pageSize;
+    qDebug() << "pageNum: "<< pageNum;
 }
 
 //初始化表格的基本属性
@@ -103,20 +111,9 @@ void HistoryView::initTimeEdit() {
 
 }
 
-
-
-
 HistoryView::~HistoryView()
 {
     delete ui;
-}
-
-void HistoryView::on_pushButton_clicked()
-{
-    db.openConnect();
-    records = db.selectByDateTimeRange(startDateTime, endDateTime);
-    db.closeConnect();
-    emit showByDateTimeRange();
 }
 
 void HistoryView::showByDateTimeRange() {
@@ -124,9 +121,85 @@ void HistoryView::showByDateTimeRange() {
 
 
     ui->recordTable->clearContents();
+    ui->recordTable->setRowCount(pageSize);
 
+    for(int i = 0, row = 0; i<records.size(); i++, row++) {
+        QTableWidgetItem *timeItem, *nameItem, *sexItem, *idItem;
 
-    for(int i = 0; i<records.size();i++) {
-        qDebug() << records[i].nameValue;
+        timeItem = new QTableWidgetItem(records[i].timesamp.toString());
+
+        if(!records[i].isStranger) {
+            nameItem = new QTableWidgetItem(records[i].nameValue);
+        } else {
+            nameItem = new QTableWidgetItem(QString::fromLocal8Bit("陌生人"));
+        }
+
+        if(records[i].sex!=NULL && records[i].sex.length()>0){
+            sexItem = new QTableWidgetItem(records[i].sex);
+        } else {
+             sexItem = new QTableWidgetItem(QString::fromLocal8Bit("未知"));
+        }
+
+        if(records[i].idNo!=NULL && records[i].idNo.length()>0) {
+            idItem = new QTableWidgetItem(records[i].idNo);
+        } else {
+            idItem = new QTableWidgetItem(QString::fromLocal8Bit("未知"));
+        }
+
+        //设置只读
+        timeItem->setFlags(timeItem->flags() ^ Qt::ItemIsEditable);
+        nameItem->setFlags(nameItem->flags() ^ Qt::ItemIsEditable);
+        sexItem->setFlags(sexItem->flags() ^ Qt::ItemIsEditable);
+        idItem->setFlags(idItem->flags() ^ Qt::ItemIsEditable);
+
+        //设置对齐方式
+        timeItem->setTextAlignment(Qt::AlignCenter);
+        nameItem->setTextAlignment(Qt::AlignCenter);
+        sexItem->setTextAlignment(Qt::AlignCenter);
+        idItem->setTextAlignment(Qt::AlignCenter);
+
+        ui->recordTable->setItem(i, 0, timeItem);
+        ui->recordTable->setItem(i, 1, nameItem);
+        ui->recordTable->setItem(i, 2, sexItem);
+        ui->recordTable->setItem(i, 3, idItem);
     }
 }
+
+/**************************zjb*******************************/
+void HistoryView::on_btnPrePage_clicked()
+{
+    nowPage = nowPage-1 > 0 ? nowPage-1 : 1;      //如果当前已经是第一页，那么点击按钮后页码不变
+    db.openConnect();
+    records = db.selectByDateTimeRange(startDateTime, endDateTime, nowPage, pageSize, totalRecordNum);
+    db.closeConnect();
+
+    emit showByDateTimeRange();
+
+}
+
+void HistoryView::on_btnNextPage_clicked()
+{
+    nowPage = nowPage+1 > pageNum ? pageNum : nowPage+1;      //如果当前已经是第一页，那么点击按钮后页码不变
+    db.openConnect();
+    records = db.selectByDateTimeRange(startDateTime, endDateTime, nowPage, pageSize, totalRecordNum);
+    db.closeConnect();
+    nowPage = nowPage+1 > pageNum ? pageNum : nowPage+1;      //如果当前已经是第一页，那么点击按钮后页码不变
+    emit showByDateTimeRange();
+}
+
+void HistoryView::on_btnSearchByTime_clicked()
+{
+    db.openConnect();
+    startDateTime = ui->edStartTime->dateTime();
+    endDateTime = ui->edEndTime->dateTime();
+    records = db.selectByDateTimeRange(startDateTime, endDateTime, 1, pageSize, totalRecordNum);
+    db.closeConnect();
+
+    pageNum = totalRecordNum / pageSize;//总的页码
+    if(totalRecordNum % pageSize)
+        pageNum += 1;
+    qDebug() << "totalRecordNum:" << totalRecordNum;
+    qDebug() << "pageNum:" << pageNum;
+    emit showByDateTimeRange();
+}
+/**************************zjb END***************************/

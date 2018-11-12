@@ -27,10 +27,21 @@ signals:
 public slots:
     void showByDateTimeRange();
 private slots:
-    void on_pushButton_clicked();
+
+
+    void on_btnPrePage_clicked();
+
+    void on_btnNextPage_clicked();
+
+    void on_btnSearchByTime_clicked();
 
 private:
     Ui::HistoryView *ui;
+    int pageNum;                    //页码的数量
+    int totalRecordNum;             //存储记录的条数
+    static int nowPage;             //当前是第几页
+    const int pageSize = 18;        //每页显示的记录条数
+
 };
 
 #endif // HISTORYVIEW_H

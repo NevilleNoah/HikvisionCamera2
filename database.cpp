@@ -43,7 +43,8 @@ bool Database::openConnect()
 }
 
 //关闭数据库连接
-bool Database::closeConnect(){
+bool Database::closeConnect()
+{
     try {
         if(&db!=NULL) {
             db.close();
@@ -80,7 +81,7 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
             return true;
         }
         return false;
-    }catch(std::exception &e) {
+    } catch(std::exception &e) {
         qDebug()<<"# ERR: SQLException:" <<e.what();
         //TAD：进行ui提示
     }
@@ -90,10 +91,10 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
 bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger)
 {
     try{
-        if(&db!=NULL) {
+        if(&db!=NULL)
+        {
             //执行sql语句
             QSqlQuery query;
-
 
             query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger) "
                           "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger)");
@@ -109,18 +110,21 @@ bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString i
             return true;
         }
         return false;
-    }catch(std::exception &e) {
+    }catch(std::exception &e)
+    {
         qDebug()<<"# ERR: SQLException:" <<e.what();
         //TAD：进行ui提示
     }
 }
 
 //获取记录
-QList<RECORD> Database::selectRecord() {
+QList<RECORD> Database::selectRecord()
+{
     QList<RECORD> records;
     QSqlQuery query;
-    query.exec("select * from record order by timesamp desc");
-    while(query.next()) {
+    query.exec("select * from record order by timeValue desc");
+    while(query.next())
+    {
         RECORD record;
         record.timesamp = query.value(1).toDateTime();
         record.nameValue = query.value(2).toString();
@@ -135,19 +139,35 @@ QList<RECORD> Database::selectRecord() {
     return records;
 }
 
-void Database::setQSqlDatabase(QSqlDatabase db) {
+
+void Database::setQSqlDatabase(QSqlDatabase db)
+{
     this->db = db;
 }
 
-QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime) {
+//根据开始时间和结束实践筛查记录
+//QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime)
+QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime, int startId, int pageSize, int &totalRecordNum)
+{
     QList<RECORD> records;
     QSqlQuery query;
-
-    query.prepare("select * from record where timesamp>:startDateTime and timesamp<:endDateTime");
+    query.prepare("select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime");
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.exec();
+    query.next();
+    totalRecordNum = query.value(0).toInt();
+    //qDebug() << "count is " << count;
+    //query.prepare("select * from record where timeValue>:startDateTime and timeValue<:endDateTime");
+    query.prepare("select * from record where timeValue>:startDateTime and timeValue<:endDateTime limit :startId, :pageSize");
+    query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":startId", (startId-1)*pageSize);
+    query.bindValue(":pageSize", pageSize);
+    query.exec();
 
-    while(query.next()) {
+    while(query.next())
+    {
         RECORD record;
         record.timesamp = query.value(1).toDateTime();
         record.nameValue = query.value(2).toString();
@@ -156,7 +176,6 @@ QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime
         record.idAvatar = query.value(5).toString();
         record.idCapture = query.value(6).toString();
         record.isStranger = query.value(7).toBool();
-
 
         records.append(record);
     }
