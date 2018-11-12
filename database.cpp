@@ -146,7 +146,6 @@ void Database::setQSqlDatabase(QSqlDatabase db)
 }
 
 //根据开始时间和结束实践筛查记录
-//QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime)
 QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime, int startId, int pageSize, int &totalRecordNum)
 {
     QList<RECORD> records;
@@ -157,8 +156,7 @@ QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime
     query.exec();
     query.next();
     totalRecordNum = query.value(0).toInt();
-    //qDebug() << "count is " << count;
-    //query.prepare("select * from record where timeValue>:startDateTime and timeValue<:endDateTime");
+
     query.prepare("select * from record where timeValue>:startDateTime and timeValue<:endDateTime limit :startId, :pageSize");
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));

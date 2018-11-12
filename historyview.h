@@ -28,7 +28,6 @@ public slots:
     void showByDateTimeRange();
 private slots:
 
-
     void on_btnPrePage_clicked();
 
     void on_btnNextPage_clicked();

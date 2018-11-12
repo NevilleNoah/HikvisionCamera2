@@ -168,7 +168,7 @@
      <string>下一页</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="textNowPage">
     <property name="geometry">
      <rect>
       <x>340</x>

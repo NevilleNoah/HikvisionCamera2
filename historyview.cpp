@@ -17,7 +17,6 @@ HistoryView::HistoryView(QWidget *parent) :
     initTable();
     initTimeEdit();
     initData();
-
 }
 
 //初始化从数据库获取的数据
@@ -26,50 +25,9 @@ void HistoryView::initData() {
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     db.setQSqlDatabase(qSqlDatabase);
     on_btnSearchByTime_clicked();
-    /*db.openConnect();
-    records = db.selectRecord();
-    db.closeConnect();
-
-    ui->recordTable->setRowCount(records.size());
-
-    for(int i = 0; i < records.size(); i++) {
-        //设置单元格内容
-        QTableWidgetItem* timesampItem;
-        QTableWidgetItem* nameItem;
-        QTableWidgetItem* sexItem;
-        QTableWidgetItem* idNoItem;
-
-        timesampItem = new QTableWidgetItem(records[i].timesamp.toString("yyyy-MM-dd hh:mm:ss"));
-        if(!records[i].isStranger) {
-            nameItem = new QTableWidgetItem(records[i].nameValue);
-        } else {
-            nameItem = new QTableWidgetItem(QString::fromLocal8Bit("陌生人"));
-        }
-        sexItem = new QTableWidgetItem(records[i].sex);
-        if(records[i].idNo!=NULL && records[i].idNo.length()>0) {
-            idNoItem = new QTableWidgetItem(records[i].idNo);
-        } else {
-            idNoItem = new QTableWidgetItem(QString::fromLocal8Bit("未知"));
-        }
-        //设置只读
-        timesampItem->setFlags(timesampItem->flags() ^ Qt::ItemIsEditable);
-        nameItem->setFlags(nameItem->flags() ^ Qt::ItemIsEditable);
-        sexItem->setFlags(sexItem->flags() ^ Qt::ItemIsEditable);
-        idNoItem->setFlags(idNoItem->flags() ^ Qt::ItemIsEditable);
-
-        //设置对齐方式
-        timesampItem->setTextAlignment(Qt::AlignCenter);
-        nameItem->setTextAlignment(Qt::AlignCenter);
-        sexItem->setTextAlignment(Qt::AlignCenter);
-        idNoItem->setTextAlignment(Qt::AlignCenter);
-
-        ui->recordTable->setItem(i, 0, timesampItem);
-        ui->recordTable->setItem(i, 1, nameItem);
-        ui->recordTable->setItem(i, 2, sexItem);
-        ui->recordTable->setItem(i, 3, idNoItem);
-
-    }
-   */
+    ui->textPageNum->setText(QString::number(pageNum));
+    ui->textNowPage->setValidator(new QIntValidator(1, pageNum, this));//设置只能输入1~pageNum之间的整数
+    ui->textNowPage->setText(QString::number(1));//初始页码为1
 }
 
 //初始化表格的基本属性
@@ -102,7 +60,6 @@ void HistoryView::initTimeEdit() {
 
     ui->edStartTime->setDateTime(startDateTime);
     ui->edEndTime->setDateTime(endDateTime);
-
 }
 
 HistoryView::~HistoryView()
@@ -113,7 +70,7 @@ HistoryView::~HistoryView()
 void HistoryView::showByDateTimeRange() {
     qDebug() << "HistoryView: showByDateTimeRange exec";
 
-
+    ui->textPageNum->setText(QString::number(pageNum));//显示总页数
     ui->recordTable->clearContents();
     ui->recordTable->setRowCount(pageSize);
 
@@ -162,7 +119,10 @@ void HistoryView::showByDateTimeRange() {
 /**************************zjb*******************************/
 void HistoryView::on_btnPrePage_clicked()
 {
-    nowPage = nowPage-1 > 0 ? nowPage-1 : 1;      //如果当前已经是第一页，那么点击按钮后页码不变
+    if(nowPage-1 <= 0)//如果当前已经是第一页，那么点击按钮后无效果
+        return;
+    nowPage -= 1;
+    ui->textNowPage->setText(QString::number(nowPage));//显示当前页码
     db.openConnect();
     records = db.selectByDateTimeRange(startDateTime, endDateTime, nowPage, pageSize, totalRecordNum);
     db.closeConnect();
@@ -173,16 +133,23 @@ void HistoryView::on_btnPrePage_clicked()
 
 void HistoryView::on_btnNextPage_clicked()
 {
-    nowPage = nowPage+1 > pageNum ? pageNum : nowPage+1;      //如果当前已经是第一页，那么点击按钮后页码不变
+    if(nowPage+1 > pageNum)//如果当前已经是最后一页，那么点击按钮无效果
+        return;
+    nowPage += 1;
+    ui->textNowPage->setText(QString::number(nowPage));//显示当前页码
+
     db.openConnect();
     records = db.selectByDateTimeRange(startDateTime, endDateTime, nowPage, pageSize, totalRecordNum);
     db.closeConnect();
-    nowPage = nowPage+1 > pageNum ? pageNum : nowPage+1;      //如果当前已经是第一页，那么点击按钮后页码不变
+
     emit showByDateTimeRange();
 }
 
 void HistoryView::on_btnSearchByTime_clicked()
 {
+    nowPage = 1;
+    ui->textNowPage->setText(QString::number(1));
+
     db.openConnect();
     startDateTime = ui->edStartTime->dateTime();
     endDateTime = ui->edEndTime->dateTime();
@@ -192,6 +159,7 @@ void HistoryView::on_btnSearchByTime_clicked()
     pageNum = totalRecordNum / pageSize;//总的页码
     if(totalRecordNum % pageSize)
         pageNum += 1;
+
     qDebug() << "totalRecordNum:" << totalRecordNum;
     qDebug() << "pageNum:" << pageNum;
     emit showByDateTimeRange();
