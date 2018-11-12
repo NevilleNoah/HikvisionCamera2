@@ -16,17 +16,17 @@ HistoryView::HistoryView(QWidget *parent) :
 
     initTable();
     initTimeEdit();
-    allData();
+    initData();
 
 }
 
 //初始化从数据库获取的数据
-void HistoryView::allData() {
+void HistoryView::initData() {
 
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     db.setQSqlDatabase(qSqlDatabase);
-
-    db.openConnect();
+    on_btnSearchByTime_clicked();
+    /*db.openConnect();
     records = db.selectRecord();
     db.closeConnect();
 
@@ -69,13 +69,7 @@ void HistoryView::allData() {
         ui->recordTable->setItem(i, 3, idNoItem);
 
     }
-    //totalRecordNum = records.size();//记录的条数
-    //pageNum = totalRecordNum / pageSize;//总的页码
-    //if(totalRecordNum % pageSize)
-        //pageNum += 1;
-    qDebug() << "totalRecordNum: " << totalRecordNum;
-    qDebug() << "pageSize: "<< pageSize;
-    qDebug() << "pageNum: "<< pageNum;
+   */
 }
 
 //初始化表格的基本属性

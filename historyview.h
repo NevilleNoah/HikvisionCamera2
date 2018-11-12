@@ -15,7 +15,7 @@ public:
     ~HistoryView();
 
     void initTable();
-    void allData();
+    void initData();
     void initTimeEdit();
     static Database db;
     static QList<RECORD> records;
