@@ -30,6 +30,12 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei UI</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="title">
         <string>预览</string>
        </property>
@@ -47,6 +53,73 @@
             <width>480</width>
             <height>280</height>
            </size>
+          </property>
+          <property name="palette">
+           <palette>
+            <active>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="196">
+                <red>145</red>
+                <green>145</green>
+                <blue>145</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </active>
+            <inactive>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="255">
+                <red>255</red>
+                <green>255</green>
+                <blue>255</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="196">
+                <red>145</red>
+                <green>145</green>
+                <blue>145</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </inactive>
+            <disabled>
+             <colorrole role="Base">
+              <brush brushstyle="SolidPattern">
+               <color alpha="196">
+                <red>145</red>
+                <green>145</green>
+                <blue>145</blue>
+               </color>
+              </brush>
+             </colorrole>
+             <colorrole role="Window">
+              <brush brushstyle="SolidPattern">
+               <color alpha="196">
+                <red>145</red>
+                <green>145</green>
+                <blue>145</blue>
+               </color>
+              </brush>
+             </colorrole>
+            </disabled>
+           </palette>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -66,6 +139,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Microsoft YaHei UI</family>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="title">
         <string>信息</string>
@@ -109,10 +188,10 @@
                  </colorrole>
                  <colorrole role="Window">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
@@ -129,10 +208,10 @@
                  </colorrole>
                  <colorrole role="Window">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
@@ -140,19 +219,19 @@
                 <disabled>
                  <colorrole role="Base">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
                  <colorrole role="Window">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
@@ -163,7 +242,7 @@
                <bool>true</bool>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::NoFrame</enum>
               </property>
               <property name="text">
                <string/>
@@ -201,10 +280,10 @@
                  </colorrole>
                  <colorrole role="Window">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
@@ -221,10 +300,10 @@
                  </colorrole>
                  <colorrole role="Window">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
@@ -232,19 +311,19 @@
                 <disabled>
                  <colorrole role="Base">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
                  <colorrole role="Window">
                   <brush brushstyle="SolidPattern">
-                   <color alpha="255">
-                    <red>31</red>
-                    <green>31</green>
-                    <blue>31</blue>
+                   <color alpha="196">
+                    <red>145</red>
+                    <green>145</green>
+                    <blue>145</blue>
                    </color>
                   </brush>
                  </colorrole>
@@ -255,7 +334,7 @@
                <bool>true</bool>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::NoFrame</enum>
               </property>
               <property name="text">
                <string/>
@@ -273,6 +352,12 @@
              <layout class="QFormLayout" name="formLayout">
               <item row="0" column="0">
                <widget class="QLabel" name="textName">
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei UI</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>姓名：</string>
                 </property>
@@ -293,6 +378,12 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="textSex">
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei UI</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>性别：</string>
                 </property>
@@ -317,6 +408,12 @@
              <layout class="QFormLayout" name="formLayout_2">
               <item row="0" column="0">
                <widget class="QLabel" name="textId">
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei UI</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>编号：</string>
                 </property>
@@ -337,6 +434,12 @@
               </item>
               <item row="1" column="0">
                <widget class="QLabel" name="textSimilarity">
+                <property name="font">
+                 <font>
+                  <family>Microsoft YaHei UI</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="text">
                  <string>相似度：</string>
                 </property>
@@ -397,6 +500,12 @@
        <width>16777215</width>
        <height>16777215</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>Microsoft YaHei UI</family>
+       <pointsize>10</pointsize>
+      </font>
      </property>
      <property name="title">
       <string>识别记录</string>

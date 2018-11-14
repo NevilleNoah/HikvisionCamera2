@@ -25,9 +25,12 @@ void HistoryView::initData() {
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     db.setQSqlDatabase(qSqlDatabase);
     on_btnSearchByTime_clicked();
-    ui->textPageNum->setText(QString::number(pageNum));
+    ui->textPageNum->setText("/"+QString::number(pageNum));
     ui->textNowPage->setValidator(new QIntValidator(1, pageNum, this));//设置只能输入1~pageNum之间的整数
-    ui->textNowPage->setText(QString::number(1));//初始页码为1
+    if(pageNum == 0)
+        ui->textNowPage->setText(QString::number(0));//如果没有数据初始页码为0
+    else
+        ui->textNowPage->setText(QString::number(1));//初始页码为1
 }
 
 //初始化表格的基本属性
@@ -77,7 +80,7 @@ void HistoryView::showByDateTimeRange() {
     for(int i = 0, row = 0; i<records.size(); i++, row++) {
         QTableWidgetItem *timeItem, *nameItem, *sexItem, *idItem;
 
-        timeItem = new QTableWidgetItem(records[i].timesamp.toString());
+        timeItem = new QTableWidgetItem(records[i].timesamp.toString("yyyy-MM-dd ddd hh:mm"));
 
         if(!records[i].isStranger) {
             nameItem = new QTableWidgetItem(records[i].nameValue);
@@ -159,7 +162,7 @@ void HistoryView::on_btnSearchByTime_clicked()
     pageNum = totalRecordNum / pageSize;//总的页码
     if(totalRecordNum % pageSize)
         pageNum += 1;
-
+    ui->textNowPage->setValidator(new QIntValidator(1, pageNum, this));//设置只能输入1~pageNum之间的整数
     qDebug() << "totalRecordNum:" << totalRecordNum;
     qDebug() << "pageNum:" << pageNum;
     emit showByDateTimeRange();

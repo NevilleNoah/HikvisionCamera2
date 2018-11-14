@@ -19,179 +19,160 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QGroupBox" name="boxDate">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>171</width>
-     <height>661</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>日期</string>
-   </property>
-   <widget class="QLabel" name="textStartDate">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>50</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>开始日期</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="textEndDate">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>120</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>结束日期</string>
-    </property>
-   </widget>
-   <widget class="QDateTimeEdit" name="edStartTime">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>70</y>
-      <width>151</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QDateTimeEdit" name="edEndTime">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>140</y>
-      <width>151</width>
-      <height>22</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnSearchByTime">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>190</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>确认</string>
-    </property>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="boxRecord">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>10</y>
-     <width>861</width>
-     <height>661</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>历史记录</string>
-   </property>
-   <widget class="QTableWidget" name="recordTable">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>30</y>
-      <width>841</width>
-      <height>571</height>
-     </rect>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>841</width>
-      <height>0</height>
-     </size>
-    </property>
-    <property name="textElideMode">
-     <enum>Qt::ElideRight</enum>
-    </property>
-    <column>
-     <property name="text">
-      <string>时间</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>姓名</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>性别</string>
-     </property>
-    </column>
-    <column>
-     <property name="text">
-      <string>编号</string>
-     </property>
-    </column>
-   </widget>
-   <widget class="QPushButton" name="btnPrePage">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>610</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>上一页</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="btnNextPage">
-    <property name="geometry">
-     <rect>
-      <x>630</x>
-      <y>610</y>
-      <width>75</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>下一页</string>
-    </property>
-   </widget>
-   <widget class="QLineEdit" name="textNowPage">
-    <property name="geometry">
-     <rect>
-      <x>340</x>
-      <y>620</y>
-      <width>113</width>
-      <height>20</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="textPageNum">
-    <property name="geometry">
-     <rect>
-      <x>460</x>
-      <y>620</y>
-      <width>54</width>
-      <height>12</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>TextLabel</string>
-    </property>
-   </widget>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QGroupBox" name="boxDate">
+       <property name="title">
+        <string>日期</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="textStartDate">
+            <property name="text">
+             <string>开始日期</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDateTimeEdit" name="edStartTime"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="textEndDate">
+            <property name="text">
+             <string>结束日期</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDateTimeEdit" name="edEndTime"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSearchByTime">
+            <property name="text">
+             <string>确认</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="boxRecord">
+       <property name="title">
+        <string>历史记录</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTableWidget" name="recordTable">
+          <property name="minimumSize">
+           <size>
+            <width>841</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="textElideMode">
+           <enum>Qt::ElideRight</enum>
+          </property>
+          <column>
+           <property name="text">
+            <string>时间</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>姓名</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>性别</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>编号</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QPushButton" name="btnPrePage">
+            <property name="text">
+             <string>上一页</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="textNowPage">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="textPageNum">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnNextPage">
+            <property name="text">
+             <string>下一页</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>
