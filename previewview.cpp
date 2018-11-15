@@ -447,12 +447,24 @@ void PreviewView::showPersonInfo(int option) {
             ui->edId->setText(alarmInfo.id);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
 
+            /**********zjb*********/
+            QImage imgCapture(":/icon/info.png", "PNG");
+            QPixmap pixCapture = QPixmap::fromImage(imgCapture);
+            ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            /**********zjb END*********/
+
         } else {
 
             ui->edName->setText(QString::fromLocal8Bit("未知"));
             ui->edSex->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
+
+            /**********zjb*********/
+            QImage imgCapture(":/icon/warn.png", "PNG");
+            QPixmap pixCapture = QPixmap::fromImage(imgCapture);
+            ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            /**********zjb END*********/
 
         }
         break;
