@@ -25,12 +25,13 @@ void HistoryView::initData() {
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     db.setQSqlDatabase(qSqlDatabase);
     on_btnSearchByTime_clicked();
-    ui->textPageNum->setText("/"+QString::number(pageNum));
+    ui->textPageNum->setText("/ "+QString::number(pageNum));
     ui->textNowPage->setValidator(new QIntValidator(1, pageNum, this));//设置只能输入1~pageNum之间的整数
     if(pageNum == 0)
         ui->textNowPage->setText(QString::number(0));//如果没有数据初始页码为0
     else
         ui->textNowPage->setText(QString::number(1));//初始页码为1
+    ui->textNowPage->setAlignment(Qt::AlignRight);
 }
 
 //初始化表格的基本属性
@@ -73,7 +74,7 @@ HistoryView::~HistoryView()
 void HistoryView::showByDateTimeRange() {
     qDebug() << "HistoryView: showByDateTimeRange exec";
 
-    ui->textPageNum->setText(QString::number(pageNum));//显示总页数
+    ui->textPageNum->setText("/ "+QString::number(pageNum));
     ui->recordTable->clearContents();
     ui->recordTable->setRowCount(pageSize);
 
@@ -119,7 +120,6 @@ void HistoryView::showByDateTimeRange() {
     }
 }
 
-/**************************zjb*******************************/
 void HistoryView::on_btnPrePage_clicked()
 {
     if(nowPage-1 <= 0)//如果当前已经是第一页，那么点击按钮后无效果
@@ -167,4 +167,14 @@ void HistoryView::on_btnSearchByTime_clicked()
     qDebug() << "pageNum:" << pageNum;
     emit showByDateTimeRange();
 }
-/**************************zjb END***************************/
+
+void HistoryView::on_btnJumpPage_clicked()
+{
+    QString turnPage = ui->textNowPage->text();
+    qDebug() << "turnPage: " << turnPage;
+    nowPage = turnPage.toInt();
+    db.openConnect();
+    records = db.selectByDateTimeRange(startDateTime, endDateTime, nowPage, pageSize, totalRecordNum);
+    db.closeConnect();
+    emit showByDateTimeRange();
+}

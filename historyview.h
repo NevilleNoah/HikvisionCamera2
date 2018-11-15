@@ -34,6 +34,8 @@ private slots:
 
     void on_btnSearchByTime_clicked();
 
+    void on_btnJumpPage_clicked();
+
 private:
     Ui::HistoryView *ui;
     int pageNum;                    //页码的数量
