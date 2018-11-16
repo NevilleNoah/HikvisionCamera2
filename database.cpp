@@ -58,7 +58,7 @@ bool Database::closeConnect()
 }
 
 //增加记录
-bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger)
+bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar)
 {
     try{
         if(&db!=NULL) {
@@ -67,8 +67,8 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
             QString mNameValue  = QString::fromLocal8Bit(nameValue);
             QString mSex = QString::fromLocal8Bit(sex);
 
-            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger) "
-                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger)");
+            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger, similar) "
+                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger, :similar)");
 
             query.bindValue(":nameValue", mNameValue);
             query.bindValue(":sex", mSex);
@@ -76,6 +76,7 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
             query.bindValue(":idCapture", idCapture);
             query.bindValue(":idAvatar", idAvatar);
             query.bindValue(":isStranger", isStranger);
+            query.bindValue(":similar", similar);
 
             query.exec();
             return true;
@@ -88,7 +89,7 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
 }
 
 //增加记录
-bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger)
+bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar)
 {
     try{
         if(&db!=NULL)
@@ -96,8 +97,8 @@ bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString i
             //执行sql语句
             QSqlQuery query;
 
-            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger) "
-                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger)");
+            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger, similar) "
+                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger, :similar)");
 
             query.bindValue(":nameValue", nameValue);
             query.bindValue(":sex", sex);
@@ -105,6 +106,7 @@ bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString i
             query.bindValue(":idCapture", idCapture);
             query.bindValue(":idAvatar", idAvatar);
             query.bindValue(":isStranger", isStranger);
+            query.bindValue(":similar", similar);
 
             query.exec();
             return true;

@@ -582,9 +582,9 @@ void PreviewView::saveToDatabase() {
 
     /**************************if else中 ZJB 都插入相似度**************************************/
     if(!alarmInfo.isStranger) {
-        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
+        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
-        database.addRecord("", "", "", alarmInfo.idCapture, "", alarmInfo.isStranger);
+        database.addRecord("", "", "", alarmInfo.idCapture, "", alarmInfo.isStranger, alarmInfo.similarity);
     }
     database.closeConnect();
 
