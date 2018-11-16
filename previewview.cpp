@@ -63,6 +63,7 @@ PreviewView::PreviewView(QWidget *parent) :
 
     ui->picCapture->setScaledContents(true);
     ui->picAvatar->setScaledContents(true);
+    //ui->picSymbol->raise();
     loadPreview();
 
 
@@ -577,8 +578,9 @@ void PreviewView::saveToDatabase() {
 
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     database.setQSqlDatabase(qSqlDatabase);
-
     database.openConnect();
+
+    /**************************if else中 ZJB 都插入相似度**************************************/
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger);
     } else {
