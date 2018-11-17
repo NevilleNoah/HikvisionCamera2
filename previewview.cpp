@@ -61,8 +61,6 @@ PreviewView::PreviewView(QWidget *parent) :
     previewView = this;
     ui->setupUi(this);
 
-    ui->picCapture->setScaledContents(true);
-    ui->picAvatar->setScaledContents(true);
     //ui->picSymbol->raise();
 
     loadPreview();
