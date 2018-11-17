@@ -102,6 +102,9 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <widget class="QTabWidget" name="tabView">
+      <property name="styleSheet">
+       <string notr="true">font: 10pt &quot;Microsoft YaHei UI&quot;;</string>
+      </property>
       <property name="currentIndex">
        <number>1</number>
       </property>

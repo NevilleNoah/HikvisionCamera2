@@ -239,3 +239,31 @@ void HistoryView::showByDateTimeRange() {
         }
     }
 }
+
+//双击表格内容
+void HistoryView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
+{
+    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+
+    //人脸图
+    QString avatarDir = config->value("/Dir/dirAvatar").toString();
+    avatarDir.append(records[item->row()].idAvatar);
+    avatarDir.append(".jpg");
+    qDebug() << "avatarDir is "<<avatarDir;
+
+    QImage avatarImg(avatarDir, "JPG");
+    QPixmap avatarPix = QPixmap::fromImage(avatarImg);
+
+    ui->picAvatar->setPixmap(avatarPix);
+
+    //抓拍图
+    QString captureDir = config->value("/Dir/dirCapture").toString();
+    captureDir.append(records[item->row()].idCapture);
+    captureDir.append(".jpg");
+    qDebug() << "captureDir is "<<captureDir;
+
+    QImage captureImg(captureDir, "JPG");
+    QPixmap capturePix = QPixmap::fromImage(captureImg);
+
+    ui->picCapture->setPixmap(capturePix);
+}

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "database.h"
+#include <QTableWidgetItem>
 namespace  Ui{
 class HistoryView;
 }
@@ -55,6 +56,8 @@ private slots:
     void on_btnSearchByTime_clicked();
 
     void on_btnJumpPage_clicked();
+
+    void on_recordTable_itemDoubleClicked(QTableWidgetItem *item);
 
 private:
     Ui::HistoryView *ui;
