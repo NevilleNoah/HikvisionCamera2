@@ -20,6 +20,7 @@ HistoryView::HistoryView(QWidget *parent) :
     initTimeEdit();
     initUI();
     initDataShow();
+
 }
 
 HistoryView::~HistoryView()
@@ -29,24 +30,33 @@ HistoryView::~HistoryView()
 
 //初始化UI设置
 void HistoryView::initUI() {
-    setEdStartTimeUI();
-    setEdEndTimeUI();
-    setTextNowPageUI();
+    initEdStartTimeUI();
+    initEdEndTimeUI();
+    initTextNowPageUI();
     initTableUI();
+    initCheckBoxUI();
+}
+
+//设置选项控件UI
+void HistoryView::initCheckBoxUI() {
+    ui->chkStranger->setCheckState(Qt::Checked);
+    ui->chkNoStranger->setCheckState(Qt::Checked);
+    ui->chkMale->setCheckState(Qt::Checked);
+    ui->chkFemale->setCheckState(Qt::Checked);
 }
 
 //开始时间控件的UI设置
-void HistoryView::setEdStartTimeUI() {
+void HistoryView::initEdStartTimeUI() {
      ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 }
 
 //结束时间控件的UI设置
-void HistoryView::setEdEndTimeUI() {
+void HistoryView::initEdEndTimeUI() {
     ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 }
 
 //设置当前页码控件的UI
-void HistoryView::setTextNowPageUI() {
+void HistoryView::initTextNowPageUI() {
     //内容靠右侧显示
     ui->textNowPage->setAlignment(Qt::AlignRight);
 }

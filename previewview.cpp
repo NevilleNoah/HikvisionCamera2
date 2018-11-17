@@ -30,7 +30,7 @@ DWORD PreviewView::captureLen;
 //相似度
 double PreviewView::similarity;
 int PreviewView::currentRow;
-double PreviewView::SIMILARITY = 0.8;
+double PreviewView::SIMILARITY;
 //保存路径
 QString PreviewView::dirAvatar;
 QString PreviewView::dirCapture;
@@ -64,6 +64,7 @@ PreviewView::PreviewView(QWidget *parent) :
     ui->picCapture->setScaledContents(true);
     ui->picAvatar->setScaledContents(true);
     //ui->picSymbol->raise();
+
     loadPreview();
 
 
@@ -128,7 +129,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
     QString CMUsername = config->value("/Camera/username").toString();
     QString CMPassword = config->value("/Camera/password").toString();
-
+    SIMILARITY = config->value("/Compare/similarity").toFloat();
 
     /***********************************************设置时间********************************************/
     alarmInfo.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -140,7 +141,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     /*********************************************设置时间 END******************************************/
 
     /*********************************************设置个人信息******************************************/
-
     if(struFaceMatchAlarm.fSimilarity > SIMILARITY) {
 
         //--------------------
@@ -197,6 +197,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
             break;
         }
 
+
         //--------------------
         //编号（不得以0结尾）
         /*for(int i = 0; i < NAME_LEN; i++) {
@@ -226,7 +227,12 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //--------------------
         //设置为陌生人
         alarmInfo.isStranger = true;
-        switch(struFaceMatchAlarm.struSnapInfo.bySex) {
+        //--------------------
+        //相似度
+        qDebug() << "alarmInfo.similarity is " << QString::number(struFaceMatchAlarm.fSimilarity);
+
+
+        /*switch(struFaceMatchAlarm.struSnapInfo.bySex) {
         case 0x0:
             strcpy(alarmInfo.sex, "男");
             break;
@@ -236,7 +242,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         case 0xff:
             strcpy(alarmInfo.sex, "未知");
             break;
-        }
+        }*/
 
     }
 
@@ -536,13 +542,19 @@ void PreviewView::addAlarmItem() {
     if(!alarmInfo.isStranger) {
         qDebug() << "is Stranger";
         QIcon icon(":/icon/info.png");
-        QListWidgetItem* item = new QListWidgetItem(icon, alarmText, ui->alarmList, 0);
+        QListWidgetItem* item = new QListWidgetItem();
+        item->setText(alarmText);
+        item->setIcon(icon);
+        ui->alarmList->insertItem(0, item);
     }
     else {
         qDebug() << "is Stranger";
 
         QIcon icon(":/icon/warn.png");
-        QListWidgetItem* item = new QListWidgetItem(icon, alarmText, ui->alarmList, 0);
+        QListWidgetItem* item = new QListWidgetItem();
+        item->setText(alarmText);
+        item->setIcon(icon);
+        ui->alarmList->insertItem(0, item);
     }
 }
 

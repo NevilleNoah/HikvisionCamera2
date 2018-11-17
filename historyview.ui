@@ -138,6 +138,34 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="chkStranger">
+            <property name="text">
+             <string>陌生人</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkNoStranger">
+            <property name="text">
+             <string>非陌生人</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkMale">
+            <property name="text">
+             <string>男</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkFemale">
+            <property name="text">
+             <string>女</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
