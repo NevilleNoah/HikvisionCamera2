@@ -83,6 +83,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 10pt &quot;Microsoft YaHei UI&quot;;</string>
+  </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
    <item>
     <widget class="QGroupBox" name="boxDate">
@@ -149,47 +152,6 @@
            <font>
             <family>Microsoft YaHei UI</family>
            </font>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnSearchByTime">
-          <property name="font">
-           <font>
-            <family>Microsoft YaHei UI</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>确认</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="chkStranger">
-          <property name="text">
-           <string>陌生人</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="chkNoStranger">
-          <property name="text">
-           <string>非陌生人</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="chkMale">
-          <property name="text">
-           <string>男</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="chkFemale">
-          <property name="text">
-           <string>女</string>
           </property>
          </widget>
         </item>
@@ -284,6 +246,19 @@
          </layout>
         </item>
         <item>
+         <widget class="QPushButton" name="btnSearchByTime">
+          <property name="font">
+           <font>
+            <family>Microsoft YaHei UI</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>确认</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -302,20 +277,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="boxRecord">
-     <property name="font">
-      <font>
-       <family>Microsoft YaHei UI</family>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="autoFillBackground">
-      <bool>true</bool>
-     </property>
+    <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>历史记录</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
        <widget class="QTableWidget" name="recordTable">
         <property name="minimumSize">
