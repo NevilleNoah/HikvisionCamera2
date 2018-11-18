@@ -30,12 +30,17 @@ public:
     QDateTime getEdStartTime();
     QDateTime getEdEndTime();
     int calPageNum();
-    int getRecordByDateTimeRange(int startId);
+    int getRecordByPageNum(int startId);
     void initDataShow();
     void initUI();
     void clearTable();
     void setTextNowPageVal();
-    void initCheckBoxUI();
+    void initComboBoxUI();
+    //void setComboBoxItemState(int index, bool state);
+    void setComboBoxState(bool strangerState, bool sexState);
+    void setComboBoxUI(int strangerIndex, int sexIndex);
+    int getCmbStrangerIndex();
+    int getCmbSexIndex();
     /*********************zjb END*********************/
 
     static Database db;
@@ -46,18 +51,20 @@ public:
 signals:
 
 public slots:
-    void showByDateTimeRange();
+    void showDataByCondition();
 private slots:
 
     void on_btnPrePage_clicked();
 
     void on_btnNextPage_clicked();
 
-    void on_btnSearchByTime_clicked();
+    void on_btnSearchByCondition_clicked();
 
     void on_btnJumpPage_clicked();
 
     void on_recordTable_itemDoubleClicked(QTableWidgetItem *item);
+
+    void on_cmbStranger_currentIndexChanged(int index);
 
 private:
     Ui::HistoryView *ui;

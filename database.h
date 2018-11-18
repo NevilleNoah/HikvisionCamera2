@@ -25,7 +25,8 @@ public:
     Database();
 
     QList<RECORD> selectRecord();
-    QList<RECORD> selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime, int startId, int pageSize, int &totalRecordNum);
+    QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+                                    int startId, int pageSize, int &totalRecordNum);
 
     bool openConnect();
     bool closeConnect();

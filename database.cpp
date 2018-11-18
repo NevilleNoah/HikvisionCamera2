@@ -147,25 +147,48 @@ void Database::setQSqlDatabase(QSqlDatabase db)
     this->db = db;
 }
 
-//根据开始时间和结束实践筛查记录
-QList<RECORD> Database::selectByDateTimeRange(QDateTime startDateTime, QDateTime endDateTime, int startId, int pageSize, int &totalRecordNum)
+//根据条件筛查记录
+QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+                                          int startId, int pageSize, int &totalRecordNum)
 {
     QList<RECORD> records;
     QSqlQuery query;
-    query.prepare("select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime");
+    QString sqlSentence = "select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime";
+    if(strangerIndex == 0) {
+        sqlSentence += " and isStranger=1";
+    } else if(strangerIndex == 1) {
+        sqlSentence += " and isStranger=0";
+        if(sexIndex == 0) {
+            sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
+        } else if(sexIndex == 1){
+            sqlSentence += " and sex='" + QString::fromLocal8Bit("女") + "'";
+        }
+    }
+    query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.exec();
     query.next();
     totalRecordNum = query.value(0).toInt();
 
-    query.prepare("select * from record where timeValue>:startDateTime and timeValue<:endDateTime limit :startId, :pageSize");
+    sqlSentence = "select * from record where timeValue>:startDateTime and timeValue<:endDateTime";
+    if(strangerIndex == 0) {
+        sqlSentence += " and isStranger=1";
+    } else if(strangerIndex == 1) {
+        sqlSentence += " and isStranger=0";
+        if(sexIndex == 0) {
+            sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
+        } else if(sexIndex == 1){
+            sqlSentence += " and sex='" + QString::fromLocal8Bit("女") + "'";
+        }
+    }
+    sqlSentence += " limit :startId, :pageSize";
+    query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":startId", (startId-1)*pageSize);
     query.bindValue(":pageSize", pageSize);
     query.exec();
-
     while(query.next())
     {
         RECORD record;

@@ -34,36 +34,33 @@ void HistoryView::initUI() {
     initEdEndTimeUI();
     initTextNowPageUI();
     initTableUI();
-    initCheckBoxUI();
+    initComboBoxUI();
 }
 
-//设置选项控件UI
-void HistoryView::initCheckBoxUI() {
-    connect(ui->cmbSex, SIGNAL(currentIndexChanged(int)), this, SLOT(proxyChange(int)));
+
+//初始化复选框控件UI
+void HistoryView::initComboBoxUI() {
+    ui->cmbStranger->setCurrentIndex(2);
+    setComboBoxState(1, 0);
 }
 
-//设置开始时间控件的UI
+//初始化开始时间控件的UI
 void HistoryView::initEdStartTimeUI() {
      ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 }
 
-//设置结束时间控件的UI
+//初始化结束时间控件的UI
 void HistoryView::initEdEndTimeUI() {
     ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 }
 
-//设置当前页码控件的UI
+//初始化当前页码控件的UI
 void HistoryView::initTextNowPageUI() {
     //内容靠右侧显示
     ui->textNowPage->setAlignment(Qt::AlignRight);
 }
 
-//设置当前页码控件的输入范围
-void HistoryView::setTextNowPageVal() {
-    ui->textNowPage->setValidator(new QIntValidator(1, pageNum, this));
-}
-
-//设置表格的UI
+//初始化表格的UI
 void HistoryView::initTableUI() {
     //设置选择时选择一行
     ui->recordTable->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -83,7 +80,7 @@ void HistoryView::initDataBase() {
 
 //初始化数据显示
 void HistoryView::initDataShow() {
-    on_btnSearchByTime_clicked();
+    on_btnSearchByCondition_clicked();
 }
 
 //初始化时间编辑器
@@ -104,16 +101,6 @@ void HistoryView::initTimeEdit() {
     setEdEndTime(HistoryView::endDateTime);
 }
 
-//设置开始时间控件的内容
-void HistoryView::setEdStartTime(QDateTime startDateTime) {
-    ui->edStartTime->setDateTime(startDateTime);
-}
-
-//设置结束时间控件的显示内容
-void HistoryView::setEdEndTime(QDateTime endDateTime) {
-     ui->edEndTime->setDateTime(endDateTime);
-}
-
 //获取开始时间控件的显示内容
 QDateTime HistoryView::getEdStartTime() {
     return ui->edStartTime->dateTime();
@@ -122,6 +109,31 @@ QDateTime HistoryView::getEdStartTime() {
 //获取结束时间控件的内容
 QDateTime HistoryView::getEdEndTime() {
     return ui->edEndTime->dateTime();
+}
+
+//获取陌生人复选框中当前选项的下标
+int HistoryView::getCmbStrangerIndex() {
+    return ui->cmbStranger->currentIndex();
+}
+
+//获取性别复选框中当前选项的下标
+int HistoryView::getCmbSexIndex() {
+    return ui->cmbSex->currentIndex();
+}
+
+//设置当前页码控件的输入范围
+void HistoryView::setTextNowPageVal() {
+    ui->textNowPage->setValidator(new QIntValidator(1, pageNum, this));
+}
+
+//设置开始时间控件的内容
+void HistoryView::setEdStartTime(QDateTime startDateTime) {
+    ui->edStartTime->setDateTime(startDateTime);
+}
+
+//设置结束时间控件的显示内容
+void HistoryView::setEdEndTime(QDateTime endDateTime) {
+     ui->edEndTime->setDateTime(endDateTime);
 }
 
 //设置当前显示的页码
@@ -134,15 +146,47 @@ void HistoryView::setTextPageNumUI(int toltalPageNum) {
     ui->textPageNum->setText("/ "+QString::number(toltalPageNum));
 }
 
+//设置复选框显示内容
+void HistoryView::setComboBoxUI(int strangerIndex, int sexIndex) {
+    ui->cmbStranger->setCurrentIndex(strangerIndex);
+    ui->cmbSex->setCurrentIndex(sexIndex);
+}
+
+//设置复选框中的某个选项是否可选
+/*void HistoryView::setComboBoxItemState(int index, bool state) {
+    QModelIndex mIndex = ui->cmbSex->model()->index(index, 0);
+    QVariant *v;
+    if(!state)
+        v = new QVariant(0);
+    else
+        v = new QVariant(1|32);
+    ui->cmbSex->model()->setData(mIndex, *v, Qt::UserRole-1);
+    delete v;
+}*/
+
+//设置复选框状态
+void HistoryView::setComboBoxState(bool strangerState, bool sexState) {
+    if(!strangerState)
+        ui->cmbStranger->setEnabled(false);
+    else
+        ui->cmbStranger->setEnabled(true);
+    if(!sexState)
+        ui->cmbSex->setEnabled(false);
+    else
+        ui->cmbSex->setEnabled(true);
+}
+
 //计算总页码
 int HistoryView::calPageNum() {
-    return totalRecordNum%pageSize ? totalRecordNum/pageSize+1 : totalRecordNum/pageSize;
+    qDebug() << "totalRecordNum: " << totalRecordNum;
+    return pageNum = totalRecordNum%pageSize ? totalRecordNum/pageSize+1 : totalRecordNum/pageSize;
 }
 
 //根据页码获取数据
-int HistoryView::getRecordByDateTimeRange(int startId) {
+int HistoryView::getRecordByPageNum(int startId) {
     db.openConnect();
-    records = db.selectByDateTimeRange(startDateTime, endDateTime, startId, pageSize, totalRecordNum);
+    records = db.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(),
+                                   getCmbSexIndex(), startId, pageSize, totalRecordNum);
     db.closeConnect();
     return records.size();
 }
@@ -152,6 +196,7 @@ void HistoryView::clearTable() {
     ui->recordTable->clearContents();
 }
 
+//点击上一页按钮
 void HistoryView::on_btnPrePage_clicked()
 {
     //如果当前已经是第一页，那么点击按钮后无效果
@@ -161,10 +206,11 @@ void HistoryView::on_btnPrePage_clicked()
     //设置当前页码
     setTextNowPageNum(nowPage);
     //获取当前页面要显示的数据
-    getRecordByDateTimeRange(nowPage);
-    emit showByDateTimeRange();
+    getRecordByPageNum(nowPage);
+    emit showDataByCondition();
 }
 
+//点击下一页按钮
 void HistoryView::on_btnNextPage_clicked()
 {
     //如果当前已经是最后一页，那么点击按钮无效果
@@ -173,39 +219,47 @@ void HistoryView::on_btnNextPage_clicked()
     //设置当前页码
     setTextNowPageNum(nowPage+=1);
     //获取当前页面要显示的数据
-    getRecordByDateTimeRange(nowPage);
-    emit showByDateTimeRange();
+    getRecordByPageNum(nowPage);
+    emit showDataByCondition();
 }
 
+//点击跳转按钮
 void HistoryView::on_btnJumpPage_clicked()
 {
     //获取要跳转的页码
     QString turnPage = ui->textNowPage->text();
     nowPage = turnPage.toInt();
     //获取当前页面要显示的数据
-    getRecordByDateTimeRange(nowPage);
-    emit showByDateTimeRange();
+    getRecordByPageNum(nowPage);
+    emit showDataByCondition();
 }
 
-void HistoryView::on_btnSearchByTime_clicked()
+//点击确认按钮(根据条件筛选数据)
+void HistoryView::on_btnSearchByCondition_clicked()
 {
     //获取开始时间与结束时间
     startDateTime = getEdStartTime();
     endDateTime = getEdEndTime();
+
     //获取当前页面要显示的数据
-    int recordNum = getRecordByDateTimeRange(1);
+    int recordNum = getRecordByPageNum(1);
     //计算总页数
-    pageNum = calPageNum();
+    calPageNum();
+      qDebug() << "calPageNum: " << pageNum;
+    //pageNum = calPageNum();
+
+
     //显示总页数
     setTextPageNumUI(pageNum);
     //显示当前页码
     setTextNowPageNum(nowPage=recordNum?1:0);
     //设置页码的输入范围
     setTextNowPageVal();
-    emit showByDateTimeRange();
+    emit showDataByCondition();
 }
 
-void HistoryView::showByDateTimeRange() {
+//显示记录
+void HistoryView::showDataByCondition() {
     qDebug() << "HistoryView: showByDateTimeRange exec";
 
     setTextPageNumUI(pageNum);
@@ -263,4 +317,21 @@ void HistoryView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
     QPixmap capturePix = QPixmap::fromImage(captureImg);
 
     ui->picCapture->setPixmap(capturePix);
+}
+
+
+
+void HistoryView::on_cmbStranger_currentIndexChanged(int index)
+{
+    qDebug() << "Current Index of ComboBox: " << index;
+    if(index == 0) {
+        setComboBoxUI(index, 2);
+        setComboBoxState(1, 0);
+    } else if(index == 1) {
+        setComboBoxUI(index, 0);
+        setComboBoxState(1, 1);
+    } else if(index == 2) {
+        setComboBoxUI(index, 2);
+        setComboBoxState(1, 0);
+    }
 }

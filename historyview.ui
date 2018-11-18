@@ -196,7 +196,7 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QComboBox" name="cmbSex">
+             <widget class="QComboBox" name="cmbStranger">
               <property name="font">
                <font>
                 <family>Microsoft YaHei UI</family>
@@ -221,7 +221,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="cmbStranger">
+             <widget class="QComboBox" name="cmbSex">
               <property name="font">
                <font>
                 <family>Microsoft YaHei UI</family>
@@ -240,7 +240,7 @@
               </item>
               <item>
                <property name="text">
-                <string>未知</string>
+                <string>不限</string>
                </property>
               </item>
              </widget>
@@ -250,7 +250,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QPushButton" name="btnSearchByTime">
+         <widget class="QPushButton" name="btnSearchByCondition">
           <property name="font">
            <font>
             <family>Microsoft YaHei UI</family>
