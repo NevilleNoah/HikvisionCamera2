@@ -452,11 +452,10 @@ void PreviewView::showPersonInfo(int option) {
             ui->edId->setText(alarmInfo.id);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
 
-            /**********zjb*********/
+
             QImage imgCapture(":/icon/info.png", "PNG");
             QPixmap pixCapture = QPixmap::fromImage(imgCapture);
             ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            /**********zjb END*********/
 
         } else {
 
@@ -465,11 +464,9 @@ void PreviewView::showPersonInfo(int option) {
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
 
-            /**********zjb*********/
             QImage imgCapture(":/icon/warn.png", "PNG");
             QPixmap pixCapture = QPixmap::fromImage(imgCapture);
             ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            /**********zjb END*********/
 
         }
         break;
@@ -590,7 +587,6 @@ void PreviewView::saveToDatabase() {
     database.setQSqlDatabase(qSqlDatabase);
     database.openConnect();
 
-    /**************************if else中 ZJB 都插入相似度**************************************/
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
@@ -607,7 +603,7 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 
 
     currentRow = ui->alarmList->currentRow();
-    alarmInfo = alarmList[currentRow];
+    alarmInfo = alarmList[alarmList.size()-1-currentRow];
 
     setAlarmInfo();
 }

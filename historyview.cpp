@@ -39,18 +39,15 @@ void HistoryView::initUI() {
 
 //设置选项控件UI
 void HistoryView::initCheckBoxUI() {
-    ui->chkStranger->setCheckState(Qt::Checked);
-    ui->chkNoStranger->setCheckState(Qt::Checked);
-    ui->chkMale->setCheckState(Qt::Checked);
-    ui->chkFemale->setCheckState(Qt::Checked);
+    connect(ui->cmbSex, SIGNAL(currentIndexChanged(int)), this, SLOT(proxyChange(int)));
 }
 
-//开始时间控件的UI设置
+//设置开始时间控件的UI
 void HistoryView::initEdStartTimeUI() {
      ui->edStartTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 }
 
-//结束时间控件的UI设置
+//设置结束时间控件的UI
 void HistoryView::initEdEndTimeUI() {
     ui->edEndTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
 }
@@ -112,12 +109,12 @@ void HistoryView::setEdStartTime(QDateTime startDateTime) {
     ui->edStartTime->setDateTime(startDateTime);
 }
 
-//设置结束时间控件的内容
+//设置结束时间控件的显示内容
 void HistoryView::setEdEndTime(QDateTime endDateTime) {
      ui->edEndTime->setDateTime(endDateTime);
 }
 
-//获取开始时间控件的内容
+//获取开始时间控件的显示内容
 QDateTime HistoryView::getEdStartTime() {
     return ui->edStartTime->dateTime();
 }
