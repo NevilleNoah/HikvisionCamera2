@@ -33,7 +33,7 @@
 #include <QTableWidgetItem>
 #include <QStringList>
 #include <QtNetwork>
-
+#include <picthread.h>
 
 typedef struct tagALARM_INFO{
     DWORD dwYear;
@@ -87,7 +87,7 @@ public:
     //相似度
     static double similarity;
     //数据库
-    static Database database;
+    //static Database database;
 
     static QList<char*> avatarList;
     static QList<char*> captureList;

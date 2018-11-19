@@ -2,7 +2,7 @@
 #include "ui_historyview.h"
 #include "database.h"
 
-Database HistoryView::db;
+Database HistoryView::database;
 QList<RECORD> HistoryView::records;
 QDateTime HistoryView::startDateTime;
 QDateTime HistoryView::endDateTime;
@@ -75,7 +75,8 @@ void HistoryView::initTableUI() {
 //初始化数据库
 void HistoryView::initDataBase() {
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
-    db.setQSqlDatabase(qSqlDatabase);
+    database.setQSqlDatabase(qSqlDatabase);
+    //database.openConnect();
 }
 
 //初始化数据显示
@@ -152,18 +153,6 @@ void HistoryView::setComboBoxUI(int strangerIndex, int sexIndex) {
     ui->cmbSex->setCurrentIndex(sexIndex);
 }
 
-//设置复选框中的某个选项是否可选
-/*void HistoryView::setComboBoxItemState(int index, bool state) {
-    QModelIndex mIndex = ui->cmbSex->model()->index(index, 0);
-    QVariant *v;
-    if(!state)
-        v = new QVariant(0);
-    else
-        v = new QVariant(1|32);
-    ui->cmbSex->model()->setData(mIndex, *v, Qt::UserRole-1);
-    delete v;
-}*/
-
 //设置复选框状态
 void HistoryView::setComboBoxState(bool strangerState, bool sexState) {
     if(!strangerState)
@@ -184,10 +173,11 @@ int HistoryView::calPageNum() {
 
 //根据页码获取数据
 int HistoryView::getRecordByPageNum(int startId) {
-    db.openConnect();
-    records = db.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(),
+    initDataBase();
+    database.openConnect();
+    records = database.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(),
                                    getCmbSexIndex(), startId, pageSize, totalRecordNum);
-    db.closeConnect();
+    database.closeConnect();
     return records.size();
 }
 

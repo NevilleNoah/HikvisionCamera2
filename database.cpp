@@ -19,6 +19,7 @@ bool Database::openConnect()
         QString password = config->value("/Database/password").toString();
 
         delete config;
+
         db.setHostName(ip);
         db.setPort(port);
         db.setDatabaseName(model);
@@ -46,15 +47,17 @@ bool Database::openConnect()
 bool Database::closeConnect()
 {
     try {
-        if(&db!=NULL) {
+        if(db.isOpen()) {
             db.close();
-            return true;
+            qDebug() << "db has closed!";
         }
-        return false;
+
     } catch(std::exception &e) {
         qDebug()<<"# ERR: SQLException:" <<e.what();
+        return false;
         //TAD：进行ui提示
     }
+    return true;
 }
 
 //增加记录
@@ -119,12 +122,9 @@ bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString i
     }
 }
 
-//获取记录
-QList<RECORD> Database::selectRecord()
-{
+//设置记录内容
+QList<RECORD> Database::setRecord(QSqlQuery query) {
     QList<RECORD> records;
-    QSqlQuery query;
-    query.exec("select * from record order by timeValue desc");
     while(query.next())
     {
         RECORD record;
@@ -139,6 +139,15 @@ QList<RECORD> Database::selectRecord()
         records.append(record);
     }
     return records;
+}
+
+//获取记录
+QList<RECORD> Database::selectRecord()
+{
+    QList<RECORD> records;
+    QSqlQuery query;
+    query.exec("select * from record order by timeValue desc");
+    return setRecord(query);
 }
 
 
@@ -189,18 +198,5 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     query.bindValue(":startId", (startId-1)*pageSize);
     query.bindValue(":pageSize", pageSize);
     query.exec();
-    while(query.next())
-    {
-        RECORD record;
-        record.timesamp = query.value(1).toDateTime();
-        record.nameValue = query.value(2).toString();
-        record.sex = query.value(3).toString();
-        record.idNo = query.value(4).toString();
-        record.idAvatar = query.value(5).toString();
-        record.idCapture = query.value(6).toString();
-        record.isStranger = query.value(7).toBool();
-
-        records.append(record);
-    }
-    return records;
+    return setRecord(query);
 }

@@ -43,7 +43,7 @@ public:
     int getCmbSexIndex();
     /*********************zjb END*********************/
 
-    static Database db;
+    static Database database;
     static QList<RECORD> records;
     static QDateTime startDateTime;
     static QDateTime endDateTime;

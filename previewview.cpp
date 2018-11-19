@@ -41,7 +41,7 @@ QList<ALARM_INFO> PreviewView::alarmList;
 ALARM_INFO PreviewView::alarmInfo;
 QString PreviewView::alarmText;
 //数据库
-Database PreviewView::database;
+//Database PreviewView::database;
 //信息列表
 QList<char*> PreviewView::avatarList;
 QList<char*> PreviewView::captureList;
@@ -227,6 +227,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         alarmInfo.isStranger = true;
         //--------------------
         //相似度
+        alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
         qDebug() << "alarmInfo.similarity is " << QString::number(struFaceMatchAlarm.fSimilarity);
 
 
@@ -263,8 +264,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     url.setUserName(CMUsername);
     url.setPassword(CMPassword);
     QNetworkReply* reply = manager->get(QNetworkRequest(url));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
     eventLoop.exec();
 
     //显示个人信息
@@ -452,7 +453,6 @@ void PreviewView::showPersonInfo(int option) {
             ui->edId->setText(alarmInfo.id);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
 
-
             QImage imgCapture(":/icon/info.png", "PNG");
             QPixmap pixCapture = QPixmap::fromImage(imgCapture);
             ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
@@ -521,7 +521,6 @@ void PreviewView::setAlarmInfo() {
 
     }
 
-
     emit previewView->showPersonInfo(OPTION_DOUBLE_CLICK);
 }
 
@@ -583,6 +582,7 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 
 void PreviewView::saveToDatabase() {
 
+    Database database = Database();
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     database.setQSqlDatabase(qSqlDatabase);
     database.openConnect();
@@ -653,28 +653,26 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
     dirPicCapture.append(alarmInfo.idCapture);
     dirPicCapture.append(".jpg");
 
-    delete config;
-
     //保存抓拍图片文件
     QFile file(dirPicCapture);
     if(file.open(QIODevice::WriteOnly)) {
         file.write(bytes);
         file.close();
     }
-    qDebug() << "write over";
-
+    /*
+    PicThread *picThread = new PicThread(dirPicCapture, bytes);
+    picThread->start();
+    */
 }
 
 void PreviewView::showAvatarPic(QNetworkReply* reply) {
     qDebug() << "PreviewView:: showAvatarPic exec";
-
 
     //显示人脸图片
     QPixmap pix;
     QByteArray bytes = reply->readAll();
     pix.loadFromData(bytes);
     ui->picAvatar->setPixmap(pix);
-
 
     //人脸图片路径设置
     QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
@@ -691,13 +689,15 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
 
     qDebug() << "dirPicAvatar:" << dirPicAvatar;
 
-    delete config;
-
     //保存人脸图片
     QFile file(dirPicAvatar);
     if(file.open(QIODevice::WriteOnly)) {
         file.write(bytes);
         file.close();
     }
+    /*PicThread *picThread = new PicThread(dirPicAvatar, bytes);
+    picThread->start();*/
+
+    delete config;
 }
 

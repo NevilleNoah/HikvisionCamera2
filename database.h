@@ -23,7 +23,7 @@ class Database
 {
 public:
     Database();
-
+    QList<RECORD> setRecord(QSqlQuery query);
     QList<RECORD> selectRecord();
     QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
                                     int startId, int pageSize, int &totalRecordNum);
