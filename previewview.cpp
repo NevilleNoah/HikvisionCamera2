@@ -335,6 +335,11 @@ void PreviewView::setAlarmText() {
 
 
 void PreviewView::loadPreview() {
+    //重置图标
+    QImage imgSymbol("");
+    QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
+    ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
 
     //---------------------------------------
     //关闭预览
@@ -455,9 +460,9 @@ void PreviewView::showPersonInfo(int option) {
             ui->edId->setText(alarmInfo.id);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
 
-            QImage imgCapture(":/icon/info.png", "PNG");
-            QPixmap pixCapture = QPixmap::fromImage(imgCapture);
-            ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            QImage imgSymbol(":/icon/correct.png", "PNG");
+            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
+            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         } else {
 
@@ -466,9 +471,9 @@ void PreviewView::showPersonInfo(int option) {
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
 
-            QImage imgCapture(":/icon/warn.png", "PNG");
-            QPixmap pixCapture = QPixmap::fromImage(imgCapture);
-            ui->picSymbol->setPixmap(pixCapture.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            QImage imgSymbol(":/icon/error.png", "PNG");
+            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
+            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         }
         break;
@@ -485,6 +490,10 @@ void PreviewView::showPersonInfo(int option) {
             QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
             ui->picAvatar->setPixmap(pixAvatar.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
+            QImage imgSymbol(":/icon/correct.png", "PNG");
+            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
+            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
             ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
             ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
             ui->edId->setText(alarmInfo.id);
@@ -492,14 +501,18 @@ void PreviewView::showPersonInfo(int option) {
 
         } else {
 
+            QImage imgAvatar("");
+            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
+            ui->picAvatar->setPixmap(pixAvatar);
+
+            QImage imgSymbol(":/icon/error.png", "PNG");
+            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
+            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
             ui->edName->setText(QString::fromLocal8Bit("未知"));
             ui->edSex->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
-
-            QImage imgAvatar("");
-            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-            ui->picAvatar->setPixmap(pixAvatar);
 
         }
         break;
@@ -627,6 +640,11 @@ void PreviewView::on_btnAlarmClear_clicked()
     QImage imgAvatar("");
     QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
     ui->picAvatar->setPixmap(pixAvatar);
+
+    QImage imgSymbol("");
+    QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
+    ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
 
     alarmList.clear();
     avatarList.clear();
