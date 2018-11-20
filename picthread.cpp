@@ -1,25 +1,30 @@
 #include "picthread.h"
 
-/*PicThread::PicThread(QObject *parent):
-    QThread(parent)
-{
+
+
+/*PicThread::PicThread(const QString dir, const QByteArray bytes){
 
 }*/
 
-PicThread::PicThread(const QString dir, const QByteArray bytes){
-    this->setDir(dir);
-    this->setBytes(bytes);
-}
 
-void PicThread::setDir(QString dir) {
-    this->dir = dir;
-}
-
-void PicThread::setBytes(QByteArray bytes) {
-    this->bytes = bytes;
-}
 
 void PicThread::run() {
+    /*sleep(2000);
 
+    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QString CMUsername = config->value("/Camera/username").toString();
+    QString CMPassword = config->value("/Camera/password").toString();
+
+    QEventLoop eventLoop;
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+
+    QUrl url(urlCapture);
+
+    url.setUserName(CMUsername);
+    url.setPassword(CMPassword);
+    QNetworkReply* reply = manager->get(QNetworkRequest(url));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
+    eventLoop.exec();*/
 }
 

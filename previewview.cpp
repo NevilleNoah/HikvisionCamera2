@@ -160,6 +160,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         urlAvatar = QString(avatar).mid(0, avatarCutIndex);
         qDebug() << "urlAvatar is " << urlAvatar;
 
+
         QEventLoop eventLoop;
         QNetworkAccessManager *manager = new QNetworkAccessManager();
 
@@ -245,6 +246,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
     }
 
+    Sleep(300);
     //--------------------
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);

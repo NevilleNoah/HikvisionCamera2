@@ -4,21 +4,17 @@
 #include <QObject>
 #include <QThread>
 #include <QtCore>
+#include <QtNetwork>
 
 class PicThread:public QThread
 {
     Q_OBJECT
 public:
-    //explicit PicThread(QObject *parent);
-    explicit PicThread(const QString dir, const QByteArray bytes);
-
-    void setDir(QString);
-    void setBytes(QByteArray);
+    explicit PicThread(const QString urlCapture);
 
     void run();
 private:
-    QString dir;
-    QByteArray bytes;
+
 
 };
 
