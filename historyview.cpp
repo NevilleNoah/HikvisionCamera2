@@ -246,6 +246,9 @@ void HistoryView::on_btnSearchByCondition_clicked()
     //设置页码的输入范围
     setTextNowPageVal();
     emit showDataByCondition();
+
+    //清除图片
+    cleanImage();
 }
 
 //显示记录
@@ -279,6 +282,15 @@ void HistoryView::showDataByCondition() {
             ui->recordTable->setItem(i, j, item[j]);
         }
     }
+}
+
+//清除图片
+void HistoryView::cleanImage() {
+    QImage imgCapture("");
+    QPixmap pixCapture = QPixmap::fromImage(imgCapture);
+    ui->picAvatar->setPixmap(pixCapture);
+    ui->picCapture->setPixmap(pixCapture);
+
 }
 
 //双击表格内容
