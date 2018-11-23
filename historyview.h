@@ -41,6 +41,7 @@ public:
     void setComboBoxUI(int strangerIndex, int sexIndex);
     int getCmbStrangerIndex();
     int getCmbSexIndex();
+    void cleanImage();
     /*********************zjb END*********************/
 
     static Database database;
