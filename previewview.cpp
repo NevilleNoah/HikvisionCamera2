@@ -772,7 +772,7 @@ void PreviewView::on_btnSearch_clicked()
 
             alarmText.append(QString::fromLocal8Bit("   陌生人"));
         }
-
+        alarmInfo = alarmList[index];
         emit previewView->addAlarmItem();
 
     }
