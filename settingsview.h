@@ -36,6 +36,10 @@ signals:
 private slots:
     void on_btnDetermine_clicked();
 
+    void on_btnCapturePath_clicked();
+
+    void on_btnAvatarPath_clicked();
+
 private:
     Ui::SettingsView *ui;
 };

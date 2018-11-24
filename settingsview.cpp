@@ -1,4 +1,5 @@
-﻿#include "settingsview.h"
+﻿#include <QFileDialog>
+#include "settingsview.h"
 #include "ui_settingsview.h"
 #include "mainwindow.h"
 
@@ -112,3 +113,17 @@ void SettingsView::on_btnDetermine_clicked()
 
 }
 /*************************************更新数据 END**************************************/
+
+void SettingsView::on_btnCapturePath_clicked()
+{
+    QString file_path = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("抓拍图路径"), "./");
+    qDebug() << "file_path: " << file_path;
+    ui->edDirCapture->setText(file_path + "/");
+}
+
+void SettingsView::on_btnAvatarPath_clicked()
+{
+    QString file_path = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("人脸图路径"), "./");
+    qDebug() << "file_path: " << file_path;
+    ui->edDirCapture->setText(file_path + "/");
+}
