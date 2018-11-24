@@ -738,10 +738,16 @@ void PreviewView::on_btnSearch_clicked()
         for(int i = 0; i < alarmList.size(); i++) {
             searchList.append(i);
         }
+    } else if(inputName.compare(QString::fromLocal8Bit("陌生人")) == 0) {
+        for(int i = 0; i < alarmList.size(); i++) {
+            if(alarmList[i].isStranger) {
+                 searchList.append(i);
+            }
+        }
     } else {
         //获取相应信息
         for(int i = 0; i < alarmList.size(); i++) {
-            if(inputName.compare(QString::fromLocal8Bit(alarmList[i].name)) == 0) {
+            if(inputName.compare(QString::fromLocal8Bit(alarmList[i].name)) == 0 && (!alarmList[i].isStranger)) {
                  searchList.append(i);
             }
         }
