@@ -127,6 +127,8 @@ private slots:
 
     void on_btnAlarmClear_clicked();
 
+    void on_btnSearch_clicked();
+
 private:
     Ui::PreviewView *ui;
 };

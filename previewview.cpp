@@ -302,8 +302,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
 
 void PreviewView::setAlarmText() {
-
-
     //报警信息
     alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
                                   alarmList.length(),
@@ -721,3 +719,25 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
     delete config;
 }
 
+
+void PreviewView::on_btnSearch_clicked()
+{
+    QString inputName = ui->edSearch->text();
+    ui->alarmList->clear();
+    qDebug().noquote() << "inputName: " << inputName;
+    if(inputName.compare("") == 0 || inputName.length() <= 0) {
+        //打印全部信息
+        for(int i = 0; i < alarmList.size(); i++) {
+            alarmInfo = alarmList[i];
+            setAlarmText();
+        }
+    } else {
+        //打印相应信息
+        for(int i = 0; i < alarmList.size(); i++) {
+            if(inputName.compare(QString::fromLocal8Bit(alarmList[i].name)) == 0) {
+                alarmInfo = alarmList[i];
+                setAlarmText();
+            }
+        }
+    }
+}
