@@ -40,6 +40,8 @@ QString PreviewView::dirPicCapture;
 QList<ALARM_INFO> PreviewView::alarmList;
 ALARM_INFO PreviewView::alarmInfo;
 QString PreviewView::alarmText;
+//搜索信息
+QList<int> PreviewView::searchList;
 //数据库
 //Database PreviewView::database;
 //信息列表
@@ -232,6 +234,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         qDebug() << "alarmInfo.similarity is " << QString::number(struFaceMatchAlarm.fSimilarity);
 
 
+
         /*switch(struFaceMatchAlarm.struSnapInfo.bySex) {
         case 0x0:
             strcpy(alarmInfo.sex, "男");
@@ -274,6 +277,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     emit previewView->showPersonInfo(OPTION_FACE_COMPARE);
 
     alarmList.append(alarmInfo);
+    searchList.append(alarmList.length()-1);
 
 
 
@@ -456,7 +460,7 @@ void PreviewView::showPersonInfo(int option) {
             ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
             ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
             ui->edId->setText(alarmInfo.id);
-            ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
+            ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));           
 
             QImage imgSymbol(":/icon/correct.png", "PNG");
             QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
@@ -473,6 +477,9 @@ void PreviewView::showPersonInfo(int option) {
             QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
             ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
+            QImage imgAvatar("");
+            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
+            ui->picAvatar->setPixmap(pixAvatar.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
         break;
 
@@ -616,8 +623,8 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 
 
     currentRow = ui->alarmList->currentRow();
-    alarmInfo = alarmList[alarmList.size()-1-currentRow];
-
+    //alarmInfo = alarmList[alarmList.size()-1-currentRow];
+    alarmInfo = alarmList[searchList[searchList.size()-1-currentRow]];
     setAlarmInfo();
 }
 
@@ -724,20 +731,49 @@ void PreviewView::on_btnSearch_clicked()
 {
     QString inputName = ui->edSearch->text();
     ui->alarmList->clear();
+    searchList.clear();
     qDebug().noquote() << "inputName: " << inputName;
     if(inputName.compare("") == 0 || inputName.length() <= 0) {
-        //打印全部信息
+        //获取全部信息
         for(int i = 0; i < alarmList.size(); i++) {
-            alarmInfo = alarmList[i];
-            setAlarmText();
+            searchList.append(i);
         }
     } else {
-        //打印相应信息
+        //获取相应信息
         for(int i = 0; i < alarmList.size(); i++) {
             if(inputName.compare(QString::fromLocal8Bit(alarmList[i].name)) == 0) {
-                alarmInfo = alarmList[i];
-                setAlarmText();
+                 searchList.append(i);
             }
         }
+    }
+
+    for(int i = 0; i < searchList.size(); i++) {
+        int index = searchList[i];
+        alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
+                                      i+1,
+                                      alarmList[index].dwYear,
+                                      alarmList[index].dwMonth,
+                                      alarmList[index].dwDay,
+                                      alarmList[index].dwHour,
+                                      alarmList[index].dwMinute,
+                                      alarmList[index].dwSecond);
+        if(!alarmList[index].isStranger) {
+
+            alarmText.append(QString::fromLocal8Bit("   姓名："));
+            alarmText.append(QString::fromLocal8Bit(alarmList[index].name));
+
+            alarmText.append(QString::fromLocal8Bit("   性别："));
+            alarmText.append(QString::fromLocal8Bit(alarmList[index].sex));
+
+            alarmText.append(QString::fromLocal8Bit("   编号："));
+            alarmText.append(alarmList[index].id);
+
+        } else {
+
+            alarmText.append(QString::fromLocal8Bit("   陌生人"));
+        }
+
+        emit previewView->addAlarmItem();
+
     }
 }

@@ -77,6 +77,9 @@ public:
     static ALARM_INFO alarmInfo;//存储当前报警信息
     static QList<ALARM_INFO> alarmList;//报警信息列表
     static QString alarmText;//打印输出的文本
+
+    static QList<int> searchList;//存储搜索信息
+
     //人脸库图
     static char* avatar;
     static DWORD avatarLen;
