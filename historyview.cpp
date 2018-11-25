@@ -296,7 +296,7 @@ void HistoryView::cleanImage() {
 //双击表格内容
 void HistoryView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
 {
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
     //人脸图
     QString avatarDir = config->value("/Dir/dirAvatar").toString();

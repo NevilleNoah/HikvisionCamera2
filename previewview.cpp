@@ -126,7 +126,7 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
 
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
     QString CMUsername = config->value("/Camera/username").toString();
     QString CMPassword = config->value("/Camera/password").toString();
     SIMILARITY = config->value("/Compare/similarity").toFloat();
@@ -354,7 +354,7 @@ void PreviewView::loadPreview() {
 
     //---------------------------------------
     //配置信息
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
     QString ip = config->value("/Camera/ip").toString();
     int port = config->value("/Camera/port").toInt();
@@ -666,7 +666,7 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
     ui->picCapture->setPixmap(pix);
 
     //抓拍图片路径设置
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
     dirCapture = config->value("/Dir/dirCapture").toString();
 
     QDir qdirCapture(dirCapture);
@@ -700,7 +700,7 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
     ui->picAvatar->setPixmap(pix);
 
     //人脸图片路径设置
-    QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
     dirAvatar = config->value("/Dir/dirAvatar").toString();
 
     QDir qdirAvatar(dirAvatar);

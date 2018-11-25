@@ -10,7 +10,7 @@ Database::Database() {
 bool Database::openConnect()
 {
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         QString ip = config->value("/Database/ip").toString();
         int port = config->value("/Database/port").toInt();

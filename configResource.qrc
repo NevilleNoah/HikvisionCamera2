@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>config/config.ini</file>
         <file>icon/info.png</file>
         <file>icon/warn.png</file>
         <file>icon/correct.png</file>

@@ -71,7 +71,7 @@ bool SettingsThread::readSettings() {
 bool SettingsThread::readCameraSettings() {
 
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         CMIp = config->value("/Camera/ip").toString();
         CMPort = config->value("/Camera/port").toInt();
@@ -96,7 +96,7 @@ bool SettingsThread::readCameraSettings() {
 bool SettingsThread::readDatabaseSettings() {
 
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         DBIp = config->value("/Database/ip").toString();
         DBPort = config->value("/Database/port").toInt();
@@ -119,7 +119,7 @@ bool SettingsThread::readDatabaseSettings() {
 
 bool SettingsThread::readPicDirSettings() {
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         dirCapture = config->value("/Dir/dirCapture").toString();
         dirAvatar = config->value("/Dir/dirAvatar").toString();
@@ -145,7 +145,7 @@ bool SettingsThread::readPicDirSettings() {
 bool SettingsThread::writeCameraSettings() {
 
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         config->setValue("/Camera/ip", CMIp);
         config->setValue("/Camera/port", CMPort);
@@ -168,7 +168,7 @@ bool SettingsThread::writeCameraSettings() {
 bool SettingsThread::writeDatabaseSettings() {
 
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         config->setValue("/Database/ip", DBIp);
         config->setValue("/Database/port", DBPort);
@@ -189,13 +189,12 @@ bool SettingsThread::writeDatabaseSettings() {
 
 //写数据库配置
 bool SettingsThread::writePicDirSettings() {
-
+    qDebug() << "current Path: " << QDir::currentPath();
     try {
-        QSettings *config = new QSettings(":/config/config.ini", QSettings::IniFormat);
-
+        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
         config->setValue("/Dir/dirCapture", dirCapture);
         config->setValue("/Dir/dirAvatar", dirAvatar);
-
+        config->sync();
         delete config;
 
         qDebug() << QString::fromLocal8Bit("SettingsThread: writePicDirSettings succeed");
