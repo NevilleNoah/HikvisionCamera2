@@ -92,6 +92,11 @@ public:
     //数据库
     //static Database database;
 
+    //是否点击搜索
+    static bool isClickSearch;
+    //搜索的名字
+    static QString inputName;
+
     static QList<char*> avatarList;
     static QList<char*> captureList;
     static QString currentAlarmInfo;
@@ -114,6 +119,8 @@ public:
     static void setAlarmInfo();
     static void setAlarmText();
     static void saveToDatabase();
+
+    static bool isSetAlarmText();
 
 signals:
 

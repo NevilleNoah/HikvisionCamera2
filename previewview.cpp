@@ -56,6 +56,12 @@ NET_VCA_FACESNAP_MATCH_ALARM PreviewView::struFaceMatchAlarm = {0};
 
 PreviewView* PreviewView::previewView = nullptr;
 
+//是否点击搜索按钮
+bool PreviewView::isClickSearch = false;
+
+//搜索的名字
+QString PreviewView::inputName = "";
+
 PreviewView::PreviewView(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PreviewView)
@@ -69,8 +75,6 @@ PreviewView::PreviewView(QWidget *parent) :
 
 
 }
-
-
 
 PreviewView::~PreviewView()
 {
@@ -303,12 +307,23 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
 }
 
-
+bool PreviewView::isSetAlarmText() {
+    if(isClickSearch == false)
+        return true;
+    if(isClickSearch == true && (inputName.compare(QString::fromLocal8Bit(alarmInfo.name)) == 0))
+        return true;
+    if(isClickSearch == true && inputName.compare(QString::fromLocal8Bit("陌生人")) == 0
+                             && alarmInfo.isStranger == true)
+        return true;
+    return false;
+}
 
 void PreviewView::setAlarmText() {
+
+    if(isSetAlarmText()){
     //报警信息
     alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
-                                  alarmList.length(),
+                                  searchList.size()-currentRow,
                                   alarmInfo.dwYear,
                                   alarmInfo.dwMonth,
                                   alarmInfo.dwDay,
@@ -332,6 +347,7 @@ void PreviewView::setAlarmText() {
     }
 
     emit previewView->addAlarmItem();
+}
 
 }
 
@@ -729,22 +745,27 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
 
 void PreviewView::on_btnSearch_clicked()
 {
-    QString inputName = ui->edSearch->text();
+    inputName = ui->edSearch->text();
     ui->alarmList->clear();
     searchList.clear();
     qDebug().noquote() << "inputName: " << inputName;
+
+    //重置报警列表数据
     if(inputName.compare("") == 0 || inputName.length() <= 0) {
+        isClickSearch = false;
         //获取全部信息
         for(int i = 0; i < alarmList.size(); i++) {
             searchList.append(i);
-        }
+        }    
     } else if(inputName.compare(QString::fromLocal8Bit("陌生人")) == 0) {
+        isClickSearch = true;
         for(int i = 0; i < alarmList.size(); i++) {
             if(alarmList[i].isStranger) {
                  searchList.append(i);
             }
-        }
+        }     
     } else {
+        isClickSearch = true;
         //获取相应信息
         for(int i = 0; i < alarmList.size(); i++) {
             if(inputName.compare(QString::fromLocal8Bit(alarmList[i].name)) == 0 && (!alarmList[i].isStranger)) {
@@ -753,6 +774,7 @@ void PreviewView::on_btnSearch_clicked()
         }
     }
 
+    //添加报警列表信息
     for(int i = 0; i < searchList.size(); i++) {
         int index = searchList[i];
         alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
