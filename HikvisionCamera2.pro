@@ -35,7 +35,8 @@ SOURCES += \
     historyview.cpp \
     settingsview.cpp \
     settingsthread.cpp \
-    database.cpp
+    database.cpp \
+    config.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -53,6 +54,7 @@ HEADERS += \
     settingsview.h \
     settingsthread.h \
     database.h \
+    config.h
 
 
 FORMS += \
