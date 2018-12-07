@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.7.82, 2018-11-25T10:54:43. -->
+<!-- Written by QtCreator 4.7.82, 2018-11-26T19:46:50. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -313,7 +313,7 @@
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default"></value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/admin/Documents/GitHub/build-HikvisionCamera2-Desktop_Qt_5_11_2_MSVC2017_64bit-Release</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>

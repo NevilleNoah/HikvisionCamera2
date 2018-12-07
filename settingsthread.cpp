@@ -10,7 +10,7 @@ SettingsThread::SettingsThread(QObject *parent):
 /*****************************************成员变量*****************************************/
 QString SettingsThread::CMIp;
 int SettingsThread::CMPort;
-int SettingsThread::CMChannel;
+int* SettingsThread::CMChannel = new int[4];
 QString SettingsThread::CMUsername;
 QString SettingsThread::CMPassword;
 
@@ -75,10 +75,12 @@ bool SettingsThread::readCameraSettings() {
 
         CMIp = config->value("/Camera/ip").toString();
         CMPort = config->value("/Camera/port").toInt();
-        CMChannel = config->value("/Camera/channel").toInt();
         CMUsername = config->value("/Camera/username").toString();
         CMPassword = config->value("/Camera/password").toString();
-
+        CMChannel[0] = config->value("/Camera/channel1").toInt();
+        CMChannel[1] = config->value("/Camera/channel2").toInt();
+        CMChannel[2] = config->value("/Camera/channel3").toInt();
+        CMChannel[3] = config->value("/Camera/channel4").toInt();
         delete config;
 
         emit readedCameraSettings(CMIp, CMPort, CMChannel, CMUsername, CMPassword);
@@ -149,10 +151,12 @@ bool SettingsThread::writeCameraSettings() {
 
         config->setValue("/Camera/ip", CMIp);
         config->setValue("/Camera/port", CMPort);
-        config->setValue("/Camera/channel", CMChannel);
         config->setValue("/Camera/username", CMUsername);
         config->setValue("/Camera/password", CMPassword);
-
+        config->setValue("/Camera/channel1", CMChannel[0]);
+        config->setValue("/Camera/channel2", CMChannel[1]);
+        config->setValue("/Camera/channel3", CMChannel[2]);
+        config->setValue("/Camera/channel4", CMChannel[3]);
         delete config;
 
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeCameraSettings succeed");

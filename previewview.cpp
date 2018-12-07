@@ -322,8 +322,7 @@ void PreviewView::setAlarmText() {
 
     if(isSetAlarmText()){
     //报警信息
-    alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
-                                  searchList.size()-currentRow,
+    alarmText = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
                                   alarmInfo.dwYear,
                                   alarmInfo.dwMonth,
                                   alarmInfo.dwDay,
@@ -417,18 +416,83 @@ void PreviewView::loadPreview() {
             return;
         }
 
-        //---------------------------------------
+        //---------------1-----------------------
         //启动预览并设置回调数据流
-        HWND hWnd = (HWND)ui->picPreview->winId();
-        NET_DVR_PREVIEWINFO struPlayInfo = {0};
-        struPlayInfo.hPlayWnd = hWnd;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo.lChannel     = channel;       //预览通道号
-        struPlayInfo.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
-        struPlayInfo.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
-        struPlayInfo.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
+        int channel1 = config->value("/Camera/channel1").toInt();
+        qDebug() << "previewview channel1: " << channel1;
+        HWND hWnd1 = (HWND)ui->picPreview1->winId();
+        NET_DVR_PREVIEWINFO struPlayInfo1 = {0};
+        struPlayInfo1.hPlayWnd = hWnd1;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+        struPlayInfo1.lChannel     = channel1;       //预览通道号
+        struPlayInfo1.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+        struPlayInfo1.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+        struPlayInfo1.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
 
         //开始播放
-        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo, NULL, NULL);
+        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo1, NULL, NULL);
+        if (lRealPlayHandle < 0)
+        {
+            printf("NET_DVR_RealPlay_V40 error\n");
+            NET_DVR_Logout(lUserID);
+            NET_DVR_Cleanup();
+            return;
+        }
+
+        //---------------2-----------------------
+        //启动预览并设置回调数据流
+        int channel2 = config->value("/Camera/channel2").toInt();
+        HWND hWnd2 = (HWND)ui->picPreview2->winId();
+        NET_DVR_PREVIEWINFO struPlayInfo2 = {0};
+        struPlayInfo2.hPlayWnd = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+        struPlayInfo2.lChannel     = channel2;       //预览通道号
+        struPlayInfo2.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+        struPlayInfo2.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+        struPlayInfo2.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
+
+        //开始播放
+        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo2, NULL, NULL);
+        if (lRealPlayHandle < 0)
+        {
+            printf("NET_DVR_RealPlay_V40 error\n");
+            NET_DVR_Logout(lUserID);
+            NET_DVR_Cleanup();
+            return;
+        }
+
+        //---------------3-----------------------
+        //启动预览并设置回调数据流
+        int channel3 = config->value("/Camera/channel3").toInt();
+        HWND hWnd3 = (HWND)ui->picPreview3->winId();
+        NET_DVR_PREVIEWINFO struPlayInfo3 = {0};
+        struPlayInfo2.hPlayWnd = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+        struPlayInfo2.lChannel     = channel3;       //预览通道号
+        struPlayInfo2.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+        struPlayInfo2.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+        struPlayInfo2.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
+
+        //开始播放
+        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo3, NULL, NULL);
+        if (lRealPlayHandle < 0)
+        {
+            printf("NET_DVR_RealPlay_V40 error\n");
+            NET_DVR_Logout(lUserID);
+            NET_DVR_Cleanup();
+            return;
+        }
+
+        //---------------4-----------------------
+        //启动预览并设置回调数据流
+        int channel4 = config->value("/Camera/channel2").toInt();
+        HWND hWnd4 = (HWND)ui->picPreview4->winId();
+        NET_DVR_PREVIEWINFO struPlayInfo4 = {0};
+        struPlayInfo2.hPlayWnd = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+        struPlayInfo2.lChannel     = channel2;       //预览通道号
+        struPlayInfo2.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
+        struPlayInfo2.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
+        struPlayInfo2.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
+
+        //开始播放
+        lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo4, NULL, NULL);
         if (lRealPlayHandle < 0)
         {
             printf("NET_DVR_RealPlay_V40 error\n");
@@ -777,8 +841,7 @@ void PreviewView::on_btnSearch_clicked()
     //添加报警列表信息
     for(int i = 0; i < searchList.size(); i++) {
         int index = searchList[i];
-        alarmText = QString::asprintf("%d   %4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
-                                      i+1,
+        alarmText = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
                                       alarmList[index].dwYear,
                                       alarmList[index].dwMonth,
                                       alarmList[index].dwDay,
@@ -794,7 +857,7 @@ void PreviewView::on_btnSearch_clicked()
             alarmText.append(QString::fromLocal8Bit(alarmList[index].sex));
 
             alarmText.append(QString::fromLocal8Bit("   编号："));
-            alarmText.append(alarmList[index].id);
+            //alarmText.append(alarmList[index].id);
 
         } else {
 

@@ -19,8 +19,8 @@ void SettingsView::runReadSettingsThread() {
     settingsThread = new SettingsThread(this);
     settingsThread->setStatus(SettingsThread::STATUS_READ);
 
-    connect(settingsThread, SIGNAL(readedCameraSettings(QString, int, int, QString, QString)),
-            this, SLOT(loadCameraSettings(QString, int, int, QString, QString)));
+    connect(settingsThread, SIGNAL(readedCameraSettings(QString, int, int*, QString, QString)),
+            this, SLOT(loadCameraSettings(QString, int, int*, QString, QString)));
     connect(settingsThread, SIGNAL(readedDatabaseSettings(QString, int, QString, QString, QString)),
             this, SLOT(loadDatabaseSettings(QString, int, QString, QString, QString)));
     connect(settingsThread, SIGNAL(readedPicDirSettings(QString, QString)),
@@ -42,12 +42,16 @@ void SettingsView::runWriteSettingsThread() {
 
 /****************************************更新Ui****************************************/
 //更新Ui：加载摄像机配置
-void SettingsView::loadCameraSettings(QString ip, int port, int channel, QString username, QString password) {
+void SettingsView::loadCameraSettings(QString ip, int port, int *channel, QString username, QString password) {
     ui->edCMIP->setText(ip);
     ui->edCMPort->setText(QString::number(port));
-    ui->edCMChannel->setText(QString::number(channel));
     ui->edCMUsername->setText(username);
     ui->edCMPassword->setText(password);
+
+    ui->edCMChannel1->setText(QString::number(channel[0]));
+    ui->edCMChannel2->setText(QString::number(channel[1]));
+    ui->edCMChannel3->setText(QString::number(channel[2]));
+    ui->edCMChannel4->setText(QString::number(channel[3]));
 }
 
 //更新Ui：加载数据库配置
@@ -76,9 +80,13 @@ void SettingsView::changeCameraSettings() {
 
     SettingsThread::CMIp = ui->edCMIP->text();
     SettingsThread::CMPort = ui->edCMPort->text().toInt();
-    SettingsThread::CMChannel = ui->edCMChannel->text().toInt();
     SettingsThread::CMUsername = ui->edCMUsername->text();
     SettingsThread::CMPassword = ui->edCMPassword->text();
+
+    SettingsThread::CMChannel[0] = ui->edCMChannel1->text().toInt();
+    SettingsThread::CMChannel[1] = ui->edCMChannel2->text().toInt();
+    SettingsThread::CMChannel[2] = ui->edCMChannel3->text().toInt();
+    SettingsThread::CMChannel[3] = ui->edCMChannel4->text().toInt();
 
 }
 

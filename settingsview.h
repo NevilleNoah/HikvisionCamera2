@@ -1,6 +1,5 @@
 ﻿#ifndef SETTINGSVIEW_H
 #define SETTINGSVIEW_H
-
 #include <QWidget>
 #include "settingsthread.h"
 
@@ -25,7 +24,7 @@ public:
     void changePicDirSettings();
 
 public slots:
-    void loadCameraSettings(QString ip, int port, int channel, QString username, QString password);
+    void loadCameraSettings(QString ip, int port, int *channel, QString username, QString password);
     void loadDatabaseSettings(QString ip, int port, QString model, QString username, QString password);
     void loadPicDirSettings(QString dirCapture, QString dirAvatar);
     void setBtnDetermineEnable();
