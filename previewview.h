@@ -113,6 +113,7 @@ public:
     static QString urlAvatar;
 
     void initAlarmTable();
+    static void initConfig();
 
     static BOOL CALLBACK MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
     static void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser);
@@ -125,6 +126,9 @@ public:
     static bool isSetAlarmText();
 private:
     static Config config;
+    static CAMERACONFIG_INFO cameraInfo;
+    static COMPARECONFIG_INFO compareInfo;
+
 signals:
 
 public slots:

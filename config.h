@@ -3,6 +3,26 @@
 #include <QString>
 #include <QSettings>
 
+typedef struct tagCAMERACONFIG_INFO {
+    QString ip;
+    int port;
+    int *channel;
+    QString userName;
+    QString passWord;
+} CAMERACONFIG_INFO;
+
+typedef struct tagDATABASECONFIG_INFO {
+    QString ip;
+    int port;
+    QString model;
+    QString userName;
+    QString passWord;
+} DATABASECONFIG_INFO;
+
+typedef struct tagCOMPARECONFIG_INFO {
+    float similarity;
+} COMPARECONFIG_INFO;
+
 class Config
 {
 public:
