@@ -4,9 +4,6 @@
 #include <QWidget>
 #include <QtCore>
 #include <QMainWindow>
-#include "HCNetSDK.h"
-#include "plaympeg4.h"
-#include "Windows.h"
 #include <QSqlError>
 #include <QSqlDatabase>
 #include <QSqlQuery>
@@ -28,14 +25,18 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include <QDir>
-#include "database.h"
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QStringList>
 #include <QtNetwork>
 #include <picthread.h>
+#include "HCNetSDK.h"
+#include "plaympeg4.h"
+#include "Windows.h"
+#include "database.h"
+#include "config.h"
 
-typedef struct tagALARM_INFO{
+typedef struct tagALARM_INFO {
     DWORD dwYear;
     DWORD dwMonth;
     DWORD dwDay;
@@ -53,6 +54,7 @@ typedef struct tagALARM_INFO{
 
     bool isStranger;
 }ALARM_INFO;
+
 
 namespace Ui {
     class PreviewView;
@@ -121,7 +123,8 @@ public:
     static void saveToDatabase();
 
     static bool isSetAlarmText();
-
+private:
+    static Config config;
 signals:
 
 public slots:

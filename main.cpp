@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <qstring.h>
 #include "previewview.h"
-
+#include "config.h"
 int main(int argc, char *argv[])
 {
 
@@ -13,6 +13,5 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.setWindowTitle(QString::fromLocal8Bit("人脸识别客户端"));
     w.show();
-
     return a.exec();
 }

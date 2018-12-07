@@ -51,7 +51,7 @@ QString PreviewView::currentAlarmInfo;
 //URL
 QString PreviewView::urlCapture;
 QString PreviewView::urlAvatar;
-
+//人脸比对结果报警上传结构体。
 NET_VCA_FACESNAP_MATCH_ALARM PreviewView::struFaceMatchAlarm = {0};
 
 PreviewView* PreviewView::previewView = nullptr;
@@ -61,6 +61,8 @@ bool PreviewView::isClickSearch = false;
 
 //搜索的名字
 QString PreviewView::inputName = "";
+//配置文件
+Config PreviewView::config;
 
 PreviewView::PreviewView(QWidget *parent) :
     QWidget(parent),
@@ -130,10 +132,9 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
 
-    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-    QString CMUsername = config->value("/Camera/username").toString();
-    QString CMPassword = config->value("/Camera/password").toString();
-    SIMILARITY = config->value("/Compare/similarity").toFloat();
+    QString CMUsername = config.getCameraUserName();
+    QString CMPassword = config.getCameraPassWord();
+    SIMILARITY = config.getCompareSimilarity();
 
     /***********************************************设置时间********************************************/
     alarmInfo.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -202,24 +203,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
             break;
         }
 
-
-        //--------------------
-        //编号（不得以0结尾）
-        /*for(int i = 0; i < NAME_LEN; i++) {
-                QString strTmp;
-                bool zero = true;//当前元素的后续元素是否都为0
-                for(int j = 0;j < NAME_LEN-i;j++) {
-                    //若存在后续元素不为0，则zero为false
-                    if(struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber[i+j]!=0) {
-                        bool zero = false;
-                    }
-                }
-                //后续元素不全为0，则赋值
-                if(!zero) {
-                    strTmp.sprintf("%d", struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber[i]);
-                    alarmInfo.id.append(strTmp);
-                }
-            }*/
         BYTE idBytes[NAME_LEN];
         memcpy(idBytes, struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber, NAME_LEN);
         alarmInfo.id = QString::fromLocal8Bit((char*)idBytes);
@@ -236,21 +219,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //相似度
         alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
         qDebug() << "alarmInfo.similarity is " << QString::number(struFaceMatchAlarm.fSimilarity);
-
-
-
-        /*switch(struFaceMatchAlarm.struSnapInfo.bySex) {
-        case 0x0:
-            strcpy(alarmInfo.sex, "男");
-            break;
-        case 0x1:
-            strcpy(alarmInfo.sex, "女");
-            break;
-        case 0xff:
-            strcpy(alarmInfo.sex, "未知");
-            break;
-        }*/
-
     }
 
     Sleep(300);
@@ -283,28 +251,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     alarmList.append(alarmInfo);
     searchList.append(alarmList.length()-1);
 
-
-
-
-    /*if(struFaceMatchAlarm.fSimilarity>SIMILARITY) {
-            //人脸库头像图
-            avatarLen = struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen;
-            avatar = (char*)malloc(struFaceMatchAlarm.struBlackListInfo.dwBlackListPicLen);
-            memcpy(avatar, avatarList[index], avatarLen);
-
-            //抓拍图
-            captureLen = struFaceMatchAlarm.dwSnapPicLen;
-            capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-            memcpy(capture, captureList[index], captureLen);
-        } else {
-            //抓拍图
-            captureLen = struFaceMatchAlarm.dwSnapPicLen;
-            capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-            memcpy(capture, captureList[index], captureLen);
-        }*/
-
     /*********************************************设置个人信息 END******************************************/
-
 }
 
 bool PreviewView::isSetAlarmText() {
@@ -319,35 +266,29 @@ bool PreviewView::isSetAlarmText() {
 }
 
 void PreviewView::setAlarmText() {
-
     if(isSetAlarmText()){
-    //报警信息
-    alarmText = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
+        //报警信息
+        alarmText = QString::asprintf("%4.4d.%2.2d.%2.2d %2.2d:%2.2d:%2.2d   ",
                                   alarmInfo.dwYear,
                                   alarmInfo.dwMonth,
                                   alarmInfo.dwDay,
                                   alarmInfo.dwHour,
                                   alarmInfo.dwMinute,
                                   alarmInfo.dwSecond);
-    if(!alarmInfo.isStranger) {
+        if(!alarmInfo.isStranger) {
+            alarmText.append(QString::fromLocal8Bit("   姓名："));
+            alarmText.append(QString::fromLocal8Bit(alarmInfo.name));
 
-        alarmText.append(QString::fromLocal8Bit("   姓名："));
-        alarmText.append(QString::fromLocal8Bit(alarmInfo.name));
+            alarmText.append(QString::fromLocal8Bit("   性别："));
+            alarmText.append(QString::fromLocal8Bit(alarmInfo.sex));
 
-        alarmText.append(QString::fromLocal8Bit("   性别："));
-        alarmText.append(QString::fromLocal8Bit(alarmInfo.sex));
-
-        alarmText.append(QString::fromLocal8Bit("   编号："));
-        alarmText.append(alarmInfo.id);
-
-    } else {
-
-        alarmText.append(QString::fromLocal8Bit("   陌生人"));
+            alarmText.append(QString::fromLocal8Bit("   编号："));
+            alarmText.append(alarmInfo.id);
+        } else {
+            alarmText.append(QString::fromLocal8Bit("   陌生人"));
+        }
+        emit previewView->addAlarmItem();
     }
-
-    emit previewView->addAlarmItem();
-}
-
 }
 
 
@@ -369,16 +310,13 @@ void PreviewView::loadPreview() {
 
     //---------------------------------------
     //配置信息
-    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
+    QString ip = config.getCameraIP();
+    int port = config.getCameraPort();
+    int *channel = config.getCameraChannel();
+    QString userName = config.getCameraUserName();
+    QString passWord = config.getCameraPassWord();
 
-    QString ip = config->value("/Camera/ip").toString();
-    int port = config->value("/Camera/port").toInt();
-    int channel = config->value("/Camera/channel").toInt();
-    QString username = config->value("/Camera/username").toString();
-    QString password = config->value("/Camera/password").toString();
-
-
-    if(ip.length()>0 && port>0 && username.length()>0 && password.length()>0) {
+    if(ip.length()>0 && port>0 && userName.length()>0 && passWord.length()>0) {
         qDebug("information is filled");
         //---------------------------------------
         // 初始化
@@ -399,8 +337,8 @@ void PreviewView::loadPreview() {
         struLoginInfo.bUseAsynLogin = 0; //同步登录方式
         strcpy(struLoginInfo.sDeviceAddress, ip.toLatin1().data()); //设备IP地址
         struLoginInfo.wPort = port; //设备服务端口
-        strcpy(struLoginInfo.sUserName, username.toLatin1().data()); //设备登录用户名
-        strcpy(struLoginInfo.sPassword, password.toLatin1().data()); //设备登录密码
+        strcpy(struLoginInfo.sUserName, userName.toLatin1().data()); //设备登录用户名
+        strcpy(struLoginInfo.sPassword, passWord.toLatin1().data()); //设备登录密码
 
         //设备信息, 输出参数
         NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = {0};
@@ -418,12 +356,10 @@ void PreviewView::loadPreview() {
 
         //---------------1-----------------------
         //启动预览并设置回调数据流
-        int channel1 = config->value("/Camera/channel1").toInt();
-        qDebug() << "previewview channel1: " << channel1;
         HWND hWnd1 = (HWND)ui->picPreview1->winId();
         NET_DVR_PREVIEWINFO struPlayInfo1 = {0};
         struPlayInfo1.hPlayWnd = hWnd1;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo1.lChannel     = channel1;       //预览通道号
+        struPlayInfo1.lChannel     = channel[0];       //预览通道号
         struPlayInfo1.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo1.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo1.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
@@ -440,11 +376,10 @@ void PreviewView::loadPreview() {
 
         //---------------2-----------------------
         //启动预览并设置回调数据流
-        int channel2 = config->value("/Camera/channel2").toInt();
         HWND hWnd2 = (HWND)ui->picPreview2->winId();
         NET_DVR_PREVIEWINFO struPlayInfo2 = {0};
-        struPlayInfo2.hPlayWnd = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo2.lChannel     = channel2;       //预览通道号
+        struPlayInfo2.hPlayWnd     = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
+        struPlayInfo2.lChannel     = channel[1];       //预览通道号
         struPlayInfo2.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo2.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo2.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
@@ -461,11 +396,10 @@ void PreviewView::loadPreview() {
 
         //---------------3-----------------------
         //启动预览并设置回调数据流
-        int channel3 = config->value("/Camera/channel3").toInt();
         HWND hWnd3 = (HWND)ui->picPreview3->winId();
         NET_DVR_PREVIEWINFO struPlayInfo3 = {0};
         struPlayInfo2.hPlayWnd = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo2.lChannel     = channel3;       //预览通道号
+        struPlayInfo2.lChannel     = channel[2];       //预览通道号
         struPlayInfo2.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo2.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo2.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
@@ -482,11 +416,10 @@ void PreviewView::loadPreview() {
 
         //---------------4-----------------------
         //启动预览并设置回调数据流
-        int channel4 = config->value("/Camera/channel2").toInt();
         HWND hWnd4 = (HWND)ui->picPreview4->winId();
         NET_DVR_PREVIEWINFO struPlayInfo4 = {0};
         struPlayInfo2.hPlayWnd = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
-        struPlayInfo2.lChannel     = channel2;       //预览通道号
+        struPlayInfo2.lChannel     = channel[3];       //预览通道号
         struPlayInfo2.dwStreamType = 0;       //0-主码流，1-子码流，2-码流3，3-码流4，以此类推
         struPlayInfo2.dwLinkMode   = 0;       //0- TCP方式，1- UDP方式，2- 多播方式，3- RTP方式，4-RTP/RTSP，5-RSTP/HTTP
         struPlayInfo2.bBlocked     = 1;       //0- 非阻塞取流，1- 阻塞取流
@@ -764,10 +697,6 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
         file.write(bytes);
         file.close();
     }
-    /*
-    PicThread *picThread = new PicThread(dirPicCapture, bytes);
-    picThread->start();
-    */
 }
 
 void PreviewView::showAvatarPic(QNetworkReply* reply) {
