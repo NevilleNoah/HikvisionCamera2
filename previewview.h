@@ -104,7 +104,6 @@ public:
     static QString currentAlarmInfo;
 
     static int currentRow;
-    static double SIMILARITY;
     static QString dirAvatar;
     static QString dirCapture;
     static QString dirPicAvatar;

@@ -30,7 +30,6 @@ DWORD PreviewView::captureLen;
 //相似度
 double PreviewView::similarity;
 int PreviewView::currentRow;
-double PreviewView::SIMILARITY;
 //保存路径
 QString PreviewView::dirAvatar;
 QString PreviewView::dirCapture;
@@ -42,8 +41,6 @@ ALARM_INFO PreviewView::alarmInfo;
 QString PreviewView::alarmText;
 //搜索信息
 QList<int> PreviewView::searchList;
-//数据库
-//Database PreviewView::database;
 //信息列表
 QList<char*> PreviewView::avatarList;
 QList<char*> PreviewView::captureList;
@@ -58,7 +55,6 @@ PreviewView* PreviewView::previewView = nullptr;
 
 //是否点击搜索按钮
 bool PreviewView::isClickSearch = false;
-
 //搜索的名字
 QString PreviewView::inputName = "";
 //配置文件
@@ -88,14 +84,12 @@ void PreviewView::initConfig() {
     cameraInfo.channel = config.getCameraChannel();
     cameraInfo.userName = config.getCameraUserName();
     cameraInfo.passWord = config.getCameraPassWord();
-    SIMILARITY = config.getCompareSimilarity();
+    compareInfo.similarity = config.getCompareSimilarity();
 }
 
-void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser)
-{
+void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser) {
     char tempbuf[256] = { 0 };
-    switch (dwType)
-    {
+    switch (dwType) {
     case EXCEPTION_RECONNECT:    //预览时重连
         printf_s("----------reconnect--------%d\n", time(NULL));
         break;
@@ -108,23 +102,18 @@ void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG 
 BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser)
 {
     qDebug() << "PreviewView: Callback start";
-
-
     switch(lCommand)
     {
     case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
     {
         qDebug() << "PreviewView: Detected face";
-
         memcpy(&struFaceMatchAlarm, pAlarmInfo, sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
-
         //设置报警信息，用于记录所需用到的的报警数据
         setAlarmInfo(struFaceMatchAlarm);
         //设置报警文本，用于在下方列表区显示
         setAlarmText();
         //数据库操作
         saveToDatabase();
-
         break;
     }
         return TRUE;
@@ -138,10 +127,6 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
 
-    //QString CMUsername = config.getCameraUserName();
-    //QString CMPassword = config.getCameraPassWord();
-    //SIMILARITY = config.getCompareSimilarity();
-
     /***********************************************设置时间********************************************/
     alarmInfo.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
     alarmInfo.dwMonth = GET_MONTH(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -152,27 +137,19 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     /*********************************************设置时间 END******************************************/
 
     /*********************************************设置个人信息******************************************/
-    if(struFaceMatchAlarm.fSimilarity > SIMILARITY) {
-
-        //--------------------
+    if(struFaceMatchAlarm.fSimilarity > compareInfo.similarity) {
         //设置不为陌生人
         alarmInfo.isStranger = false;
-
-        //--------------------
         //相似度
         alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
-
-        //--------------------
         //人脸库头像图
         alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
         int idAvatarCutIndex = alarmInfo.idAvatar.indexOf("<FDDescription>");
         alarmInfo.idAvatar = alarmInfo.idAvatar.mid(0, idAvatarCutIndex);
-
         avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
         int avatarCutIndex = QString(avatar).indexOf("http://",1);
         urlAvatar = QString(avatar).mid(0, avatarCutIndex);
         qDebug() << "urlAvatar is " << urlAvatar;
-
 
         QEventLoop eventLoop;
         QNetworkAccessManager *manager = new QNetworkAccessManager();
@@ -231,9 +208,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     //--------------------
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
-    //captureLen = struFaceMatchAlarm.dwSnapPicLen;
-    //capture = (char*)malloc(struFaceMatchAlarm.dwSnapPicLen);
-    //memcpy(capture, struFaceMatchAlarm.pSnapPicBuffer, captureLen);
 
     capture = (char*)struFaceMatchAlarm.pSnapPicBuffer;
     int captureCutIndex = QString(capture).indexOf("SEl");
@@ -260,6 +234,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     /*********************************************设置个人信息 END******************************************/
 }
 
+//判断是否设置报警信息
 bool PreviewView::isSetAlarmText() {
     if(isClickSearch == false)
         return true;
@@ -313,14 +288,6 @@ void PreviewView::loadPreview() {
     }
     NET_DVR_Logout(lUserID);
     NET_DVR_Cleanup();
-
-    //---------------------------------------
-    //配置信息
-    /*QString ip = config.getCameraIP();
-    int port = config.getCameraPort();
-    int *channel = config.getCameraChannel();
-    QString userName = config.getCameraUserName();
-    QString passWord = config.getCameraPassWord();*/
 
     if(cameraInfo.ip.length()>0 && cameraInfo.port>0 &&
             cameraInfo.userName.length()>0 && cameraInfo.passWord.length()>0) {
@@ -724,8 +691,8 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
         qdirAvatar.mkpath(dirAvatar);
     }
     dirPicAvatar = dirAvatar;
-    dirPicAvatar.append(alarmInfo.idAvatar);
-    dirPicAvatar.append(".jpg");
+    dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
+   //8 dirPicAvatar.append(".jpg");
 
 
     qDebug() << "dirPicAvatar:" << dirPicAvatar;
@@ -736,8 +703,6 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
         file.write(bytes);
         file.close();
     }
-    /*PicThread *picThread = new PicThread(dirPicAvatar, bytes);
-    picThread->start();*/
 
     delete config;
 }
@@ -793,7 +758,6 @@ void PreviewView::on_btnSearch_clicked()
             alarmText.append(QString::fromLocal8Bit(alarmList[index].sex));
 
             alarmText.append(QString::fromLocal8Bit("   编号："));
-            //alarmText.append(alarmList[index].id);
 
         } else {
 
