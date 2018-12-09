@@ -6,6 +6,7 @@ Config::Config() {
 
 }
 
+/*******************摄像头配置设置与读取*******************/
 void Config::setCameraIP(QString _ip) {
     configSetting.setValue("/Camera/ip", _ip);
 }
@@ -52,8 +53,9 @@ QString Config::getCameraUserName() {
 QString Config::getCameraPassWord() {
     return configSetting.value("/Camera/password").toString();
 }
+/*******************摄像头配置设置与读取*******************/
 
-
+/*******************数据库配置设置与读取*******************/
 void Config::setDataBaseIP(QString _ip) {
     configSetting.setValue("/Database/ip", _ip);
 }
@@ -94,7 +96,35 @@ QString Config::getDataBaseUserName() {
 QString Config::getDataBasePassWord() {
     return configSetting.value("/Database/password").toString();
 }
+/*******************数据库配置设置与读取*******************/
 
+/******************文件路径配置设置与读取******************/
+void Config::setDirAvatar(QString _dirAvatar) {
+    configSetting.setValue("/Dir/dirAvatar", _dirAvatar);
+}
+
+void Config::setDirCapture(QString _dirCapture) {
+    configSetting.setValue("/Dir/dirCapture", _dirCapture);
+}
+
+void Config::setDirStranger(QString _dirStranger) {
+    configSetting.setValue("/Dir/dirStranger", _dirStranger);
+}
+
+QString Config::getDirAvatar() {
+    return configSetting.value("/Dir/dirAvatar").toString();
+}
+
+QString Config::getDirCapture() {
+    return configSetting.value("/Dir/dirCapture").toString();
+}
+
+QString Config::getDirStranger() {
+    return configSetting.value("/Dir/dirStranger").toString();
+}
+/******************文件路径配置设置与读取******************/
+
+/*******************相似度配置设置与读取*******************/
 void Config::setCompareSimilarity(float _similarity) {
     configSetting.setValue("/Compare/similarity", _similarity);
 }
@@ -102,3 +132,4 @@ void Config::setCompareSimilarity(float _similarity) {
 float Config::getCompareSimilarity() {
     return configSetting.value("/Compare/similarity").toFloat();
 }
+/*******************相似度配置设置与读取*******************/

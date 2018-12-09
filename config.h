@@ -3,6 +3,7 @@
 #include <QString>
 #include <QSettings>
 
+//摄像头配置
 typedef struct tagCAMERACONFIG_INFO {
     QString ip;
     int port;
@@ -11,6 +12,7 @@ typedef struct tagCAMERACONFIG_INFO {
     QString passWord;
 } CAMERACONFIG_INFO;
 
+//数据库配置
 typedef struct tagDATABASECONFIG_INFO {
     QString ip;
     int port;
@@ -19,6 +21,14 @@ typedef struct tagDATABASECONFIG_INFO {
     QString passWord;
 } DATABASECONFIG_INFO;
 
+//路径配置
+typedef struct tagDIR_INFO {
+    QString dirAvatar;
+    QString dirCapture;
+    QString dirStranger;
+} DIR_INFO;
+
+//相似度配置
 typedef struct tagCOMPARECONFIG_INFO {
     float similarity;
 } COMPARECONFIG_INFO;
@@ -54,6 +64,15 @@ public:
     static QString getDataBaseUserName();
     static QString getDataBasePassWord();
     /*******************数据库配置设置与读取*******************/
+
+    /******************文件路径配置设置与读取******************/
+    static void setDirAvatar(QString _dirAvatar);
+    static void setDirCapture(QString _dirCapture);
+    static void setDirStranger(QString _dirStranger);
+    static QString getDirAvatar();
+    static QString getDirCapture();
+    static QString getDirStranger();
+    /******************文件路径配置设置与读取******************/
 
     /*******************相似度配置设置与读取*******************/
     static void setCompareSimilarity(float _similarity);
