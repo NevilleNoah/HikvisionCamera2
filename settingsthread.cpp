@@ -22,8 +22,8 @@ QString SettingsThread::DBPassword;
 
 QString SettingsThread::dirCapture;
 QString SettingsThread::dirAvatar;
+Config SettingsThread::config;
 /***************************************成员变量 END***************************************/
-
 
 void SettingsThread::run() {
     switch(SettingsThread::status) {

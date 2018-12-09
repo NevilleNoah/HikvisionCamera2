@@ -1,26 +1,22 @@
 ﻿#include "database.h"
 
 QSqlDatabase Database::db;
-Config Database::config;
 DATABASECONFIG_INFO Database::dataBaseInfo;
 
 Database::Database() {
-    //initConfig();
+
 }
 
-//初始化设置
-void Database::initConfig() {
-    dataBaseInfo.ip = config.getDataBaseIP();
-    dataBaseInfo.port = config.getDataBasePort();
-    dataBaseInfo.model = config.getDataBaseModel();
-    dataBaseInfo.userName = config.getDataBaseUserName();
-    dataBaseInfo.passWord = config.getDataBasePassWord();
+void Database::setDbConfig() {
+    db.setHostName(dataBaseInfo.ip);
+    db.setPort(dataBaseInfo.port);
+    db.setDatabaseName(dataBaseInfo.model);
+    db.setUserName(dataBaseInfo.userName);
+    db.setPassword(dataBaseInfo.passWord);
 }
 
 //创建数据库连接
-bool Database::openConnect()
-{
-    initConfig();
+bool Database::openConnect() {
     try {
         /*QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
@@ -36,20 +32,21 @@ bool Database::openConnect()
         db.setDatabaseName(model);
         db.setUserName(username);
         db.setPassword(password);*/
-        db.setHostName(dataBaseInfo.ip);
+
+        /*db.setHostName(dataBaseInfo.ip);
         db.setPort(dataBaseInfo.port);
         db.setDatabaseName(dataBaseInfo.model);
         db.setUserName(dataBaseInfo.userName);
-        db.setPassword(dataBaseInfo.passWord);
+        db.setPassword(dataBaseInfo.passWord);*/
+        dataBaseInfo = Config::getDataBaseInfo();
+        setDbConfig();
 
         bool ok = db.open();//建立数据库连接
-        if(ok)
-        {
+        if(ok) {
             qDebug() << "Database: connect to succeed";
             return false;
         }
-        else
-        {
+        else {
             qDebug() << "Database: connect to failed";
             return true;
         }
@@ -60,8 +57,7 @@ bool Database::openConnect()
 }
 
 //关闭数据库连接
-bool Database::closeConnect()
-{
+bool Database::closeConnect() {
     try {
         if(db.isOpen()) {
             db.close();
@@ -77,8 +73,8 @@ bool Database::closeConnect()
 }
 
 //增加记录
-bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar)
-{
+bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCapture,
+                         QString idAvatar, bool isStranger, float similar) {
     try{
         if(&db!=NULL) {
             //执行sql语句
@@ -108,11 +104,10 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
 }
 
 //增加记录
-bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar)
-{
+bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture,
+                         QString idAvatar, bool isStranger, float similar) {
     try{
-        if(&db!=NULL)
-        {
+        if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
 
@@ -158,8 +153,7 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
 }
 
 //获取记录
-QList<RECORD> Database::selectRecord()
-{
+QList<RECORD> Database::selectRecord() {
     QList<RECORD> records;
     QSqlQuery query;
     query.exec("select * from record order by timeValue desc");
@@ -167,8 +161,7 @@ QList<RECORD> Database::selectRecord()
 }
 
 
-void Database::setQSqlDatabase(QSqlDatabase db)
-{
+void Database::setQSqlDatabase(QSqlDatabase db) {
     this->db = db;
 }
 
@@ -196,9 +189,7 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
 }
 //根据条件筛查记录
 QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
-                                          int startId, int pageSize, int &totalRecordNum)
-{
-    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, sexIndex, startId, pageSize, totalRecordNum);
+                                          int startId, int pageSize, int &totalRecordNum) {
     /*QList<RECORD> records;
     QSqlQuery query;
 
@@ -220,6 +211,7 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     query.next();
     totalRecordNum = query.value(0).toInt();*/
 
+    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, sexIndex, startId, pageSize, totalRecordNum);
     QSqlQuery query;
     QString sqlSentence = "select * from record where timeValue>:startDateTime and timeValue<:endDateTime";
     if(strangerIndex == 0) {

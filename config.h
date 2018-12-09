@@ -79,8 +79,24 @@ public:
     static float getCompareSimilarity();
     /*******************相似度配置设置与读取*******************/
 
+    static void initAllConfig();
+    static void initCameraConfig();
+    static void initDataBaseConfig();
+    static void initDirConfig();
+    static void initCompareConfig();
+
+    static CAMERACONFIG_INFO getCameraInfo();
+    static DATABASECONFIG_INFO getDataBaseInfo();
+    static DIR_INFO getDirInfo();
+    static COMPARECONFIG_INFO getCompareInfo();
+
 private:
     static QSettings configSetting;
+    static CAMERACONFIG_INFO cameraInfo;
+    static DATABASECONFIG_INFO dataBaseInfo;
+    static DIR_INFO dirInfo;
+    static COMPARECONFIG_INFO compareInfo;
+
 };
 
 #endif // CONFIG_H

@@ -7,6 +7,7 @@
 #include <QtDebug>
 #include <QThread>
 #include <exception>
+#include "config.h"
 
 class SettingsThread:public QThread
 {
@@ -45,6 +46,7 @@ public:
     bool writeDatabaseSettings();
     bool writePicDirSettings();
 
+    bool readAllConfig();
 signals:
     void writedSettings();
     void readedSettings();
@@ -57,6 +59,7 @@ public slots:
 
 private:
     int status;
+    static Config config;
 
 };
 

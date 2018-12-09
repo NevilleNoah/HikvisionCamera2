@@ -1,10 +1,51 @@
 #include "config.h"
+#include <QDebug>
 
 QSettings Config::configSetting("./config/config.ini", QSettings::IniFormat);
+CAMERACONFIG_INFO Config::cameraInfo;
+DATABASECONFIG_INFO Config::dataBaseInfo;
+DIR_INFO Config::dirInfo;
+COMPARECONFIG_INFO Config::compareInfo;
 
 Config::Config() {
 
 }
+
+
+/***********************初始化配置***********************/
+void Config::initAllConfig() {
+    initCameraConfig();
+    initDataBaseConfig();
+    initDirConfig();
+    initCompareConfig();
+}
+
+void Config::initCameraConfig() {
+    cameraInfo.ip = getCameraIP();
+    cameraInfo.port = getCameraPort();
+    cameraInfo.channel = getCameraChannel();
+    cameraInfo.userName = getCameraUserName();
+    cameraInfo.passWord = getCameraPassWord();
+}
+
+void Config::initDataBaseConfig() {
+    dataBaseInfo.ip = getDataBaseIP();
+    dataBaseInfo.port = getDataBasePort();
+    dataBaseInfo.model = getDataBaseModel();
+    dataBaseInfo.userName = getDataBaseUserName();
+    dataBaseInfo.passWord = getDataBasePassWord();
+}
+
+void Config::initDirConfig() {
+    dirInfo.dirAvatar = getDirAvatar();
+    dirInfo.dirCapture = getDirCapture();
+    dirInfo.dirStranger = getDirStranger();
+}
+
+void Config::initCompareConfig() {
+    compareInfo.similarity = getCompareSimilarity();
+}
+/***********************初始化配置***********************/
 
 /*******************摄像头配置设置与读取*******************/
 void Config::setCameraIP(QString _ip) {
@@ -133,3 +174,19 @@ float Config::getCompareSimilarity() {
     return configSetting.value("/Compare/similarity").toFloat();
 }
 /*******************相似度配置设置与读取*******************/
+
+CAMERACONFIG_INFO Config::getCameraInfo() {
+    return cameraInfo;
+}
+
+DATABASECONFIG_INFO Config::getDataBaseInfo() {
+    return dataBaseInfo;
+}
+
+DIR_INFO Config::getDirInfo() {
+    return dirInfo;
+}
+
+COMPARECONFIG_INFO Config::getCompareInfo() {
+    return compareInfo;
+}

@@ -57,8 +57,6 @@ PreviewView* PreviewView::previewView = nullptr;
 bool PreviewView::isClickSearch = false;
 //搜索的名字
 QString PreviewView::inputName = "";
-//配置文件
-Config PreviewView::config;
 //摄像头配置信息
 CAMERACONFIG_INFO PreviewView::cameraInfo;
 //相似度配置信息
@@ -79,12 +77,8 @@ PreviewView::~PreviewView() {
 }
 
 void PreviewView::initConfig() {
-    cameraInfo.ip = config.getCameraIP();
-    cameraInfo.port = config.getCameraPort();
-    cameraInfo.channel = config.getCameraChannel();
-    cameraInfo.userName = config.getCameraUserName();
-    cameraInfo.passWord = config.getCameraPassWord();
-    compareInfo.similarity = config.getCompareSimilarity();
+    cameraInfo = Config::getCameraInfo();
+    compareInfo = Config::getCompareInfo();
 }
 
 void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser) {
@@ -279,7 +273,7 @@ void PreviewView::loadPreview() {
     QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
     ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-
+    qDebug() << "camera ip :" << cameraInfo.ip;
     //---------------------------------------
     //关闭预览
     if (lRealPlayHandle >= 0) {

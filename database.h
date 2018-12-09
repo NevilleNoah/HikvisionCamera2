@@ -23,13 +23,14 @@ typedef struct tagRECORD{
 class Database
 {
 public:
-    Database();
+    explicit Database();
     QList<RECORD> setRecord(QSqlQuery query);
     QList<RECORD> selectRecord();
     QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
                                     int startId, int pageSize, int &totalRecordNum);
     void getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
                                      int startId, int pageSize, int &totalRecordNum);
+    void setDbConfig();
     bool openConnect();
     bool closeConnect();
 
@@ -38,10 +39,9 @@ public:
 
     void setQSqlDatabase(QSqlDatabase db);
 
-    static void initConfig();
 private:
     static QSqlDatabase db;
-    static Config config;
+
     static DATABASECONFIG_INFO dataBaseInfo;
 
 };

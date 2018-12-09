@@ -124,7 +124,6 @@ public:
 
     static bool isSetAlarmText();
 private:
-    static Config config;
     static CAMERACONFIG_INFO cameraInfo;
     static COMPARECONFIG_INFO compareInfo;
 
