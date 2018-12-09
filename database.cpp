@@ -1,16 +1,28 @@
 ﻿#include "database.h"
 
 QSqlDatabase Database::db;
+Config Database::config;
+DATABASECONFIG_INFO Database::dataBaseInfo;
 
 Database::Database() {
+    //initConfig();
+}
 
+//初始化设置
+void Database::initConfig() {
+    dataBaseInfo.ip = config.getDataBaseIP();
+    dataBaseInfo.port = config.getDataBasePort();
+    dataBaseInfo.model = config.getDataBaseModel();
+    dataBaseInfo.userName = config.getDataBaseUserName();
+    dataBaseInfo.passWord = config.getDataBasePassWord();
 }
 
 //创建数据库连接
 bool Database::openConnect()
 {
+    initConfig();
     try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
+        /*QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
 
         QString ip = config->value("/Database/ip").toString();
         int port = config->value("/Database/port").toInt();
@@ -19,12 +31,16 @@ bool Database::openConnect()
         QString password = config->value("/Database/password").toString();
 
         delete config;
-
         db.setHostName(ip);
         db.setPort(port);
         db.setDatabaseName(model);
         db.setUserName(username);
-        db.setPassword(password);
+        db.setPassword(password);*/
+        db.setHostName(dataBaseInfo.ip);
+        db.setPort(dataBaseInfo.port);
+        db.setDatabaseName(dataBaseInfo.model);
+        db.setUserName(dataBaseInfo.userName);
+        db.setPassword(dataBaseInfo.passWord);
 
         bool ok = db.open();//建立数据库连接
         if(ok)
@@ -156,11 +172,9 @@ void Database::setQSqlDatabase(QSqlDatabase db)
     this->db = db;
 }
 
-//根据条件筛查记录
-QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
-                                          int startId, int pageSize, int &totalRecordNum)
-{
-    QList<RECORD> records;
+//获取记录总条数
+void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+                                 int startId, int pageSize, int &totalRecordNum) {
     QSqlQuery query;
     QString sqlSentence = "select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime";
     if(strangerIndex == 0) {
@@ -179,8 +193,35 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     query.exec();
     query.next();
     totalRecordNum = query.value(0).toInt();
+}
+//根据条件筛查记录
+QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+                                          int startId, int pageSize, int &totalRecordNum)
+{
+    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, sexIndex, startId, pageSize, totalRecordNum);
+    /*QList<RECORD> records;
+    QSqlQuery query;
 
-    sqlSentence = "select * from record where timeValue>:startDateTime and timeValue<:endDateTime";
+    QString sqlSentence = "select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime";
+    if(strangerIndex == 0) {
+        sqlSentence += " and isStranger=1";
+    } else if(strangerIndex == 1) {
+        sqlSentence += " and isStranger=0";
+        if(sexIndex == 0) {
+            sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
+        } else if(sexIndex == 1){
+            sqlSentence += " and sex='" + QString::fromLocal8Bit("女") + "'";
+        }
+    }
+    query.prepare(sqlSentence);
+    query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.exec();
+    query.next();
+    totalRecordNum = query.value(0).toInt();*/
+
+    QSqlQuery query;
+    QString sqlSentence = "select * from record where timeValue>:startDateTime and timeValue<:endDateTime";
     if(strangerIndex == 0) {
         sqlSentence += " and isStranger=1";
     } else if(strangerIndex == 1) {

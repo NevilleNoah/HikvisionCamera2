@@ -8,6 +8,7 @@
 #include <QSqlQuery>
 #include <QDateTime>
 #include <QList>
+#include "config.h"
 
 typedef struct tagRECORD{
     QDateTime timesamp;
@@ -27,7 +28,8 @@ public:
     QList<RECORD> selectRecord();
     QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
                                     int startId, int pageSize, int &totalRecordNum);
-
+    void getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+                                     int startId, int pageSize, int &totalRecordNum);
     bool openConnect();
     bool closeConnect();
 
@@ -35,10 +37,12 @@ public:
     bool addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar);
 
     void setQSqlDatabase(QSqlDatabase db);
-    static QSqlDatabase db;
 
+    static void initConfig();
 private:
-
+    static QSqlDatabase db;
+    static Config config;
+    static DATABASECONFIG_INFO dataBaseInfo;
 
 };
 
