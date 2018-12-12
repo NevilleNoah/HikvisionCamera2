@@ -7,24 +7,6 @@ SettingsThread::SettingsThread(QObject *parent):
     qDebug() << "Settings: SettingsThread create succeed";
 }
 
-/*****************************************成员变量*****************************************/
-QString SettingsThread::CMIp;
-int SettingsThread::CMPort;
-int* SettingsThread::CMChannel = new int[4];
-QString SettingsThread::CMUsername;
-QString SettingsThread::CMPassword;
-
-QString SettingsThread::DBIp;
-int SettingsThread::DBPort;
-QString SettingsThread::DBModel;
-QString SettingsThread::DBUsername;
-QString SettingsThread::DBPassword;
-
-QString SettingsThread::dirCapture;
-QString SettingsThread::dirAvatar;
-Config SettingsThread::config;
-/***************************************成员变量 END***************************************/
-
 void SettingsThread::run() {
     switch(SettingsThread::status) {
     case SettingsThread::STATUS_READ:
@@ -45,6 +27,7 @@ void SettingsThread::run() {
 
         emit writedSettings();
         emit MainWindow::previewView->loadPreview();
+
         break;
     default:
         break;
@@ -69,144 +52,78 @@ bool SettingsThread::readSettings() {
 
 //读摄像机配置
 bool SettingsThread::readCameraSettings() {
-
-    try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-
-        CMIp = config->value("/Camera/ip").toString();
-        CMPort = config->value("/Camera/port").toInt();
-        CMUsername = config->value("/Camera/username").toString();
-        CMPassword = config->value("/Camera/password").toString();
-        CMChannel[0] = config->value("/Camera/channel1").toInt();
-        CMChannel[1] = config->value("/Camera/channel2").toInt();
-        CMChannel[2] = config->value("/Camera/channel3").toInt();
-        CMChannel[3] = config->value("/Camera/channel4").toInt();
-        delete config;
-
-        emit readedCameraSettings(CMIp, CMPort, CMChannel, CMUsername, CMPassword);
-
+    try
+    {
+        emit readedCameraSettings();
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readCameraSettings succeed");
     } catch(...) {
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readCameraSettings fail");
         return false;
     }
-
     return true;
 }
 
 //读数据库配置
 bool SettingsThread::readDatabaseSettings() {
-
     try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-
-        DBIp = config->value("/Database/ip").toString();
-        DBPort = config->value("/Database/port").toInt();
-        DBModel = config->value("/Database/model").toString();
-        DBUsername = config->value("/Database/username").toString();
-        DBPassword = config->value("/Database/password").toString();
-
-        delete config;
-
-        emit readedDatabaseSettings(DBIp, DBPort, DBModel, DBUsername, DBPassword);
-
+        emit readedDatabaseSettings();
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readCameraSettings succeed");
     } catch(...) {
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readCameraSettings fail");
         return false;
     }
-
     return true;
 }
 
 bool SettingsThread::readPicDirSettings() {
     try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-
-        dirCapture = config->value("/Dir/dirCapture").toString();
-        dirAvatar = config->value("/Dir/dirAvatar").toString();
-
-        delete config;
-
-        emit readedPicDirSettings(dirCapture, dirAvatar);
-
+        emit readedPicDirSettings();
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readPicDirSettings succeed");
     } catch(...) {
         qDebug()<<QString::fromLocal8Bit("SettingsThread: readPicDirSettings fail");
         return false;
     }
-
-
     return true;
 }
 /***************************************读配置 END***************************************/
 
-/*****************************************写配置*****************************************/
 
+/*****************************************写配置*****************************************/
 //写摄像头配置
 bool SettingsThread::writeCameraSettings() {
-
     try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-
-        config->setValue("/Camera/ip", CMIp);
-        config->setValue("/Camera/port", CMPort);
-        config->setValue("/Camera/username", CMUsername);
-        config->setValue("/Camera/password", CMPassword);
-        config->setValue("/Camera/channel1", CMChannel[0]);
-        config->setValue("/Camera/channel2", CMChannel[1]);
-        config->setValue("/Camera/channel3", CMChannel[2]);
-        config->setValue("/Camera/channel4", CMChannel[3]);
-        delete config;
+        Config::setCameraConfig();
 
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeCameraSettings succeed");
     } catch(...) {
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeCameraSettings fail");
         return false;
     }
-
     return true;
 }
 
 //写数据库配置
 bool SettingsThread::writeDatabaseSettings() {
-
     try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-
-        config->setValue("/Database/ip", DBIp);
-        config->setValue("/Database/port", DBPort);
-        config->setValue("/Database/model", DBModel);
-        config->setValue("/Database/username", DBUsername);
-        config->setValue("/Database/password", DBPassword);
-
-        delete config;
-
+        Config::setDataBaseConfig();
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeDatabaseSettings succeed");
     } catch(...) {
         qDebug() << QString::fromLocal8Bit("SettingsThread: writeDatabaseSettings fail");
         return false;
     }
-
     return true;
 }
 
-//写数据库配置
+//写路径配置
 bool SettingsThread::writePicDirSettings() {
     qDebug() << "current Path: " << QDir::currentPath();
     try {
-        QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-        config->setValue("/Dir/dirCapture", dirCapture);
-        config->setValue("/Dir/dirAvatar", dirAvatar);
-        config->sync();
-        delete config;
-
+        Config::setDirConfigConfig();
         qDebug() << QString::fromLocal8Bit("SettingsThread: writePicDirSettings succeed");
     } catch(...) {
         qDebug() << QString::fromLocal8Bit("SettingsThread: writePicDirSettings fail");
         return false;
     }
-
     return true;
 }
 

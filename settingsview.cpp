@@ -1,7 +1,4 @@
-﻿#include <QFileDialog>
-#include "settingsview.h"
-#include "ui_settingsview.h"
-#include "mainwindow.h"
+﻿#include "settingsview.h"
 
 SettingsView::SettingsView(QWidget *parent) :
     QWidget(parent),
@@ -14,22 +11,19 @@ SettingsView::~SettingsView()
 {
     delete ui;
 }
+
 /*****************************************线程*****************************************/
 void SettingsView::runReadSettingsThread() {
     settingsThread = new SettingsThread(this);
     settingsThread->setStatus(SettingsThread::STATUS_READ);
-
-    connect(settingsThread, SIGNAL(readedCameraSettings(QString, int, int*, QString, QString)),
-            this, SLOT(loadCameraSettings(QString, int, int*, QString, QString)));
-    connect(settingsThread, SIGNAL(readedDatabaseSettings(QString, int, QString, QString, QString)),
-            this, SLOT(loadDatabaseSettings(QString, int, QString, QString, QString)));
-    connect(settingsThread, SIGNAL(readedPicDirSettings(QString, QString)),
-            this, SLOT(loadPicDirSettings(QString, QString)));
+    connect(settingsThread, SIGNAL(readedCameraSettings()),
+            this, SLOT(loadCameraSettings()));
+    connect(settingsThread, SIGNAL(readedDatabaseSettings()),
+            this, SLOT(loadDatabaseSettings()));
+    connect(settingsThread, SIGNAL(readedPicDirSettings()),
+            this, SLOT(loadPicDirSettings()));
     connect(settingsThread, SIGNAL(readedSettings()),
             this, SLOT(setBtnDetermineEnable()));
-    //connect(settingsThread, SIGNAL(writedSettings()),
-            //this, SLOT(setBtnDetermineEnable()));
-
     settingsThread->start();
 }
 
@@ -42,32 +36,36 @@ void SettingsView::runWriteSettingsThread() {
 
 /****************************************更新Ui****************************************/
 //更新Ui：加载摄像机配置
-void SettingsView::loadCameraSettings(QString ip, int port, int *channel, QString username, QString password) {
-    ui->edCMIP->setText(ip);
-    ui->edCMPort->setText(QString::number(port));
-    ui->edCMUsername->setText(username);
-    ui->edCMPassword->setText(password);
 
-    ui->edCMChannel1->setText(QString::number(channel[0]));
-    ui->edCMChannel2->setText(QString::number(channel[1]));
-    ui->edCMChannel3->setText(QString::number(channel[2]));
-    ui->edCMChannel4->setText(QString::number(channel[3]));
+void SettingsView::loadCameraSettings() {
+    int *channels = Config::getCameraInfoChannel();
+    for(int i = 0; i < 4; i++) {
+        qDebug() << "loadCameraSettings(settingsview.cpp):" << channels[i];
+    }
+    ui->edCMIP->setText(Config::getCameraInfoIP());
+    ui->edCMPort->setText(QString::number(Config::getCameraInfoPort()));
+    ui->edCMUsername->setText(Config::getCameraInfoUserName());
+    ui->edCMPassword->setText(Config::getCameraInfoPassWord());
+    ui->edCMChannel1->setText(QString::number(channels[0]));
+    ui->edCMChannel2->setText(QString::number(channels[1]));
+    ui->edCMChannel3->setText(QString::number(channels[2]));
+    ui->edCMChannel4->setText(QString::number(channels[3]));
 }
+
 
 //更新Ui：加载数据库配置
-void SettingsView::loadDatabaseSettings(QString ip, int port, QString model, QString username, QString password) {
-    ui->edDBIP->setText(ip);
-    ui->edDBPort->setText(QString::number(port));
-    ui->edDBModel->setText(model);
-    ui->edDBUsername->setText(username);
-    ui->edDBPassword->setText(password);
+void SettingsView::loadDatabaseSettings() {
+    qDebug() << "settingsview DBInfo: " << Config::getDataBaseInfoIP();
+    ui->edDBIP->setText(Config::getDataBaseInfoIP());
+    ui->edDBPort->setText(QString::number(Config::getDataBaseInfoPort()));
+    ui->edDBModel->setText(Config::getDataBaseInfoModel());
+    ui->edDBUsername->setText(Config::getDataBaseInfoUserName());
+    ui->edDBPassword->setText(Config::getDataBaseInfoPassWord());
 }
 
-void SettingsView::loadPicDirSettings(QString dirCapture, QString dirAvatar) {
-
-    ui->edDirCapture->setText(dirCapture);
-    ui->edDirAvatar->setText(dirAvatar);
-
+void SettingsView::loadPicDirSettings() {
+    ui->edDirCapture->setText(Config::getDirInfoCapture());
+    ui->edDirAvatar->setText(Config::getDirInfoAvatar());
 }
 //更新Ui：按键生效
 void SettingsView::setBtnDetermineEnable() {
@@ -77,34 +75,34 @@ void SettingsView::setBtnDetermineEnable() {
 
 /****************************************更新数据****************************************/
 void SettingsView::changeCameraSettings() {
+    int *channel = new int[4];
+    channel[0] = ui->edCMChannel1->text().toInt();
+    channel[1] = ui->edCMChannel2->text().toInt();
+    channel[2] = ui->edCMChannel3->text().toInt();
+    channel[3] = ui->edCMChannel4->text().toInt();
+    for(int i = 0; i < 4; i++) {
+        qDebug() << "changeCameraSettings(settingsview.cpp):" << channel[i];
+    }
+    Config::setCameraInfoChannel(channel);
+    Config::setCameraInfoIP(ui->edCMIP->text());
+    Config::setCameraInfoPort(ui->edCMPort->text().toInt());
+    Config::setCameraInfoUserName(ui->edCMUsername->text());
+    Config::setCameraInfoPassWord(ui->edCMPassword->text());
 
-    SettingsThread::CMIp = ui->edCMIP->text();
-    SettingsThread::CMPort = ui->edCMPort->text().toInt();
-    SettingsThread::CMUsername = ui->edCMUsername->text();
-    SettingsThread::CMPassword = ui->edCMPassword->text();
-
-    SettingsThread::CMChannel[0] = ui->edCMChannel1->text().toInt();
-    SettingsThread::CMChannel[1] = ui->edCMChannel2->text().toInt();
-    SettingsThread::CMChannel[2] = ui->edCMChannel3->text().toInt();
-    SettingsThread::CMChannel[3] = ui->edCMChannel4->text().toInt();
-
+    qDebug() << "settingsview cameraInfo.ip: " << Config::getCameraInfoIP();
 }
 
 void SettingsView::changeDatabaseSettings() {
-
-    SettingsThread::DBIp = ui->edDBIP->text();
-    SettingsThread::DBPort = ui->edDBPort->text().toInt();
-    SettingsThread::DBModel = ui->edDBModel->text();
-    SettingsThread::DBUsername = ui->edDBUsername->text();
-    SettingsThread::DBPassword = ui->edDBPassword->text();
-
+    Config::setDataBaseInfoIP(ui->edDBIP->text());
+    Config::setDataBaseInfoPort(ui->edDBPort->text().toInt());
+    Config::setDataBaseInfoModel(ui->edDBModel->text());
+    Config::setDataBaseInfoUserName(ui->edDBUsername->text());
+    Config::setDataBaseInfoPassWord(ui->edDBPassword->text());
 }
 
 void SettingsView::changePicDirSettings() {
-
-    SettingsThread::dirCapture = ui->edDirCapture->text();
-    SettingsThread::dirAvatar = ui->edDirAvatar->text();
-
+    Config::setDirInfoAvatar(ui->edDirAvatar->text());
+    Config::setDirInfoCapture(ui->edDirCapture->text());
 }
 
 void SettingsView::on_btnDetermine_clicked()
@@ -120,6 +118,7 @@ void SettingsView::on_btnDetermine_clicked()
     settingsThread->start();
 
 }
+
 /*************************************更新数据 END**************************************/
 
 void SettingsView::on_btnCapturePath_clicked()

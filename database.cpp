@@ -1,44 +1,28 @@
 ﻿#include "database.h"
 
 QSqlDatabase Database::db;
-DATABASECONFIG_INFO Database::dataBaseInfo;
+//DATABASECONFIG_INFO Database::dataBaseInfo;
 
 Database::Database() {
 
 }
 
+void Database::setQSqlDatabase(QSqlDatabase db) {
+    this->db = db;
+}
+
 void Database::setDbConfig() {
-    db.setHostName(dataBaseInfo.ip);
-    db.setPort(dataBaseInfo.port);
-    db.setDatabaseName(dataBaseInfo.model);
-    db.setUserName(dataBaseInfo.userName);
-    db.setPassword(dataBaseInfo.passWord);
+    db.setHostName(Config::getDataBaseInfoIP());
+    db.setPort(Config::getDataBaseInfoPort());
+    db.setDatabaseName(Config::getDataBaseInfoModel());
+    db.setUserName(Config::getDataBaseInfoUserName());
+    db.setPassword(Config::getDataBaseInfoPassWord());
 }
 
 //创建数据库连接
 bool Database::openConnect() {
     try {
-        /*QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-
-        QString ip = config->value("/Database/ip").toString();
-        int port = config->value("/Database/port").toInt();
-        QString model = config->value("/Database/model").toString();
-        QString username = config->value("/Database/username").toString();
-        QString password = config->value("/Database/password").toString();
-
-        delete config;
-        db.setHostName(ip);
-        db.setPort(port);
-        db.setDatabaseName(model);
-        db.setUserName(username);
-        db.setPassword(password);*/
-
-        /*db.setHostName(dataBaseInfo.ip);
-        db.setPort(dataBaseInfo.port);
-        db.setDatabaseName(dataBaseInfo.model);
-        db.setUserName(dataBaseInfo.userName);
-        db.setPassword(dataBaseInfo.passWord);*/
-        dataBaseInfo = Config::getDataBaseInfo();
+        //dataBaseInfo = Config::getDataBaseInfoConfig();
         setDbConfig();
 
         bool ok = db.open();//建立数据库连接
@@ -161,9 +145,7 @@ QList<RECORD> Database::selectRecord() {
 }
 
 
-void Database::setQSqlDatabase(QSqlDatabase db) {
-    this->db = db;
-}
+
 
 //获取记录总条数
 void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
@@ -187,30 +169,10 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
     query.next();
     totalRecordNum = query.value(0).toInt();
 }
+
 //根据条件筛查记录
 QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
                                           int startId, int pageSize, int &totalRecordNum) {
-    /*QList<RECORD> records;
-    QSqlQuery query;
-
-    QString sqlSentence = "select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime";
-    if(strangerIndex == 0) {
-        sqlSentence += " and isStranger=1";
-    } else if(strangerIndex == 1) {
-        sqlSentence += " and isStranger=0";
-        if(sexIndex == 0) {
-            sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
-        } else if(sexIndex == 1){
-            sqlSentence += " and sex='" + QString::fromLocal8Bit("女") + "'";
-        }
-    }
-    query.prepare(sqlSentence);
-    query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
-    query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
-    query.exec();
-    query.next();
-    totalRecordNum = query.value(0).toInt();*/
-
     getTotalRecordNum(startDateTime, endDateTime, strangerIndex, sexIndex, startId, pageSize, totalRecordNum);
     QSqlQuery query;
     QString sqlSentence = "select * from record where timeValue>:startDateTime and timeValue<:endDateTime";

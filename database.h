@@ -42,7 +42,7 @@ public:
 private:
     static QSqlDatabase db;
 
-    static DATABASECONFIG_INFO dataBaseInfo;
+    //static DATABASECONFIG_INFO dataBaseInfo;
 
 };
 
