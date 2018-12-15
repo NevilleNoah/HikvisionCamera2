@@ -24,6 +24,7 @@
 #include "previewview.h"
 #include "historyview.h"
 #include "settingsview.h"
+#include "houseview.h"
 
 
 namespace Ui {
@@ -37,9 +38,11 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
     static PreviewView* previewView;
     static HistoryView* historyView;
     static SettingsView* settingsView;
+    static HouseView* houseView;
 
 public slots:
     //void clickBtnLogin();

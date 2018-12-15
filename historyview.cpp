@@ -235,7 +235,7 @@ void HistoryView::on_btnSearchByCondition_clicked()
     int recordNum = getRecordByPageNum(1);
     //计算总页数
     calPageNum();
-      qDebug() << "calPageNum: " << pageNum;
+    qDebug() << "calPageNum: " << pageNum;
     //pageNum = calPageNum();
 
 
@@ -270,7 +270,7 @@ void HistoryView::showDataByCondition() {
             case 2: item[j] = records[i].sex.length()>0 ? new QTableWidgetItem(records[i].sex)
                                                         : new QTableWidgetItem(QString::fromLocal8Bit("未知"));
                 break;
-            case 3: item[j] = records[i].idNo.length()>0 ? new QTableWidgetItem(records[i].idNo)
+            case 3: item[j] = records[i].idAvatar.length()>0 ? new QTableWidgetItem(records[i].idNo)
                                                          : new QTableWidgetItem(QString::fromLocal8Bit("未知"));
                 break;
             }

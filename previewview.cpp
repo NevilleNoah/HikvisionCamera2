@@ -578,9 +578,9 @@ void PreviewView::saveToDatabase() {
     database.openConnect();
 
     if(!alarmInfo.isStranger) {
-        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.id, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
-        database.addRecord("", "", "", alarmInfo.idCapture, "", alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord("", "", alarmInfo.idCapture, "", alarmInfo.isStranger, alarmInfo.similarity);
     }
     database.closeConnect();
 

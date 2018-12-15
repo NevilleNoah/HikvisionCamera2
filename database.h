@@ -34,8 +34,8 @@ public:
     bool openConnect();
     bool closeConnect();
 
-    bool addRecord(char* nameValue, char* sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar);
-    bool addRecord(QString nameValue, QString sex, QString idNo, QString idCapture, QString idAvatar, bool isStranger, float similar);
+    bool addRecord(char* nameValue, char* sex, QString idCapture, QString idAvatar, bool isStranger, float similar);
+    bool addRecord(QString nameValue, QString sex, QString idCapture, QString idAvatar, bool isStranger, float similar);
 
     void setQSqlDatabase(QSqlDatabase db);
 

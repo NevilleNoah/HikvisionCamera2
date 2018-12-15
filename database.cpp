@@ -55,7 +55,7 @@ bool Database::closeConnect() {
 }
 
 //增加记录
-bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCapture,
+bool Database::addRecord(char* nameValue, char* sex, QString idCapture,
                          QString idAvatar, bool isStranger, float similar) {
     try{
         if(&db!=NULL) {
@@ -64,12 +64,11 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
             QString mNameValue  = QString::fromLocal8Bit(nameValue);
             QString mSex = QString::fromLocal8Bit(sex);
 
-            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger, similar) "
-                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger, :similar)");
+            query.prepare("INSERT INTO record(appname, sex, capture_id, avatar_id, stranger, similar) "
+                          "VALUES(:nameValue, :sex, :idCapture, :idAvatar, :isStranger, :similar)");
 
             query.bindValue(":nameValue", mNameValue);
             query.bindValue(":sex", mSex);
-            query.bindValue(":idNo", idNo);
             query.bindValue(":idCapture", idCapture);
             query.bindValue(":idAvatar", idAvatar);
             query.bindValue(":isStranger", isStranger);
@@ -86,19 +85,18 @@ bool Database::addRecord(char* nameValue, char* sex, QString idNo, QString idCap
 }
 
 //增加记录
-bool Database::addRecord(QString nameValue, QString sex, QString idNo, QString idCapture,
+bool Database::addRecord(QString nameValue, QString sex, QString idCapture,
                          QString idAvatar, bool isStranger, float similar) {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
 
-            query.prepare("INSERT INTO record(nameValue, sex, idNo, idCapture, idAvatar, isStranger, similar) "
-                          "VALUES(:nameValue, :sex, :idNo, :idCapture, :idAvatar, :isStranger, :similar)");
+            query.prepare("INSERT INTO record(appname, sex, capture_id, avatar_id, stranger, similar) "
+                          "VALUES(:nameValue, :sex, :idCapture, :idAvatar, :isStranger, :similar)");
 
             query.bindValue(":nameValue", nameValue);
             query.bindValue(":sex", sex);
-            query.bindValue(":idNo", idNo);
             query.bindValue(":idCapture", idCapture);
             query.bindValue(":idAvatar", idAvatar);
             query.bindValue(":isStranger", isStranger);
@@ -138,7 +136,7 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
 QList<RECORD> Database::selectRecord() {
     QList<RECORD> records;
     QSqlQuery query;
-    query.exec("select * from record order by timeValue desc");
+    query.exec("select * from record order by time_value desc");
     return setRecord(query);
 }
 
@@ -149,11 +147,11 @@ QList<RECORD> Database::selectRecord() {
 void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
                                  int startId, int pageSize, int &totalRecordNum) {
     QSqlQuery query;
-    QString sqlSentence = "select count(*) from record where timeValue>:startDateTime and timeValue<:endDateTime";
+    QString sqlSentence = "select count(*) from record where time_value>:startDateTime and time_value<:endDateTime";
     if(strangerIndex == 0) {
-        sqlSentence += " and isStranger=1";
+        sqlSentence += " and stranger=1";
     } else if(strangerIndex == 1) {
-        sqlSentence += " and isStranger=0";
+        sqlSentence += " and stranger=0";
         if(sexIndex == 0) {
             sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
         } else if(sexIndex == 1){
@@ -173,11 +171,11 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
                                           int startId, int pageSize, int &totalRecordNum) {
     getTotalRecordNum(startDateTime, endDateTime, strangerIndex, sexIndex, startId, pageSize, totalRecordNum);
     QSqlQuery query;
-    QString sqlSentence = "select * from record where timeValue>:startDateTime and timeValue<:endDateTime";
+    QString sqlSentence = "select * from record where time_value>:startDateTime and time_value<:endDateTime";
     if(strangerIndex == 0) {
-        sqlSentence += " and isStranger=1";
+        sqlSentence += " and stranger=1";
     } else if(strangerIndex == 1) {
-        sqlSentence += " and isStranger=0";
+        sqlSentence += " and stranger=0";
         if(sexIndex == 0) {
             sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
         } else if(sexIndex == 1){

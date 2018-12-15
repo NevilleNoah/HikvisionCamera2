@@ -36,7 +36,8 @@ SOURCES += \
     settingsview.cpp \
     settingsthread.cpp \
     database.cpp \
-    config.cpp
+    config.cpp \
+    houseview.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -54,14 +55,16 @@ HEADERS += \
     settingsview.h \
     settingsthread.h \
     database.h \
-    config.h
+    config.h \
+    houseview.h
 
 
 FORMS += \
         mainwindow.ui \
     previewview.ui \
     historyview.ui \
-    settingsview.ui
+    settingsview.ui \
+    houseview.ui
 # Hikvision Camera SDK
 LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/GdiPlus.lib"
 LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/HCCore.lib"
