@@ -1,7 +1,6 @@
 ﻿#include "database.h"
 
 QSqlDatabase Database::db;
-//DATABASECONFIG_INFO Database::dataBaseInfo;
 
 Database::Database() {
 
@@ -22,7 +21,6 @@ void Database::setDbConfig() {
 //创建数据库连接
 bool Database::openConnect() {
     try {
-        //dataBaseInfo = Config::getDataBaseInfoConfig();
         setDbConfig();
 
         bool ok = db.open();//建立数据库连接
