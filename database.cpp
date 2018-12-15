@@ -64,7 +64,7 @@ bool Database::addRecord(char* nameValue, char* sex, QString idCapture,
             QString mNameValue  = QString::fromLocal8Bit(nameValue);
             QString mSex = QString::fromLocal8Bit(sex);
 
-            query.prepare("INSERT INTO record(appname, sex, capture_id, avatar_id, stranger, similar) "
+            query.prepare("INSERT INTO record(app_name, sex, capture_id, avatar_id, stranger, similar) "
                           "VALUES(:nameValue, :sex, :idCapture, :idAvatar, :isStranger, :similar)");
 
             query.bindValue(":nameValue", mNameValue);
@@ -92,7 +92,7 @@ bool Database::addRecord(QString nameValue, QString sex, QString idCapture,
             //执行sql语句
             QSqlQuery query;
 
-            query.prepare("INSERT INTO record(appname, sex, capture_id, avatar_id, stranger, similar) "
+            query.prepare("INSERT INTO record(app_name, sex, capture_id, avatar_id, stranger, similar) "
                           "VALUES(:nameValue, :sex, :idCapture, :idAvatar, :isStranger, :similar)");
 
             query.bindValue(":nameValue", nameValue);
@@ -119,13 +119,13 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
     while(query.next())
     {
         RECORD record;
-        record.timesamp = query.value(1).toDateTime();
-        record.nameValue = query.value(2).toString();
-        record.sex = query.value(3).toString();
-        record.idNo = query.value(4).toString();
-        record.idAvatar = query.value(5).toString();
-        record.idCapture = query.value(6).toString();
-        record.isStranger = query.value(7).toBool();
+        record.timesamp = query.value("time_value").toDateTime();
+        record.nameValue = query.value("app_name").toString();
+        record.sex = query.value("sex").toString();
+        record.idNo = query.value("avatar_id").toString();
+        record.idAvatar = query.value("avatar_id").toString();
+        record.idCapture = query.value("capture_id").toString();
+        record.isStranger = query.value("stranger").toBool();
 
         records.append(record);
     }

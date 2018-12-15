@@ -120,11 +120,19 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //设置不为陌生人
         alarmInfo.isStranger = false;
         //相似度
-        alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
+        alarmInfo.similarity = struFaceMatchAlarm.fSimilarity*100;
+        //身份证号
+        BYTE idBytes[NAME_LEN];
+        memcpy(idBytes, struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber, NAME_LEN);
+        alarmInfo.id = QString::fromLocal8Bit((char*)idBytes);
+        if(alarmInfo.id.length()==0) {
+            alarmInfo.id = QString::fromLocal8Bit("未知");
+        }
         //人脸库头像图
-        alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
-        int idAvatarCutIndex = alarmInfo.idAvatar.indexOf("<FDDescription>");
-        alarmInfo.idAvatar = alarmInfo.idAvatar.mid(0, idAvatarCutIndex);
+        //alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
+        //int idAvatarCutIndex = alarmInfo.idAvatar.indexOf("<FDDescription>");
+        //alarmInfo.idAvatar = alarmInfo.idAvatar.mid(0, idAvatarCutIndex);
+        alarmInfo.idAvatar = alarmInfo.id;
         avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
         int avatarCutIndex = QString(avatar).indexOf("http://",1);
         urlAvatar = QString(avatar).mid(0, avatarCutIndex);
@@ -165,12 +173,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
             break;
         }
 
-        BYTE idBytes[NAME_LEN];
-        memcpy(idBytes, struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber, NAME_LEN);
-        alarmInfo.id = QString::fromLocal8Bit((char*)idBytes);
-        if(alarmInfo.id.length()==0) {
-            alarmInfo.id = QString::fromLocal8Bit("未知");
-        }
+
 
     } else {
 

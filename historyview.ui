@@ -351,7 +351,7 @@
         </column>
         <column>
          <property name="text">
-          <string>编号</string>
+          <string>身份证号</string>
          </property>
         </column>
        </widget>
