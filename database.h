@@ -20,6 +20,14 @@ typedef struct tagRECORD{
     bool isStranger;
 } RECORD;
 
+typedef struct tagHouse {
+    QString community;
+    QString building;
+    QString unit;
+    QString house;
+    double area;
+} House;
+
 class Database
 {
 public:
@@ -38,6 +46,12 @@ public:
     bool addRecord(QString nameValue, QString sex, QString idCapture, QString idAvatar, bool isStranger, float similar);
 
     void setQSqlDatabase(QSqlDatabase db);
+
+    QList<House> setHouse(QSqlQuery query);
+
+    QList<House> selectHouse(QDateTime start, QDateTime end);
+
+    House selectSingleHouse();
 
 private:
     static QSqlDatabase db;

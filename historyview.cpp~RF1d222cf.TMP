@@ -16,7 +16,7 @@ HistoryView::HistoryView(QWidget *parent) :
     ui(new Ui::HistoryView) {
 
     ui->setupUi(this);
-    initDatabase();
+    initDataBase();
     initTimeEdit();
     initUI();
     initDataShow();
@@ -73,7 +73,7 @@ void HistoryView::initTableUI() {
 }
 
 //初始化数据库
-void HistoryView::initDatabase() {
+void HistoryView::initDataBase() {
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     database.setQSqlDatabase(qSqlDatabase);
     //database.openConnect();
@@ -173,7 +173,7 @@ int HistoryView::calPageNum() {
 
 //根据页码获取数据
 int HistoryView::getRecordByPageNum(int startId) {
-    initDatabase();
+    initDataBase();
     database.openConnect();
     records = database.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(),
                                    getCmbSexIndex(), startId, pageSize, totalRecordNum);

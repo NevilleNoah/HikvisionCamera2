@@ -1,0 +1,44 @@
+#include "houseview.h"
+#include "ui_houseview.h"
+
+
+Database HouseView::database;
+
+HouseView::HouseView(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::HouseView)
+{
+    ui->setupUi(this);
+
+    initDatabase();
+    initTable(6, 6);
+}
+
+HouseView::~HouseView()
+{
+    delete ui;
+}
+
+void HouseView::initDatabase() {
+    QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
+    database.setQSqlDatabase(qSqlDatabase);
+}
+
+void HouseView::initTable(int row, int col) {
+
+    ui->table->setRowCount(row);
+    ui->table->setColumnCount(col);
+
+    for(int i = 0; i < row; i++) {
+        for(int j = 0; j < col; j++) {
+            QTableWidgetItem *item = new QTableWidgetItem();
+
+            //设置背景色
+            QColor color(238, 240, 244, 255);
+            item->setBackgroundColor(color);
+
+            ui->table->setItem(i, j, item);
+        }
+    }
+}
+

@@ -72,9 +72,6 @@ void HouseView::setHouse() {
 }
 
 void HouseView::changeHouseStatus() {
-
-    QColor color(129, 166, 96, 255);//绿色
-
     for(int i = 0; i < houses.size(); i++) {
         QString houseNo = houses[i].house;
         if(houseNo.length() == 3) {
@@ -88,20 +85,14 @@ void HouseView::changeHouseStatus() {
             qDebug() << "HouseView::front:" << front;
             qDebug() << "HouseView::end" << end;
 
-            QTableWidgetItem *item = ui->table->takeItem(front, end);
-            item->setBackgroundColor(color);
-            ui->table->setItem(front, end, item);
 
         } else if(houseNo.length() == 4){
 
-            QString frontString = houseNo.mid(0, 2);
-            QString endString = houseNo.mid(2, 2);
+            QString front = houseNo.mid(0, 2);
+            QString end = houseNo.mid(2, 2);
 
             front = frontString.toInt();
             end = endString.toInt();
-
-            qDebug() << "HouseView::front:" << front;
-            qDebug() << "HouseView::end" << end;
 
         } else {
 

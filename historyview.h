@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "database.h"
 #include <QTableWidgetItem>
+
 namespace  Ui{
 class HistoryView;
 }
@@ -19,7 +20,7 @@ public:
 
     /************************zjb**********************/
     void initTableUI();
-    void initDataBase();
+    void initDatabase();
     void setTextNowPageNum(int nowPageNum);
     void initTextNowPageUI();
     void setTextPageNumUI(int toltalPageNum);

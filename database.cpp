@@ -132,6 +132,23 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
     return records;
 }
 
+QList<House> Database::setHouse(QSqlQuery query) {
+    QList<House> houses;
+    while(query.next()) {
+
+        House house;
+        house.community = query.value("community").toString();
+        house.building = query.value("building").toString();
+        house.unit = query.value("unit").toString();
+        house.house = query.value("house").toString();
+        house.area = query.value("area").toDouble();
+
+        houses.append(house);
+
+    }
+    return houses;
+}
+
 //获取记录
 QList<RECORD> Database::selectRecord() {
     QList<RECORD> records;
@@ -141,6 +158,15 @@ QList<RECORD> Database::selectRecord() {
 }
 
 
+//根据出入时间找出住房状况
+QList<House> Database::selectHouse(QDateTime start, QDateTime end) {
+    QSqlQuery query;
+    QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= '2018-12-15 16:51:34'	AND time_value <= '2018-12-15 23:59:51')";
+    query.prepare(sqlSentence);
+
+    query.exec();
+    return setHouse(query);
+}
 
 
 //获取记录总条数
