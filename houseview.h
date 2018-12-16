@@ -25,11 +25,14 @@ private:
     static Database database;
     static QList<House> houses;
 
-    static int front;
-    static int end;
+    static int row;
+    static int col;
+
+    static int rowSum;
+    static int colSum;
 
     void initDatabase();
-    void initTable(int row, int col);
+    void initTable();
     void setHouse();
     void changeHouseStatus();
 
