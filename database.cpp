@@ -161,7 +161,7 @@ QList<RECORD> Database::selectRecord() {
 //根据出入时间找出住房状况
 QList<House> Database::selectHouse(QDateTime start, QDateTime end) {
     QSqlQuery query;
-    QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= '2018-12-15 16:51:34'	AND time_value <= '2018-12-15 23:59:51')";
+    QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= '2018-12-15 16:51:34'	AND time_value <= '2018-12-16 23:59:51')";
     query.prepare(sqlSentence);
 
     query.exec();

@@ -33,7 +33,7 @@ void HouseView::initDatabase() {
 void HouseView::initTable() {
 
     rowSum = 18;
-    colSum = 6;
+    colSum = 5;
 
     ui->table->setRowCount(rowSum);
     ui->table->setColumnCount(colSum);
@@ -43,9 +43,9 @@ void HouseView::initTable() {
             //门牌号
             QString houseNo;
             if(colSum<10) {
-                houseNo = QString::number(rowSum-row)+"0"+QString::number(col);
+                houseNo = QString::number(rowSum-row)+"0"+QString::number(col+1);
             } else {
-                houseNo = QString::number(rowSum-row)+QString::number(col);
+                houseNo = QString::number(rowSum-row)+QString::number(col+1);
             }
 
             //单元格
@@ -88,7 +88,7 @@ void HouseView::changeHouseStatus() {
             QString colString = houseNo.mid(1, 2);
 
             row = rowSum-rowString.toInt();
-            col = colString.toInt();
+            col = colString.toInt()-1;
 
             qDebug() << "HouseView::front:" << row;
             qDebug() << "HouseView::end" << col;
@@ -103,10 +103,14 @@ void HouseView::changeHouseStatus() {
             QString colString = houseNo.mid(2, 2);
 
             row = rowSum-rowString.toInt();
-            col = colString.toInt();
+            col = colString.toInt()-1;
 
             qDebug() << "HouseView::front:" << row;
             qDebug() << "HouseView::end" << col;
+
+            QTableWidgetItem *item = ui->table->takeItem(row, col);
+            item->setBackgroundColor(color);
+            ui->table->setItem(row, col, item);
 
         } else {
 
