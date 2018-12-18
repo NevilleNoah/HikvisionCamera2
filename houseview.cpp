@@ -15,9 +15,10 @@ HouseView::HouseView(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    initDatabase();
+
     initTable();
-    setHouse();
+    //setHouse();
+    setTimer();
 }
 
 HouseView::~HouseView()
@@ -68,6 +69,7 @@ void HouseView::setHouse() {
     QDateTime start = QDateTime();
     QDateTime end = QDateTime();
 
+    initDatabase();
     database.openConnect();
     houses = database.selectHouse(start, end);
     database.closeConnect();
@@ -76,9 +78,36 @@ void HouseView::setHouse() {
 
 }
 
+void HouseView::setTimer() {
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(setHouseAsTimer()));
+    timer->start(10000);
+}
+
+void HouseView::setHouseAsTimer() {
+    qDebug("HouseView::timer exec........");
+
+    initDatabase();
+    database.openConnect();
+    houses = database.selectHouseAsTimer();
+    database.closeConnect();
+
+    changeHouseStatus();
+
+}
+
 void HouseView::changeHouseStatus() {
 
-    QColor color(129, 166, 96, 255);//绿色
+    QColor green(129, 166, 96, 255);//绿色
+    QColor glory(238, 240, 244, 255);//灰色
+
+    for(int i = 0; i < rowSum; i++) {
+        for(int j = 0; j < colSum; j++) {
+            QTableWidgetItem *item = ui->table->takeItem(i, j);
+            item->setBackgroundColor(glory);
+            ui->table->setItem(i, j, item);
+        }
+    }
 
     for(int i = 0; i < houses.size(); i++) {
         QString houseNo = houses[i].house;
@@ -94,7 +123,7 @@ void HouseView::changeHouseStatus() {
             qDebug() << "HouseView::end" << col;
 
             QTableWidgetItem *item = ui->table->takeItem(row, col);
-            item->setBackgroundColor(color);
+            item->setBackgroundColor(green);
             ui->table->setItem(row, col, item);
 
         } else if(houseNo.length() == 4){
@@ -109,7 +138,7 @@ void HouseView::changeHouseStatus() {
             qDebug() << "HouseView::end" << col;
 
             QTableWidgetItem *item = ui->table->takeItem(row, col);
-            item->setBackgroundColor(color);
+            item->setBackgroundColor(green);
             ui->table->setItem(row, col, item);
 
         } else {
@@ -117,4 +146,6 @@ void HouseView::changeHouseStatus() {
         }
     }
 }
+
+
 

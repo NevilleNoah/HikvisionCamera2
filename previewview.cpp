@@ -326,13 +326,13 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo1, NULL, NULL);
-        if (lRealPlayHandle < 0)
+        /*if (lRealPlayHandle < 0)
         {
             printf("NET_DVR_RealPlay_V40 error\n");
             NET_DVR_Logout(lUserID);
             NET_DVR_Cleanup();
             //return;
-        }
+        }*/
 
         //---------------2-----------------------
         //启动预览并设置回调数据流
@@ -346,13 +346,13 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo2, NULL, NULL);
-        if (lRealPlayHandle < 0)
+        /*if (lRealPlayHandle < 0)
         {
             printf("NET_DVR_RealPlay_V40 error\n");
             NET_DVR_Logout(lUserID);
             NET_DVR_Cleanup();
             //return;
-        }
+        }*/
 
 
         //---------------3-----------------------
@@ -367,13 +367,13 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo3, NULL, NULL);
-        if (lRealPlayHandle < 0)
+        /*if (lRealPlayHandle < 0)
         {
             printf("NET_DVR_RealPlay_V40 error\n");
             NET_DVR_Logout(lUserID);
             NET_DVR_Cleanup();
             //return;
-        }
+        }*/
 
         //---------------4-----------------------
         //启动预览并设置回调数据流
@@ -387,13 +387,13 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo4, NULL, NULL);
-        if (lRealPlayHandle < 0)
+        /*if (lRealPlayHandle < 0)
         {
             printf("NET_DVR_RealPlay_V40 error\n");
             NET_DVR_Logout(lUserID);
             NET_DVR_Cleanup();
             //return;
-        }
+        }*/
 
         //设置报警回调函数
         NET_DVR_SetDVRMessageCallBack_V31(MessageCallback, NULL);
@@ -578,6 +578,7 @@ void PreviewView::saveToDatabase() {
     Database database = Database();
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     database.setQSqlDatabase(qSqlDatabase);
+
     database.openConnect();
 
     if(!alarmInfo.isStranger) {

@@ -7,6 +7,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QString>
+#include <QTimer>
 
 namespace Ui {
 class HouseView;
@@ -33,8 +34,12 @@ private:
 
     void initDatabase();
     void initTable();
-    void setHouse();
+
+    void setTimer();
     void changeHouseStatus();
+ public slots:
+    void setHouse();
+    void setHouseAsTimer();
 
 };
 

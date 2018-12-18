@@ -50,6 +50,7 @@ public:
     QList<House> setHouse(QSqlQuery query);
 
     QList<House> selectHouse(QDateTime start, QDateTime end);
+    QList<House> selectHouseAsTimer();
 
     House selectSingleHouse();
 

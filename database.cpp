@@ -142,10 +142,10 @@ QList<House> Database::setHouse(QSqlQuery query) {
         house.unit = query.value("unit").toString();
         house.house = query.value("house").toString();
         house.area = query.value("area").toDouble();
-
         houses.append(house);
 
     }
+    qDebug()<<"HouseSize::"<<houses.size();
     return houses;
 }
 
@@ -158,16 +158,37 @@ QList<RECORD> Database::selectRecord() {
 }
 
 
-//根据出入时间找出住房状况
+//根据出入时间获取出入情况
 QList<House> Database::selectHouse(QDateTime start, QDateTime end) {
     QSqlQuery query;
-    QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= '2018-12-15 16:51:34'	AND time_value <= '2018-12-16 23:59:51')";
+    QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= :start	AND time_value <= :end)";
     query.prepare(sqlSentence);
-
+    query.bindValue(":start","2018-12-18 16:51:34");
+    query.bindValue(":end", "2018-12-18 23:59:51");
     query.exec();
     return setHouse(query);
 }
 
+//根据计时器来获取出入情况
+QList<House> Database::selectHouseAsTimer() {
+    QDateTime curr = QDateTime::currentDateTime();
+
+    QDateTime start = curr.addSecs(-5);
+    QDateTime end = curr.addSecs(5);
+
+    qDebug()<<start.toString();
+    qDebug()<<end.toString();
+
+    QSqlQuery query;
+    QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= :start	AND time_value <= :end)";
+    query.prepare(sqlSentence);
+    query.bindValue(":start", start.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":end", end.toString("yyyy-MM-dd hh:mm:ss"));
+    query.exec();
+    query.exec();
+
+    return setHouse(query);
+}
 
 //获取记录总条数
 void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
