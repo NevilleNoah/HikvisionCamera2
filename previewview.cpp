@@ -336,7 +336,7 @@ void PreviewView::loadPreview() {
 
         //---------------2-----------------------
         //启动预览并设置回调数据流
-        HWND hWnd2 = (HWND)ui->picPreview2->winId();
+        /*HWND hWnd2 = (HWND)ui->picPreview2->winId();
         NET_DVR_PREVIEWINFO struPlayInfo2 = {0};
         struPlayInfo2.hPlayWnd     = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
         struPlayInfo2.lChannel     = channels[1];       //预览通道号
@@ -346,14 +346,6 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo2, NULL, NULL);
-        /*if (lRealPlayHandle < 0)
-        {
-            printf("NET_DVR_RealPlay_V40 error\n");
-            NET_DVR_Logout(lUserID);
-            NET_DVR_Cleanup();
-            //return;
-        }*/
-
 
         //---------------3-----------------------
         //启动预览并设置回调数据流
@@ -367,13 +359,6 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo3, NULL, NULL);
-        /*if (lRealPlayHandle < 0)
-        {
-            printf("NET_DVR_RealPlay_V40 error\n");
-            NET_DVR_Logout(lUserID);
-            NET_DVR_Cleanup();
-            //return;
-        }*/
 
         //---------------4-----------------------
         //启动预览并设置回调数据流
@@ -387,13 +372,7 @@ void PreviewView::loadPreview() {
 
         //开始播放
         lRealPlayHandle = NET_DVR_RealPlay_V40(lUserID, &struPlayInfo4, NULL, NULL);
-        /*if (lRealPlayHandle < 0)
-        {
-            printf("NET_DVR_RealPlay_V40 error\n");
-            NET_DVR_Logout(lUserID);
-            NET_DVR_Cleanup();
-            //return;
-        }*/
+        */
 
         //设置报警回调函数
         NET_DVR_SetDVRMessageCallBack_V31(MessageCallback, NULL);
@@ -433,7 +412,7 @@ void PreviewView::showPersonInfo(int option) {
             ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
             ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
             ui->edId->setText(alarmInfo.id);
-            ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));           
+            ui->edSimilarity->setText(QString::number(alarmInfo.similarity));
 
             QImage imgSymbol(":/icon/correct.png", "PNG");
             QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
