@@ -255,7 +255,7 @@ void HistoryView::on_btnSearchByCondition_clicked()
 void HistoryView::showDataByCondition() {
     qDebug() << "HistoryView: showByDateTimeRange exec";
 
-    setTextPageNumUI(pageNum);
+    /*setTextPageNumUI(pageNum);
     clearTable();
 
     for(int i = 0; i < records.size(); i++) {
@@ -264,7 +264,7 @@ void HistoryView::showDataByCondition() {
             switch(j) {
             case 0: item[j] = new QTableWidgetItem(records[i].timesamp.toString("yyyy-MM-dd ddd hh:mm"));
                 break;
-            case 1: item[j] = !records[i].isStranger ? new QTableWidgetItem(records[i].nameValue)
+            case 1: item[j] = !records[i].isStranger ? new QTableWidgetItem(records[i].applicant)
                                                      : new QTableWidgetItem(QString::fromLocal8Bit("陌生人"));
                 break;
             case 2: item[j] = records[i].sex.length()>0 ? new QTableWidgetItem(records[i].sex)
@@ -281,7 +281,7 @@ void HistoryView::showDataByCondition() {
             //设置单元格内容
             ui->recordTable->setItem(i, j, item[j]);
         }
-    }
+    }*/
 }
 
 //清除图片

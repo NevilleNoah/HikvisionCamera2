@@ -12,9 +12,7 @@
 
 typedef struct tagRECORD{
     QDateTime timesamp;
-    QString nameValue;
-    QString sex;
-    QString idNo;
+    QString applicant;
     QString idAvatar;
     QString idCapture;
     bool isStranger;
@@ -46,8 +44,7 @@ public:
     bool openConnect();
     bool closeConnect();
 
-    bool addRecord(char* nameValue, char* sex, QString idCapture, QString idAvatar, bool isStranger, float similar);
-    bool addRecord(QString nameValue, QString sex, QString idCapture, QString idAvatar, bool isStranger, float similar);
+    bool addRecord(QString applicant, QString idCapture, QString idAvatar, bool isStranger, float similar);
 
     void setQSqlDatabase(QSqlDatabase db);
 

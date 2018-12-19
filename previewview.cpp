@@ -124,21 +124,18 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //相似度
         alarmInfo.similarity = struFaceMatchAlarm.fSimilarity*100;
         //身份证号
-        BYTE idBytes[NAME_LEN];
-        memcpy(idBytes, struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byCertificateNumber, NAME_LEN);
-        alarmInfo.id = QString::fromLocal8Bit((char*)idBytes);
-        if(alarmInfo.id.length()==0) {
-            alarmInfo.id = QString::fromLocal8Bit("未知");
-        }
+        alarmInfo.sfzNo = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName);
+        //姓名
+        initDatabase();
+        database.openConnect();
+        ApplicantInfo applicantInfo = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo);
+        database.closeConnect();
+        alarmInfo.applicant = applicantInfo.applicant;
         //人脸库头像图
-        //alarmInfo.idAvatar = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.pPID);
-        //int idAvatarCutIndex = alarmInfo.idAvatar.indexOf("<FDDescription>");
-        //alarmInfo.idAvatar = alarmInfo.idAvatar.mid(0, idAvatarCutIndex);
-        alarmInfo.idAvatar = alarmInfo.id;
+        alarmInfo.idAvatar = alarmInfo.sfzNo;
         avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
         int avatarCutIndex = QString(avatar).indexOf("http://",1);
         urlAvatar = QString(avatar).mid(0, avatarCutIndex);
-        qDebug() << "urlAvatar is " << urlAvatar;
 
         QEventLoop eventLoop;
         QNetworkAccessManager *manager = new QNetworkAccessManager();
@@ -154,12 +151,12 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
         //--------------------
         //姓名
-        char nameHexStr[32];
+        /*char nameHexStr[32];
         BYTE nameBytes[NAME_LEN];
         for(int i =0 ;i<NAME_LEN; i++) {
             nameBytes[i] = struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName[i];
         }
-        convertUnCharToStr(nameBytes, nameHexStr, alarmInfo.name, sizeof(nameBytes));
+        convertUnCharToStr(nameBytes, nameHexStr, alarmInfo.name, sizeof(nameBytes));*/
 
         //--------------------
         //性别
@@ -185,7 +182,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //--------------------
         //相似度
         alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
-        qDebug() << "alarmInfo.similarity is " << QString::number(struFaceMatchAlarm.fSimilarity);
     }
 
     Sleep(300);
@@ -242,13 +238,10 @@ void PreviewView::setAlarmText() {
                                   alarmInfo.dwSecond);
         if(!alarmInfo.isStranger) {
             alarmText.append(QString::fromLocal8Bit("   姓名："));
-            alarmText.append(QString::fromLocal8Bit(alarmInfo.name));
-
-            alarmText.append(QString::fromLocal8Bit("   性别："));
-            alarmText.append(QString::fromLocal8Bit(alarmInfo.sex));
+            alarmText.append(alarmInfo.applicant);
 
             alarmText.append(QString::fromLocal8Bit("   编号："));
-            alarmText.append(alarmInfo.id);
+            alarmText.append(alarmInfo.sfzNo);
         } else {
             alarmText.append(QString::fromLocal8Bit("   陌生人"));
         }
@@ -411,9 +404,8 @@ void PreviewView::showPersonInfo(int option) {
 
         if(!alarmInfo.isStranger) {
 
-            ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
-            ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
-            ui->edId->setText(alarmInfo.id);
+            ui->edName->setText(alarmInfo.applicant);
+            ui->edId->setText(alarmInfo.sfzNo);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity));
 
             QImage imgSymbol(":/icon/correct.png", "PNG");
@@ -453,10 +445,9 @@ void PreviewView::showPersonInfo(int option) {
             QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
             ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-            ui->edName->setText(QString::fromLocal8Bit(alarmInfo.name));
-            ui->edSex->setText(QString::fromLocal8Bit(alarmInfo.sex));
-            ui->edId->setText(alarmInfo.id);
-            ui->edSimilarity->setText(QString::number(alarmInfo.similarity*100));
+            ui->edName->setText(alarmInfo.applicant);
+            ui->edId->setText(alarmInfo.sfzNo);
+            ui->edSimilarity->setText(QString::number(alarmInfo.similarity));
 
         } else {
 
@@ -560,9 +551,9 @@ void PreviewView::saveToDatabase() {
     database.openConnect();
 
     if(!alarmInfo.isStranger) {
-        database.addRecord(alarmInfo.name, alarmInfo.sex, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord(alarmInfo.applicant, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
-        database.addRecord("", "", alarmInfo.idCapture, "", alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord("", alarmInfo.idCapture, "", alarmInfo.isStranger, alarmInfo.similarity);
     }
     database.closeConnect();
 
@@ -698,7 +689,7 @@ void PreviewView::on_btnSearch_clicked()
         isClickSearch = true;
         //获取相应信息
         for(int i = 0; i < alarmList.size(); i++) {
-            if(inputName.compare(QString::fromLocal8Bit(alarmList[i].name)) == 0 && (!alarmList[i].isStranger)) {
+            if(inputName.compare(alarmList[i].applicant) == 0 && (!alarmList[i].isStranger)) {
                  searchList.append(i);
             }
         }
@@ -717,12 +708,10 @@ void PreviewView::on_btnSearch_clicked()
         if(!alarmList[index].isStranger) {
 
             alarmText.append(QString::fromLocal8Bit("   姓名："));
-            alarmText.append(QString::fromLocal8Bit(alarmList[index].name));
-
-            alarmText.append(QString::fromLocal8Bit("   性别："));
-            alarmText.append(QString::fromLocal8Bit(alarmList[index].sex));
+            alarmText.append(alarmList[index].applicant);
 
             alarmText.append(QString::fromLocal8Bit("   编号："));
+            alarmText.append(alarmList[index].sfzNo);
 
         } else {
 

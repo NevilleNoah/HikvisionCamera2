@@ -54,49 +54,25 @@ bool Database::closeConnect() {
     return true;
 }
 
-//增加记录
-bool Database::addRecord(char* nameValue, char* sex, QString idCapture,
-                         QString idAvatar, bool isStranger, float similar) {
-    try{
-        if(&db!=NULL) {
-            //执行sql语句
-            QSqlQuery query;
-            QString mNameValue  = QString::fromLocal8Bit(nameValue);
-            QString mSex = QString::fromLocal8Bit(sex);
 
-            query.prepare("INSERT INTO record(app_name, sex, capture_id, avatar_id, stranger, similar) "
-                          "VALUES(:nameValue, :sex, :idCapture, :idAvatar, :isStranger, :similar)");
 
-            query.bindValue(":nameValue", mNameValue);
-            query.bindValue(":sex", mSex);
-            query.bindValue(":idCapture", idCapture);
-            query.bindValue(":idAvatar", idAvatar);
-            query.bindValue(":isStranger", isStranger);
-            query.bindValue(":similar", similar);
 
-            query.exec();
-            return true;
-        }
-        return false;
-    } catch(std::exception &e) {
-        qDebug()<<"# ERR: SQLException:" <<e.what();
-        //TAD：进行ui提示
-    }
-}
+
+
+
 
 //增加记录
-bool Database::addRecord(QString nameValue, QString sex, QString idCapture,
+bool Database::addRecord(QString applicant, QString idCapture,
                          QString idAvatar, bool isStranger, float similar) {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
 
-            query.prepare("INSERT INTO record(app_name, sex, capture_id, avatar_id, stranger, similar) "
-                          "VALUES(:nameValue, :sex, :idCapture, :idAvatar, :isStranger, :similar)");
+            query.prepare("INSERT INTO record(applicant, capture_id, avatar_id, stranger, similar) "
+                          "VALUES(:applicant, :idCapture, :idAvatar, :isStranger, :similar)");
 
-            query.bindValue(":nameValue", nameValue);
-            query.bindValue(":sex", sex);
+            query.bindValue(":applicant", applicant);
             query.bindValue(":idCapture", idCapture);
             query.bindValue(":idAvatar", idAvatar);
             query.bindValue(":isStranger", isStranger);
@@ -120,9 +96,7 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
     {
         RECORD record;
         record.timesamp = query.value("time_value").toDateTime();
-        record.nameValue = query.value("app_name").toString();
-        record.sex = query.value("sex").toString();
-        record.idNo = query.value("avatar_id").toString();
+        record.applicant = query.value("applicant").toString();
         record.idAvatar = query.value("avatar_id").toString();
         record.idCapture = query.value("capture_id").toString();
         record.isStranger = query.value("stranger").toBool();
@@ -248,7 +222,7 @@ ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {
 ApplicantInfo Database::setSingleApplicantInfo(QSqlQuery query) {
     ApplicantInfo applicantInfo;
     while(query.next()) {
-       applicantInfo.applicant = query.value("applicant").toString();
+        applicantInfo.applicant = query.value("applicant").toString();
     }
     return applicantInfo;
 }

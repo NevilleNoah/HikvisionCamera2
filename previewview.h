@@ -59,6 +59,8 @@ typedef struct tagALARM_INFO {
 
     QString idAvatar;
     QString idCapture;
+    QString sfzNo;
+    QString applicant;
 
     bool isStranger;
 }ALARM_INFO;
