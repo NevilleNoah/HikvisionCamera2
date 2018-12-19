@@ -235,3 +235,19 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     query.exec();
     return setRecord(query);
 }
+
+ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {
+     QSqlQuery query;
+     QString sql = "select * from applicant where sfzno = :sfzNo";
+     query.prepare(sql);
+     query.bindValue(":sfzNo", sfzNo);
+     query.exec();
+     return setSingleApplicantInfo(query);
+}
+
+ApplicantInfo Database::setSingleApplicantInfo(QSqlQuery query) {
+    ApplicantInfo applicantInfo;
+    while(query.next()) {
+       applicantInfo.applicant = query.value("applicant").toString();
+    }
+}

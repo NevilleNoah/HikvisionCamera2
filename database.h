@@ -28,6 +28,10 @@ typedef struct tagHouse {
     double area;
 } House;
 
+typedef struct tagApplicantInfo {
+    QString applicant;
+} ApplicantInfo;
+
 class Database
 {
 public:
@@ -52,7 +56,12 @@ public:
     QList<House> selectHouse(QDateTime start, QDateTime end);
     QList<House> selectHouseAsTimer();
 
+
+
     House selectSingleHouse();
+
+    ApplicantInfo selectApplicantInfoBySfzNo(QString sfzNo);
+    ApplicantInfo setSingleApplicantInfo(QSqlQuery query);
 
 private:
     static QSqlDatabase db;
