@@ -17,8 +17,10 @@ HouseView::HouseView(QWidget *parent) :
 
 
     initTable();
+    initDateTime();
+    setHouse();
     //setHouse();
-    setTimer();
+    //setTimer();
 }
 
 HouseView::~HouseView()
@@ -66,8 +68,8 @@ void HouseView::initTable() {
 
 void HouseView::setHouse() {
 
-    QDateTime start = QDateTime();
-    QDateTime end = QDateTime();
+    QDateTime start = ui->startDateTime->dateTime();
+    QDateTime end = ui->endDateTime->dateTime();
 
     initDatabase();
     database.openConnect();
@@ -147,5 +149,30 @@ void HouseView::changeHouseStatus() {
     }
 }
 
+void HouseView::initDateTime() {
+    QDate startDate = QDate::currentDate();
+    QTime startTime;
+    startTime.setHMS(0, 0, 0);
+    ui->startDateTime->setDate(startDate);
+    ui->startDateTime->setTime(startTime);
+
+    QDate endDate = QDate::currentDate();
+    QTime endTime;
+    endTime.setHMS(23, 59, 59);
+    ui->endDateTime->setDate(endDate);
+    ui->endDateTime->setTime(endTime);
+
+    //setEdStartTime(HistoryView::startDateTime);
+    //setEdEndTime(HistoryView::endDateTime);
+}
 
 
+void HouseView::on_flush_clicked()
+{
+
+
+
+    setHouse();
+
+
+}

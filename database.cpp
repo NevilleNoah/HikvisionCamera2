@@ -137,8 +137,8 @@ QList<House> Database::selectHouse(QDateTime start, QDateTime end) {
     QSqlQuery query;
     QString sqlSentence = "SELECT h.* FROM `houseapplicant` ha LEFT JOIN applicant a ON ha.applicant_id = a.id LEFT JOIN house h ON ha.house_id = h.id WHERE a.sfzno IN (SELECT DISTINCT	avatar_id	FROM	`record`	WHERE	stranger = 0	AND time_value >= :start	AND time_value <= :end)";
     query.prepare(sqlSentence);
-    query.bindValue(":start","2018-12-18 16:51:34");
-    query.bindValue(":end", "2018-12-18 23:59:51");
+    query.bindValue(":start",start.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":end", end.toString("yyyy-MM-dd hh:mm:ss"));
     query.exec();
     return setHouse(query);
 }
@@ -155,7 +155,6 @@ QList<House> Database::selectHouseAsTimer() {
     query.prepare(sqlSentence);
     query.bindValue(":start", start.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":end", curr.toString("yyyy-MM-dd hh:mm:ss"));
-    query.exec();
     query.exec();
 
     return setHouse(query);

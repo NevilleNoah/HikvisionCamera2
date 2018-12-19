@@ -34,6 +34,7 @@ private:
 
     void initDatabase();
     void initTable();
+    void initDateTime();
 
     void setTimer();
     void changeHouseStatus();
@@ -41,6 +42,8 @@ private:
     void setHouse();
     void setHouseAsTimer();
 
+private slots:
+    void on_flush_clicked();
 };
 
 #endif // HOUSEVIEW_H
