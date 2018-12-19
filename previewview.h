@@ -100,7 +100,7 @@ public:
     //相似度
     static double similarity;
     //数据库
-    //static Database database;
+    static Database database;
 
     //是否点击搜索
     static bool isClickSearch;
@@ -131,6 +131,8 @@ public:
     static void saveToDatabase();
 
     static bool isSetAlarmText();
+
+    static void initDatabase();
 private:
     //static Config config;
     //static CAMERACONFIG_INFO cameraInfo;

@@ -40,6 +40,8 @@ QString PreviewView::urlCapture;
 QString PreviewView::urlAvatar;
 //人脸比对结果报警上传结构体。
 NET_VCA_FACESNAP_MATCH_ALARM PreviewView::struFaceMatchAlarm = {0};
+//数据库
+Database PreviewView::database;
 
 PreviewView* PreviewView::previewView = nullptr;
 
@@ -554,10 +556,7 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 
 void PreviewView::saveToDatabase() {
 
-    Database database = Database();
-    QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
-    database.setQSqlDatabase(qSqlDatabase);
-
+    initDatabase();
     database.openConnect();
 
     if(!alarmInfo.isStranger) {
@@ -733,4 +732,9 @@ void PreviewView::on_btnSearch_clicked()
         emit previewView->addAlarmItem();
 
     }
+}
+
+void PreviewView::initDatabase() {
+    QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
+    database.setQSqlDatabase(qSqlDatabase);
 }

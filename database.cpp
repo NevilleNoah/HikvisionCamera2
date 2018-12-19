@@ -250,4 +250,5 @@ ApplicantInfo Database::setSingleApplicantInfo(QSqlQuery query) {
     while(query.next()) {
        applicantInfo.applicant = query.value("applicant").toString();
     }
+    return applicantInfo;
 }
