@@ -56,6 +56,7 @@ PreviewView::PreviewView(QWidget *parent) :
 {
     previewView = this;
     ui->setupUi(this);
+    connect(this, SIGNAL(clearAlarmList()), this, SLOT(on_btnAlarmClear_clicked()));
     loadPreview();
 }
 
@@ -83,6 +84,12 @@ void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG 
 BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser)
 {
     qDebug() << "PreviewView: Callback start";
+
+    //报警列表显示的报警总数上限控制
+    if(alarmList.size()>=100) {
+        emit previewView->clearAlarmList();
+    }
+
     switch(lCommand)
     {
     case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息

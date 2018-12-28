@@ -35,7 +35,7 @@ void HouseView::initDatabase() {
 
 void HouseView::initTable() {
 
-    rowSum = 18;
+    rowSum = 17;
     colSum = 5;
 
     ui->table->setRowCount(rowSum);
@@ -46,9 +46,9 @@ void HouseView::initTable() {
             //门牌号
             QString houseNo;
             if(colSum<10) {
-                houseNo = QString::number(rowSum-row)+"0"+QString::number(col+1);
+                houseNo = QString::number(rowSum-row+1)+"0"+QString::number(col+1);
             } else {
-                houseNo = QString::number(rowSum-row)+QString::number(col+1);
+                houseNo = QString::number(rowSum-row+1)+QString::number(col+1);
             }
 
             //单元格
@@ -118,7 +118,7 @@ void HouseView::changeHouseStatus() {
             QString rowString = houseNo.mid(0, 1);
             QString colString = houseNo.mid(1, 2);
 
-            row = rowSum-rowString.toInt();
+            row = rowSum-rowString.toInt()+1;
             col = colString.toInt()-1;
 
             qDebug() << "HouseView::front:" << row;
@@ -133,7 +133,7 @@ void HouseView::changeHouseStatus() {
             QString rowString = houseNo.mid(0, 2);
             QString colString = houseNo.mid(2, 2);
 
-            row = rowSum-rowString.toInt();
+            row = rowSum-rowString.toInt()+1;
             col = colString.toInt()-1;
 
             qDebug() << "HouseView::front:" << row;

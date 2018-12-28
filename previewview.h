@@ -141,7 +141,7 @@ private:
     //static COMPARECONFIG_INFO compareInfo;
 
 signals:
-
+    void clearAlarmList();
 public slots:
     void showPersonInfo(int option);
     void showCapturePic(QNetworkReply*);
