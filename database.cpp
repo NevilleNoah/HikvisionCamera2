@@ -161,7 +161,7 @@ QList<House> Database::selectHouseAsTimer() {
 }
 
 //获取记录总条数
-void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
                                  int startId, int pageSize, int &totalRecordNum) {
     QSqlQuery query;
     QString sqlSentence = "select count(*) from record where time_value>:startDateTime and time_value<:endDateTime";
@@ -169,11 +169,6 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
         sqlSentence += " and stranger=1";
     } else if(strangerIndex == 1) {
         sqlSentence += " and stranger=0";
-        if(sexIndex == 0) {
-            sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
-        } else if(sexIndex == 1){
-            sqlSentence += " and sex='" + QString::fromLocal8Bit("女") + "'";
-        }
     }
     query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
@@ -184,20 +179,15 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
 }
 
 //根据条件筛查记录
-QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
                                           int startId, int pageSize, int &totalRecordNum) {
-    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, sexIndex, startId, pageSize, totalRecordNum);
+    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, startId, pageSize, totalRecordNum);
     QSqlQuery query;
     QString sqlSentence = "select * from record where time_value>:startDateTime and time_value<:endDateTime";
     if(strangerIndex == 0) {
         sqlSentence += " and stranger=1";
     } else if(strangerIndex == 1) {
         sqlSentence += " and stranger=0";
-        if(sexIndex == 0) {
-            sqlSentence += " and sex='" + QString::fromLocal8Bit("男") + "'";
-        } else if(sexIndex == 1){
-            sqlSentence += " and sex='" + QString::fromLocal8Bit("女") + "'";
-        }
     }
     sqlSentence += " limit :startId, :pageSize";
     query.prepare(sqlSentence);

@@ -178,19 +178,6 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QLabel" name="label_3">
-              <property name="font">
-               <font>
-                <family>Microsoft YaHei UI</family>
-                <pointsize>10</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>性别</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
@@ -211,31 +198,6 @@
               <item>
                <property name="text">
                 <string>否</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>不限</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="cmbSex">
-              <property name="font">
-               <font>
-                <family>Microsoft YaHei UI</family>
-                <pointsize>10</pointsize>
-               </font>
-              </property>
-              <item>
-               <property name="text">
-                <string>男</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>女</string>
                </property>
               </item>
               <item>
@@ -342,11 +304,6 @@
         <column>
          <property name="text">
           <string>姓名</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>性别</string>
          </property>
         </column>
         <column>

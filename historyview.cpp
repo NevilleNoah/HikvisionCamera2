@@ -9,7 +9,7 @@ QDateTime HistoryView::endDateTime;
 int HistoryView::pageNum = 0;
 int HistoryView::totalRecordNum = 0;
 int HistoryView::nowPage = 0;
-const int HistoryView::fieldNum = 4;
+const int HistoryView::fieldNum = 3;
 
 HistoryView::HistoryView(QWidget *parent) :
     QWidget(parent),
@@ -118,9 +118,9 @@ int HistoryView::getCmbStrangerIndex() {
 }
 
 //获取性别复选框中当前选项的下标
-int HistoryView::getCmbSexIndex() {
+/*int HistoryView::getCmbSexIndex() {
     return ui->cmbSex->currentIndex();
-}
+}*/
 
 //设置当前页码控件的输入范围
 void HistoryView::setTextNowPageVal() {
@@ -150,7 +150,7 @@ void HistoryView::setTextPageNumUI(int toltalPageNum) {
 //设置复选框显示内容
 void HistoryView::setComboBoxUI(int strangerIndex, int sexIndex) {
     ui->cmbStranger->setCurrentIndex(strangerIndex);
-    ui->cmbSex->setCurrentIndex(sexIndex);
+    //ui->cmbSex->setCurrentIndex(sexIndex);
 }
 
 //设置复选框状态
@@ -159,10 +159,10 @@ void HistoryView::setComboBoxState(bool strangerState, bool sexState) {
         ui->cmbStranger->setEnabled(false);
     else
         ui->cmbStranger->setEnabled(true);
-    if(!sexState)
+    /*if(!sexState)
         ui->cmbSex->setEnabled(false);
     else
-        ui->cmbSex->setEnabled(true);
+        ui->cmbSex->setEnabled(true);*/
 }
 
 //计算总页码
@@ -176,7 +176,7 @@ int HistoryView::getRecordByPageNum(int startId) {
     initDatabase();
     database.openConnect();
     records = database.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(),
-                                   getCmbSexIndex(), startId, pageSize, totalRecordNum);
+                                   startId, pageSize, totalRecordNum);
     database.closeConnect();
     return records.size();
 }
@@ -255,7 +255,7 @@ void HistoryView::on_btnSearchByCondition_clicked()
 void HistoryView::showDataByCondition() {
     qDebug() << "HistoryView: showByDateTimeRange exec";
 
-    /*setTextPageNumUI(pageNum);
+    setTextPageNumUI(pageNum);
     clearTable();
 
     for(int i = 0; i < records.size(); i++) {
@@ -267,10 +267,7 @@ void HistoryView::showDataByCondition() {
             case 1: item[j] = !records[i].isStranger ? new QTableWidgetItem(records[i].applicant)
                                                      : new QTableWidgetItem(QString::fromLocal8Bit("陌生人"));
                 break;
-            case 2: item[j] = records[i].sex.length()>0 ? new QTableWidgetItem(records[i].sex)
-                                                        : new QTableWidgetItem(QString::fromLocal8Bit("未知"));
-                break;
-            case 3: item[j] = records[i].idAvatar.length()>0 ? new QTableWidgetItem(records[i].idNo)
+            case 2: item[j] = records[i].idAvatar.length()>0 ? new QTableWidgetItem(records[i].idAvatar)
                                                          : new QTableWidgetItem(QString::fromLocal8Bit("未知"));
                 break;
             }
@@ -281,7 +278,7 @@ void HistoryView::showDataByCondition() {
             //设置单元格内容
             ui->recordTable->setItem(i, j, item[j]);
         }
-    }*/
+    }
 }
 
 //清除图片

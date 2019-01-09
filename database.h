@@ -36,9 +36,9 @@ public:
     explicit Database();
     QList<RECORD> setRecord(QSqlQuery query);
     QList<RECORD> selectRecord();
-    QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+    QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
                                     int startId, int pageSize, int &totalRecordNum);
-    void getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, int sexIndex,
+    void getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
                                      int startId, int pageSize, int &totalRecordNum);
     void setDbConfig();
     bool openConnect();
