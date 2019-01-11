@@ -26,24 +26,35 @@ private:
     static Database database;
     static QList<House> houses;
 
-    static int row;
-    static int col;
+    static int houseRow;
+    static int houseCol;
+    static int houseRowSum;
+    static int houseColSum;
 
-    static int rowSum;
-    static int colSum;
+    static int recordRow;
+    static int recordCol;
+    static int recordRowSum;
+    static int recordColSum;
 
+    static QList<RECORD> records;
+
+    void initUI();
     void initDatabase();
-    void initTable();
+    void initHouseTable();
+    void initRecordTable();
     void initDateTime();
 
     void setTimer();
     void changeHouseStatus();
+    void changeRecordTableData();
  public slots:
-    void setHouse();
+    void setHouseTable();
+    void setRecordTable(QTableWidgetItem *item);
     void setHouseAsTimer();
 
 private slots:
     void on_flush_clicked();
+    void on_houseTable_itemDoubleClicked(QTableWidgetItem *item);
 };
 
 #endif // HOUSEVIEW_H

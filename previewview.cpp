@@ -1,4 +1,5 @@
-﻿#include "previewview.h"
+﻿#include <cstring>
+#include "previewview.h"
 #include "ui_previewview.h"
 
 const int OPTION_FACE_COMPARE = 0;
@@ -112,8 +113,16 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
  * @brief PreviewView::setAlarmInfo
  * @param struFaceMatchAlarm
  */
+
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
+
+    /**********人脸子图测试代码**********/
+    byte *faceSonPic = struFaceMatchAlarm.struSnapInfo.pBuffer1;
+    QByteArray qbyte;
+    qbyte.resize(sizeof (faceSonPic));
+    memcpy(qbyte.data(), faceSonPic, sizeof(qbyte));
+    /**********人脸子图测试代码**********/
 
     /***********************************************设置时间********************************************/
     alarmInfo.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -378,7 +387,6 @@ void PreviewView::loadPreview() {
 
         //设置报警回调函数
         NET_DVR_SetDVRMessageCallBack_V31(MessageCallback, NULL);
-
         //启用布防
         LONG lHandle;
         NET_DVR_SETUPALARM_PARAM  struAlarmParam={0};
@@ -477,6 +485,22 @@ void PreviewView::showPersonInfo(int option) {
 
     /*********************************************显示个人信息 END******************************************/
 
+    /**********人脸子图测试**********/
+    byte *faceSonPic = struFaceMatchAlarm.struSnapInfo.pBuffer1;
+    QByteArray qbyte;
+    qbyte.resize(sizeof (faceSonPic));
+    memcpy(qbyte.data(), faceSonPic, sizeof(faceSonPic));
+    for(int i = 0; i < qbyte.length(); i++)
+        qDebug() << "byte[i]: " << (int)qbyte[i] << " faceSonpic[i]: " << faceSonPic[i];
+    QImage img;
+    QBuffer buffer(&qbyte);
+    buffer.open(QIODevice::WriteOnly);
+    img.save(&buffer,"JPG",20);
+    //img.loadFromData(qbyte);
+    QPixmap pixS = QPixmap::fromImage(img);
+    ui->picCapture->setPixmap(pixS.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    //ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    /**********人脸子图测试**********/
 }
 
 void PreviewView::setAlarmInfo() {

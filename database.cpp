@@ -54,13 +54,6 @@ bool Database::closeConnect() {
     return true;
 }
 
-
-
-
-
-
-
-
 //增加记录
 bool Database::addRecord(QString applicant, QString idCapture,
                          QString idAvatar, bool isStranger, float similar) {
@@ -183,7 +176,7 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
                                           int startId, int pageSize, int &totalRecordNum) {
     getTotalRecordNum(startDateTime, endDateTime, strangerIndex, startId, pageSize, totalRecordNum);
     QSqlQuery query;
-    QString sqlSentence = "select * from record where time_value>:startDateTime and time_value<:endDateTime";
+    QString sqlSentence = "select * from record where time_value>=:startDateTime and time_value<=:endDateTime";
     if(strangerIndex == 0) {
         sqlSentence += " and stranger=1";
     } else if(strangerIndex == 1) {
@@ -195,6 +188,26 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":startId", (startId-1)*pageSize);
     query.bindValue(":pageSize", pageSize);
+    query.exec();
+    return setRecord(query);
+
+}
+
+//根据时间与门牌号来筛查记录
+QList<RECORD> Database::selectByTimeDoorplate(QDateTime startDateTime, QDateTime endDateTime,
+                                    QString doorPlate) {
+    QSqlQuery query;
+    QString sqlSentence = "SELECT r.time_value,r.applicant,r.avatar_id,r.capture_id,r.stranger "
+            "FROM record r,house h,applicant a, houseapplicant ha "
+            "WHERE r.time_value>=:startDateTime AND r.time_value<=:endDateTime "
+            "AND h.house=:doorPlate "
+            "AND r.avatar_id=a.sfzno "
+            "AND ha.house_id=h.id AND ha.applicant_id=a.id";
+
+    query.prepare(sqlSentence);
+    query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":doorPlate", doorPlate);
     query.exec();
     return setRecord(query);
 }

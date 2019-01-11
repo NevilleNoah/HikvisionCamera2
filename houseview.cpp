@@ -4,10 +4,16 @@
 
 Database HouseView::database;
 QList<House> HouseView::houses;
-int HouseView::row;
-int HouseView::col;
-int HouseView::rowSum;
-int HouseView::colSum;
+QList<RECORD> HouseView::records;
+int HouseView::houseRow;
+int HouseView::houseCol;
+int HouseView::houseRowSum;
+int HouseView::houseColSum;
+
+int HouseView::recordRow;
+int HouseView::recordCol;
+int HouseView::recordRowSum;
+int HouseView::recordColSum;
 
 HouseView::HouseView(QWidget *parent) :
     QWidget(parent),
@@ -15,12 +21,8 @@ HouseView::HouseView(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    initUI();
 
-    initTable();
-    initDateTime();
-    setHouse();
-    //setHouse();
-    //setTimer();
 }
 
 HouseView::~HouseView()
@@ -28,27 +30,47 @@ HouseView::~HouseView()
     delete ui;
 }
 
+void HouseView::initUI() {
+    initRecordTable();
+    initHouseTable();
+    initDateTime();
+    setHouseTable();
+}
+
+/**
+ * @brief HouseView::initDatabase
+ * 初始化数据库
+ */
 void HouseView::initDatabase() {
     QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
     database.setQSqlDatabase(qSqlDatabase);
 }
 
-void HouseView::initTable() {
+/**
+ * @brief HouseView::initInfoTable
+ * 初始化特定门牌号用户的出入信息表
+ */
+void HouseView::initRecordTable() {
+    //设置列宽
+    ui->recordTable->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
+}
 
-    rowSum = 17;
-    colSum = 5;
+void HouseView::initHouseTable() {
 
-    ui->table->setRowCount(rowSum);
-    ui->table->setColumnCount(colSum);
+    houseRowSum = 17;
+    houseColSum = 5;
 
-    for(int row = 0; row < rowSum; row++) {
-        for(int col = 0; col < colSum; col++) {
+    ui->houseTable->setRowCount(houseRowSum);
+    ui->houseTable->setColumnCount(houseColSum);
+
+    for(int row = 0; row < houseRowSum; row++) {
+        for(int col = 0; col < houseColSum; col++) {
             //门牌号
             QString houseNo;
-            if(colSum<10) {
-                houseNo = QString::number(rowSum-row+1)+"0"+QString::number(col+1);
+            if(houseColSum<10) {
+                houseNo = QString::number(houseRowSum-row+1)+"0"+QString::number(col+1);
             } else {
-                houseNo = QString::number(rowSum-row+1)+QString::number(col+1);
+                houseNo = QString::number(houseRowSum-row+1)+QString::number(col+1);
             }
 
             //单元格
@@ -61,12 +83,12 @@ void HouseView::initTable() {
             QColor color(238, 240, 244, 255);
             item->setBackgroundColor(color);
 
-            ui->table->setItem(row, col, item);
+            ui->houseTable->setItem(row, col, item);
         }
     }
 }
 
-void HouseView::setHouse() {
+void HouseView::setHouseTable() {
 
     QDateTime start = ui->startDateTime->dateTime();
     QDateTime end = ui->endDateTime->dateTime();
@@ -78,6 +100,41 @@ void HouseView::setHouse() {
 
     changeHouseStatus();
 
+}
+
+void HouseView::setRecordTable(QTableWidgetItem *item) {
+    QDateTime start = ui->startDateTime->dateTime();
+    QDateTime end = ui->endDateTime->dateTime();
+    QString doorPlate = item->text();
+
+    initDatabase();
+    database.openConnect();
+    records = database.selectByTimeDoorplate(start, end, doorPlate);
+    database.closeConnect();
+
+    recordRowSum = records.size();
+
+    changeRecordTableData();
+};
+
+void HouseView::changeRecordTableData() {
+    ui->recordTable->clearContents();
+    ui->recordTable->setRowCount(recordRowSum);
+
+    for(int i = 0; i < recordRowSum; i++) {
+        QTableWidgetItem *timeItem = new QTableWidgetItem();
+        QTableWidgetItem *applicantItem = new QTableWidgetItem();
+        QTableWidgetItem *sfzNoItem = new QTableWidgetItem();
+
+        timeItem->setText(records[i].timesamp.toString("yyyy-MM-dd ddd hh:mm"));
+        applicantItem->setText(records[i].applicant);
+        sfzNoItem->setText(records[i].idAvatar);
+
+        ui->recordTable->setItem(i, 0, timeItem);
+        ui->recordTable->setItem(i, 1, applicantItem);
+        ui->recordTable->setItem(i, 2, sfzNoItem);
+
+    }
 }
 
 void HouseView::setTimer() {
@@ -103,11 +160,11 @@ void HouseView::changeHouseStatus() {
     QColor green(129, 166, 96, 255);//绿色
     QColor glory(238, 240, 244, 255);//灰色
 
-    for(int i = 0; i < rowSum; i++) {
-        for(int j = 0; j < colSum; j++) {
-            QTableWidgetItem *item = ui->table->takeItem(i, j);
+    for(int i = 0; i < houseRowSum; i++) {
+        for(int j = 0; j < houseColSum; j++) {
+            QTableWidgetItem *item = ui->houseTable->takeItem(i, j);
             item->setBackgroundColor(glory);
-            ui->table->setItem(i, j, item);
+            ui->houseTable->setItem(i, j, item);
         }
     }
 
@@ -118,30 +175,30 @@ void HouseView::changeHouseStatus() {
             QString rowString = houseNo.mid(0, 1);
             QString colString = houseNo.mid(1, 2);
 
-            row = rowSum-rowString.toInt()+1;
-            col = colString.toInt()-1;
+            houseRow = houseRowSum-rowString.toInt()+1;
+            houseCol = colString.toInt()-1;
 
-            qDebug() << "HouseView::front:" << row;
-            qDebug() << "HouseView::end" << col;
+            qDebug() << "HouseView::front:" << houseRow;
+            qDebug() << "HouseView::end" << houseCol;
 
-            QTableWidgetItem *item = ui->table->takeItem(row, col);
+            QTableWidgetItem *item = ui->houseTable->takeItem(houseRow, houseCol);
             item->setBackgroundColor(green);
-            ui->table->setItem(row, col, item);
+            ui->houseTable->setItem(houseRow, houseCol, item);
 
         } else if(houseNo.length() == 4){
 
             QString rowString = houseNo.mid(0, 2);
             QString colString = houseNo.mid(2, 2);
 
-            row = rowSum-rowString.toInt()+1;
-            col = colString.toInt()-1;
+            houseRow = houseRowSum-rowString.toInt()+1;
+            houseCol = colString.toInt()-1;
 
-            qDebug() << "HouseView::front:" << row;
-            qDebug() << "HouseView::end" << col;
+            qDebug() << "HouseView::front:" << houseRow;
+            qDebug() << "HouseView::end" << houseCol;
 
-            QTableWidgetItem *item = ui->table->takeItem(row, col);
+            QTableWidgetItem *item = ui->houseTable->takeItem(houseRow, houseCol);
             item->setBackgroundColor(green);
-            ui->table->setItem(row, col, item);
+            ui->houseTable->setItem(houseRow, houseCol, item);
 
         } else {
 
@@ -170,9 +227,13 @@ void HouseView::initDateTime() {
 void HouseView::on_flush_clicked()
 {
 
+    setHouseTable();
+
+}
 
 
-    setHouse();
 
-
+void HouseView::on_houseTable_itemDoubleClicked(QTableWidgetItem *item)
+{
+    setRecordTable(item);
 }
