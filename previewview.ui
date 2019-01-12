@@ -385,6 +385,13 @@
          </layout>
         </item>
         <item>
+         <widget class="QLabel" name="picFace">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
            <layout class="QFormLayout" name="formLayout">

@@ -1,4 +1,4 @@
-#ifndef CONFIG_H
+﻿#ifndef CONFIG_H
 #define CONFIG_H
 #include <QString>
 #include <QSettings>
@@ -25,6 +25,7 @@ typedef struct tagDATABASECONFIG_INFO {
 typedef struct tagDIRCONFIG_INFO {
     QString dirAvatar;
     QString dirCapture;
+    QString dirFace;
     QString dirStranger;
 } DIRCONFIG_INFO;
 
@@ -98,9 +99,11 @@ public:
     /******************文件路径结构体设置与读取******************/
     static void setDirInfoAvatar(QString _avatar);
     static void setDirInfoCapture(QString _capture);
+    static void setDirInfoFace(QString _face);
     static void setDirInfoStranger(QString _stranger);
     static QString getDirInfoAvatar();
     static QString getDirInfoCapture();
+    static QString getDirInfoFace();
     static QString getDirInfoStranger();
     /******************文件路径结构体设置与读取******************/
 
@@ -108,9 +111,11 @@ public:
     static void setDirConfigConfig();
     static void setDirAvatarConfig();
     static void setDirCaptureConfig();
+    static void setDirFaceConfig();
     static void setDirStrangerConfig();
     static QString getDirAvatarConfig();
     static QString getDirCaptureConfig();
+    static QString getDirFaceConfig();
     static QString getDirStrangerConfig();
     /******************文件路径配置设置与读取******************/
 

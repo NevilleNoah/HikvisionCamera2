@@ -1,4 +1,4 @@
-#include "config.h"
+﻿#include "config.h"
 
 QSettings Config::configSetting("./config/config.ini", QSettings::IniFormat);
 CAMERACONFIG_INFO Config::cameraInfo;
@@ -38,6 +38,7 @@ void Config::initDirConfig() {
     dirInfo.dirAvatar = getDirAvatarConfig();
     dirInfo.dirCapture = getDirCaptureConfig();
     dirInfo.dirStranger = getDirStrangerConfig();
+    dirInfo.dirFace = getDirFaceConfig();
 }
 
 void Config::initCompareConfig() {
@@ -258,6 +259,10 @@ void Config::setDirInfoCapture(QString _capture) {
     dirInfo.dirCapture = _capture;
 }
 
+void Config::setDirInfoFace(QString _face) {
+    dirInfo.dirFace = _face;
+}
+
 void Config::setDirInfoStranger(QString _stranger) {
     dirInfo.dirStranger = _stranger;
 }
@@ -270,6 +275,10 @@ QString Config::getDirInfoCapture() {
     return dirInfo.dirCapture;
 }
 
+QString Config::getDirInfoFace() {
+    return dirInfo.dirFace;
+}
+
 QString Config::getDirInfoStranger() {
     return dirInfo.dirStranger;
 }
@@ -279,6 +288,7 @@ QString Config::getDirInfoStranger() {
 void Config::setDirConfigConfig() {
     setDirAvatarConfig();
     setDirCaptureConfig();
+    setDirFaceConfig();
     setDirStrangerConfig();
 }
 
@@ -288,6 +298,10 @@ void Config::setDirAvatarConfig() {
 
 void Config::setDirCaptureConfig() {
     configSetting.setValue("/Dir/dirCapture", dirInfo.dirCapture);
+}
+
+void Config::setDirFaceConfig( ) {
+    configSetting.setValue("/Dir/dirFace", dirInfo.dirFace);
 }
 
 void Config::setDirStrangerConfig( ) {
@@ -305,6 +319,10 @@ DIRCONFIG_INFO Config::getDirInfoConfig() {
 
 QString Config::getDirCaptureConfig() {
     return configSetting.value("/Dir/dirCapture").toString();
+}
+
+QString Config::getDirFaceConfig() {
+    return configSetting.value("/Dir/dirFace").toString();
 }
 
 QString Config::getDirStrangerConfig() {

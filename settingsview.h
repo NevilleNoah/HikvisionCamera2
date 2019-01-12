@@ -37,6 +37,9 @@ private slots:
     void on_btnCapturePath_clicked();
     void on_btnAvatarPath_clicked();
 
+
+    void on_btnFacePath_clicked();
+
 private:
     Ui::SettingsView *ui;
 };

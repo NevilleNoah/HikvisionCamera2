@@ -146,6 +146,7 @@ public slots:
     void showPersonInfo(int option);
     void showCapturePic(QNetworkReply*);
     void showAvatarPic(QNetworkReply*);
+    void showFacePic(QNetworkReply*);
     void addAlarmItem();
 
     void loadPreview();

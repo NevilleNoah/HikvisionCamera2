@@ -35,8 +35,7 @@ void SettingsView::runWriteSettingsThread() {
 /***************************************线程 END***************************************/
 
 /****************************************更新Ui****************************************/
-//更新Ui：加载摄像机配置
-
+//更新Ui：加载摄像机配
 void SettingsView::loadCameraSettings() {
     int *channels = Config::getCameraInfoChannel();
     for(int i = 0; i < 4; i++) {
@@ -63,9 +62,11 @@ void SettingsView::loadDatabaseSettings() {
     ui->edDBPassword->setText(Config::getDataBaseInfoPassWord());
 }
 
+//更新Ui：加载路径配置
 void SettingsView::loadPicDirSettings() {
     ui->edDirCapture->setText(Config::getDirInfoCapture());
     ui->edDirAvatar->setText(Config::getDirInfoAvatar());
+    ui->edDirFace->setText(Config::getDirInfoFace());
 }
 //更新Ui：按键生效
 void SettingsView::setBtnDetermineEnable() {
@@ -103,6 +104,7 @@ void SettingsView::changeDatabaseSettings() {
 void SettingsView::changePicDirSettings() {
     Config::setDirInfoAvatar(ui->edDirAvatar->text());
     Config::setDirInfoCapture(ui->edDirCapture->text());
+    Config::setDirInfoFace(ui->edDirFace->text());
 }
 
 void SettingsView::on_btnDetermine_clicked()
@@ -132,5 +134,12 @@ void SettingsView::on_btnAvatarPath_clicked()
 {
     QString file_path = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("人脸图路径"), "./");
     qDebug() << "file_path: " << file_path;
-    ui->edDirCapture->setText(file_path + "/");
+    ui->edDirAvatar->setText(file_path + "/");
+}
+
+void SettingsView::on_btnFacePath_clicked()
+{
+    QString file_path = QFileDialog::getExistingDirectory(this, QString::fromLocal8Bit("人脸子图路径"), "./");
+    qDebug() << "file_path: " << file_path;
+    ui->edDirFace->setText(file_path + "/");
 }

@@ -117,13 +117,6 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
 void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) {
     qDebug() << "PreviewView: setAlarmInfo start";
 
-    /**********人脸子图测试代码**********/
-    byte *faceSonPic = struFaceMatchAlarm.struSnapInfo.pBuffer1;
-    QByteArray qbyte;
-    qbyte.resize(sizeof (faceSonPic));
-    memcpy(qbyte.data(), faceSonPic, sizeof(qbyte));
-    /**********人脸子图测试代码**********/
-
     /***********************************************设置时间********************************************/
     alarmInfo.dwYear = GET_YEAR(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
     alarmInfo.dwMonth = GET_MONTH(struFaceMatchAlarm.struSnapInfo.dwAbsTime);
@@ -201,6 +194,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     }
 
     Sleep(300);
+
     //--------------------
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
@@ -220,6 +214,24 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
     connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
     eventLoop.exec();
+
+    /**********人脸子图测试代码**********/
+    QString facePic = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struSnapInfo.pBuffer1);
+    qDebug() << "FacePic: " << facePic;
+    int faceCutIndex = facePic.mid(6).indexOf("http://")+6;
+    QString urlFacePic = facePic.mid(0, faceCutIndex);
+    qDebug() << "urlFacePic: " << urlFacePic;
+    QEventLoop eventLoop1;
+    QNetworkAccessManager *manager1 = new QNetworkAccessManager();
+    QUrl url1(urlFacePic);
+
+    url1.setUserName(Config::getCameraInfoUserName());
+    url1.setPassword(Config::getCameraInfoPassWord());
+    QNetworkReply* reply1 = manager1->get(QNetworkRequest(url1));
+    connect(manager1, SIGNAL(finished(QNetworkReply*)), &eventLoop1, SLOT(quit()));
+    connect(manager1, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showFacePic(QNetworkReply*)));
+    eventLoop1.exec();
+    /**********人脸子图测试代码**********/
 
     //显示个人信息
     emit previewView->showPersonInfo(OPTION_FACE_COMPARE);
@@ -402,10 +414,7 @@ void PreviewView::loadPreview() {
             return;
         }
     }
-
-
 }
-
 
 
 //更新Ui
@@ -484,23 +493,6 @@ void PreviewView::showPersonInfo(int option) {
     }
 
     /*********************************************显示个人信息 END******************************************/
-
-    /**********人脸子图测试**********/
-    byte *faceSonPic = struFaceMatchAlarm.struSnapInfo.pBuffer1;
-    QByteArray qbyte;
-    qbyte.resize(sizeof (faceSonPic));
-    memcpy(qbyte.data(), faceSonPic, sizeof(faceSonPic));
-    for(int i = 0; i < qbyte.length(); i++)
-        qDebug() << "byte[i]: " << (int)qbyte[i] << " faceSonpic[i]: " << faceSonPic[i];
-    QImage img;
-    QBuffer buffer(&qbyte);
-    buffer.open(QIODevice::WriteOnly);
-    img.save(&buffer,"JPG",20);
-    //img.loadFromData(qbyte);
-    QPixmap pixS = QPixmap::fromImage(img);
-    ui->picCapture->setPixmap(pixS.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    //ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-    /**********人脸子图测试**********/
 }
 
 void PreviewView::setAlarmInfo() {
@@ -660,6 +652,35 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
     }
 }
 
+
+void PreviewView::showFacePic(QNetworkReply* reply) {
+    qDebug() << "PreviewView:: showFacePic exec";
+    //显示人脸子图
+    QPixmap pix;
+    QByteArray bytes = reply->readAll();
+    pix.loadFromData(bytes);
+    ui->picFace->setPixmap(pix);
+
+    QString dirFace = Config::getDirInfoFace();
+    QDir qdirCapture(dirFace);
+    qDebug() << "dirFace: " << dirFace;
+    if(!qdirCapture.exists(dirFace)) {
+        qdirCapture.mkpath(dirFace);
+    }
+
+    //dirPicCapture = dirCapture;
+    QString dirPicFace = dirFace;
+    dirPicFace.append(alarmInfo.idCapture);
+    dirPicFace.append(".jpg");
+    qDebug() << "dirPicFace: " << dirPicFace;
+    //保存人脸子图文件
+    QFile file(dirPicFace);
+    if(file.open(QIODevice::WriteOnly)) {
+        file.write(bytes);
+        file.close();
+    }
+}
+
 void PreviewView::showAvatarPic(QNetworkReply* reply) {
     qDebug() << "PreviewView:: showAvatarPic exec";
 
@@ -679,7 +700,7 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
     }
     dirPicAvatar = dirAvatar;
     dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
-   //8 dirPicAvatar.append(".jpg");
+   // dirPicAvatar.append(".jpg");
 
 
     qDebug() << "dirPicAvatar:" << dirPicAvatar;
