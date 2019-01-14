@@ -100,6 +100,39 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
     return records;
 }
 
+//根据时间、姓名、省份证号来获取记录
+RECORD Database::selectRecord(QDateTime timesamp, QString applicant, QString idAvatar) {
+    RECORD record;
+    try{
+
+        if(&db!=NULL) {
+            //执行sql语句
+            QSqlQuery query;
+            query.prepare("SELECT * "
+                          "FROM record r where r.time_value=:timesamp "
+                          "AND r.applicant=:applicant AND r.avatar_id=:avatar_id");
+            query.bindValue(":timesamp", timesamp);
+            query.bindValue(":applicant", applicant);
+            query.bindValue(":avatar_id", idAvatar);
+            query.exec();
+            query.next();
+            record.timesamp = query.value("time_value").toDateTime();
+            record.applicant = query.value("applicant").toString();
+            record.idAvatar = query.value("avatar_id").toString();
+            record.idCapture = query.value("capture_id").toString();
+            record.similar = query.value("similar").toInt();
+            record.isStranger = query.value("stranger").toBool();
+        }
+        return record;
+    }catch(std::exception &e)
+    {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+
+
+}
+
 QList<House> Database::setHouse(QSqlQuery query) {
     QList<House> houses;
     while(query.next()) {
@@ -211,6 +244,20 @@ QList<RECORD> Database::selectByTimeDoorplate(QDateTime startDateTime, QDateTime
     query.bindValue(":doorPlate", doorPlate);
     query.exec();
     return setRecord(query);
+}
+
+
+QString Database::selectFamilyRole(QString applicant, QString sfzno) {
+    QSqlQuery query;
+    QString sqlSentence = "SELECT a.familyrole FROM applicant a "
+                          "WHERE a.applicant=:applicant AND a.sfzno=:sfzno";
+
+    query.prepare(sqlSentence);
+    query.bindValue(":applicant", applicant);
+    query.bindValue(":sfzno", sfzno);
+    query.exec();
+    query.next();
+    return query.value("familyrole").toString();
 }
 
 ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {

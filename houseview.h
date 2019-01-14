@@ -36,6 +36,13 @@ private:
     static int recordRowSum;
     static int recordColSum;
 
+    static QString dirAvatar;
+    static QString dirCapture;
+    static QString dirFace;
+    static QString dirPicAvatar;
+    static QString dirPicCapture;
+    static QString dirPicFace;
+
     static QList<RECORD> records;
 
     void initUI();
@@ -47,14 +54,16 @@ private:
     void setTimer();
     void changeHouseStatus();
     void changeRecordTableData();
+
  public slots:
     void setHouseTable();
     void setRecordTable(QTableWidgetItem *item);
-    void setHouseAsTimer();
 
 private slots:
     void on_flush_clicked();
     void on_houseTable_itemDoubleClicked(QTableWidgetItem *item);
+
+    void on_recordTable_itemDoubleClicked(QTableWidgetItem *item);
 };
 
 #endif // HOUSEVIEW_H

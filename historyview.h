@@ -73,6 +73,7 @@ private:
     static int pageNum;             //页码的数量
     static int totalRecordNum;      //存储记录的条数
     static int nowPage;             //当前是第几页
+
     const int pageSize = 18;        //每页显示的记录条数
     const static int fieldNum;         //字段数
 

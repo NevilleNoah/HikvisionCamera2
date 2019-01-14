@@ -70,6 +70,8 @@ void HistoryView::initTableUI() {
     ui->recordTable->horizontalHeader()->setSectionResizeMode(0,QHeaderView::ResizeToContents);
     //设置表格行数
     ui->recordTable->setRowCount(pageSize);
+    //设置表头伸缩格式
+    ui->recordTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 //初始化数据库

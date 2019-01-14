@@ -15,6 +15,13 @@ int HouseView::recordCol;
 int HouseView::recordRowSum;
 int HouseView::recordColSum;
 
+QString HouseView::dirAvatar;
+QString HouseView::dirCapture;
+QString HouseView::dirFace;
+QString HouseView::dirPicAvatar;
+QString HouseView::dirPicCapture;
+QString HouseView::dirPicFace;
+
 HouseView::HouseView(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::HouseView)
@@ -22,6 +29,7 @@ HouseView::HouseView(QWidget *parent) :
     ui->setupUi(this);
 
     initUI();
+    setTimer();
 
 }
 
@@ -142,21 +150,10 @@ void HouseView::changeRecordTableData() {
 
 void HouseView::setTimer() {
     QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT(setHouseAsTimer()));
+    connect(timer, SIGNAL(timeout()), this, SLOT(setHouseTable()));
     timer->start(10000);
 }
 
-void HouseView::setHouseAsTimer() {
-    qDebug("HouseView::timer exec........");
-
-    initDatabase();
-    database.openConnect();
-    houses = database.selectHouseAsTimer();
-    database.closeConnect();
-
-    changeHouseStatus();
-
-}
 
 void HouseView::changeHouseStatus() {
 
@@ -232,9 +229,7 @@ void HouseView::initDateTime() {
 
 void HouseView::on_flush_clicked()
 {
-
     setHouseTable();
-
 }
 
 
@@ -242,4 +237,38 @@ void HouseView::on_flush_clicked()
 void HouseView::on_houseTable_itemDoubleClicked(QTableWidgetItem *item)
 {
     setRecordTable(item);
+}
+
+
+void HouseView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
+{
+    initDatabase();
+    database.openConnect();
+    RECORD record = database.selectRecord(records[item->row()].timesamp, records[item->row()].applicant, records[item->row()].idAvatar);
+    QString familyRole = database.selectFamilyRole(record.applicant, record.idAvatar);
+    database.closeConnect();
+    dirCapture = Config::getDirInfoCapture();
+    dirAvatar = Config::getDirInfoAvatar();
+    dirFace = Config::getDirInfoFace();
+
+    dirPicCapture = dirCapture.append(record.idCapture+".jpg");
+    QImage imgCapture(dirPicCapture, "JPG");
+    QPixmap pixCapture = QPixmap::fromImage(imgCapture);
+    ui->picCapture->setPixmap(pixCapture.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    dirPicFace = dirFace.append(record.idCapture+".jpg");
+    QImage imgFace(dirPicFace, "JPG");
+    QPixmap pixFace = QPixmap::fromImage(imgFace);
+    ui->picFace->setPixmap(pixFace.scaled(ui->picFace->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+
+    dirPicAvatar = dirAvatar.append(record.idAvatar+".jpg");
+    QImage imgAvatar(dirPicAvatar, "JPG");
+    QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
+    ui->picAvatar->setPixmap(pixAvatar.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    ui->edName->setText(record.applicant);
+    ui->edSimilarity->setText(QString::number(record.similar));
+    ui->edNo->setText(record.idAvatar);
+    ui->edStatus->setText(familyRole);
 }
