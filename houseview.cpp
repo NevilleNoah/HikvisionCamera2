@@ -63,6 +63,9 @@ void HouseView::initHouseTable() {
     ui->houseTable->setRowCount(houseRowSum);
     ui->houseTable->setColumnCount(houseColSum);
 
+    ui->houseTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    ui->houseTable->verticalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+
     for(int row = 0; row < houseRowSum; row++) {
         for(int col = 0; col < houseColSum; col++) {
             //门牌号
@@ -207,6 +210,9 @@ void HouseView::changeHouseStatus() {
 }
 
 void HouseView::initDateTime() {
+    ui->startDateTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
+    ui->endDateTime->setDisplayFormat("yyyy-MM-dd ddd hh:mm");
+
     QDate startDate = QDate::currentDate();
     QTime startTime;
     startTime.setHMS(0, 0, 0);

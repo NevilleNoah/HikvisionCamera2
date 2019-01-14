@@ -24,8 +24,10 @@ int PreviewView::currentRow;
 //保存路径
 QString PreviewView::dirAvatar;
 QString PreviewView::dirCapture;
+QString PreviewView::dirFace;
 QString PreviewView::dirPicAvatar;
 QString PreviewView::dirPicCapture;
+QString PreviewView::dirPicFace;
 //报警信息
 QList<ALARM_INFO> PreviewView::alarmList;
 ALARM_INFO PreviewView::alarmInfo;
@@ -180,9 +182,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
             strcpy(alarmInfo.sex, "未知");
             break;
         }
-
-
-
     } else {
 
         //--------------------
@@ -439,7 +438,7 @@ void PreviewView::showPersonInfo(int option) {
         } else {
 
             ui->edName->setText(QString::fromLocal8Bit("未知"));
-            ui->edSex->setText(QString::fromLocal8Bit("未知"));
+            //ui->edSex->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
 
@@ -458,6 +457,10 @@ void PreviewView::showPersonInfo(int option) {
         QImage imgCapture(dirPicCapture, "JPG");
         QPixmap pixCapture = QPixmap::fromImage(imgCapture);
         ui->picCapture->setPixmap(pixCapture.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+        QImage imgFace(dirPicFace, "JPG");
+        QPixmap pixFace = QPixmap::fromImage(imgFace);
+        ui->picFace->setPixmap(pixFace.scaled(ui->picFace->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         if(!alarmInfo.isStranger) {
 
@@ -484,7 +487,6 @@ void PreviewView::showPersonInfo(int option) {
             ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
             ui->edName->setText(QString::fromLocal8Bit("未知"));
-            ui->edSex->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
 
@@ -496,19 +498,17 @@ void PreviewView::showPersonInfo(int option) {
 }
 
 void PreviewView::setAlarmInfo() {
-
     dirPicCapture = dirCapture;
-    dirPicCapture.append(alarmInfo.idCapture);
-    dirPicCapture.append(".jpg");
+    dirPicCapture.append(alarmInfo.idCapture + ".jpg");
+    //dirPicCapture.append(".jpg");
+    dirPicFace = dirFace;
+    dirPicFace.append(alarmInfo.idCapture + ".jpg");
 
     if(!alarmInfo.isStranger) {
         dirPicAvatar = dirAvatar;
-        dirPicAvatar.append(alarmInfo.idAvatar);
-        dirPicAvatar.append(".jpg");
-    } else {
-
+        dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
+        //dirPicAvatar.append(".jpg");
     }
-
     emit previewView->showPersonInfo(OPTION_DOUBLE_CLICK);
 }
 
@@ -522,7 +522,7 @@ void PreviewView::addAlarmItem() {
     qDebug() << "PreviweView: addAlarmItem exec";
 
     if(!alarmInfo.isStranger) {
-        qDebug() << "is Stranger";
+        qDebug() << "is not Stranger";
         QIcon icon(":/icon/info.png");
         QListWidgetItem* item = new QListWidgetItem();
         item->setText(alarmText);
@@ -531,7 +531,6 @@ void PreviewView::addAlarmItem() {
     }
     else {
         qDebug() << "is Stranger";
-
         QIcon icon(":/icon/warn.png");
         QListWidgetItem* item = new QListWidgetItem();
         item->setText(alarmText);
@@ -574,9 +573,9 @@ void PreviewView::saveToDatabase() {
     database.openConnect();
 
     if(!alarmInfo.isStranger) {
-        database.addRecord(alarmInfo.applicant, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord(alarmInfo.applicant, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.idCapture, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
-        database.addRecord("", alarmInfo.idCapture, "", alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord("", alarmInfo.idCapture, "", alarmInfo.idCapture,  alarmInfo.isStranger, alarmInfo.similarity);
     }
     database.closeConnect();
 
@@ -586,8 +585,6 @@ void PreviewView::saveToDatabase() {
 void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 {
     qDebug() << "PreviewView: on_alarmList_itemDoubleClicked exec";
-
-
     currentRow = ui->alarmList->currentRow();
     //alarmInfo = alarmList[alarmList.size()-1-currentRow];
     alarmInfo = alarmList[searchList[searchList.size()-1-currentRow]];
@@ -601,7 +598,6 @@ void PreviewView::on_btnAlarmClear_clicked()
 
     ui->edId->setText("");
     ui->edName->setText("");
-    ui->edSex->setText("");
     ui->edSimilarity->setText("");
 
     QImage imgCapture("");
@@ -632,8 +628,9 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
     ui->picCapture->setPixmap(pix);
 
     //抓拍图片路径设置
-    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-    dirCapture = config->value("/Dir/dirCapture").toString();
+    //QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
+    //dirCapture = config->value("/Dir/dirCapture").toString();
+    dirCapture = Config::getDirCaptureConfig();
 
     QDir qdirCapture(dirCapture);
     if(!qdirCapture.exists(dirCapture)) {
@@ -641,8 +638,8 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
     }
 
     dirPicCapture = dirCapture;
-    dirPicCapture.append(alarmInfo.idCapture);
-    dirPicCapture.append(".jpg");
+    dirPicCapture.append(alarmInfo.idCapture + ".jpg");
+    //dirPicCapture.append(".jpg");
 
     //保存抓拍图片文件
     QFile file(dirPicCapture);
@@ -661,7 +658,8 @@ void PreviewView::showFacePic(QNetworkReply* reply) {
     pix.loadFromData(bytes);
     ui->picFace->setPixmap(pix);
 
-    QString dirFace = Config::getDirInfoFace();
+    dirFace = Config::getDirInfoFace();
+    //QString dirFace = Config::getDirInfoFace();
     QDir qdirCapture(dirFace);
     qDebug() << "dirFace: " << dirFace;
     if(!qdirCapture.exists(dirFace)) {
@@ -669,9 +667,10 @@ void PreviewView::showFacePic(QNetworkReply* reply) {
     }
 
     //dirPicCapture = dirCapture;
-    QString dirPicFace = dirFace;
-    dirPicFace.append(alarmInfo.idCapture);
-    dirPicFace.append(".jpg");
+    //QString dirPicFace = dirFace;
+    dirPicFace = dirFace;
+    dirPicFace.append(alarmInfo.idCapture + ".jpg");
+   // dirPicFace.append(".jpg");
     qDebug() << "dirPicFace: " << dirPicFace;
     //保存人脸子图文件
     QFile file(dirPicFace);
@@ -691,9 +690,9 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
     ui->picAvatar->setPixmap(pix);
 
     //人脸图片路径设置
-    QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-    dirAvatar = config->value("/Dir/dirAvatar").toString();
-
+    //QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
+    //dirAvatar = config->value("/Dir/dirAvatar").toString();
+    dirAvatar = Config::getDirInfoAvatar();
     QDir qdirAvatar(dirAvatar);
     if(!qdirAvatar.exists(dirAvatar)) {
         qdirAvatar.mkpath(dirAvatar);
@@ -712,7 +711,7 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
         file.close();
     }
 
-    delete config;
+    //delete config;
 }
 
 

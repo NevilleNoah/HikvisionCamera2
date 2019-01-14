@@ -116,8 +116,10 @@ public:
     static int currentRow;
     static QString dirAvatar;
     static QString dirCapture;
+    static QString dirFace;
     static QString dirPicAvatar;
     static QString dirPicCapture;
+    static QString dirPicFace;
     static QString urlCapture;
     static QString urlAvatar;
 

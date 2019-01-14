@@ -327,9 +327,9 @@
      <property name="title">
       <string>路径</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QLabel" name="textDirCapture">
           <property name="text">
@@ -337,26 +337,6 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLineEdit" name="edDirCapture"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="btnCapturePath">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QLabel" name="textDirAvatar">
           <property name="sizePolicy">
@@ -371,12 +351,46 @@
          </widget>
         </item>
         <item>
+         <widget class="QLabel" name="textDirFace">
+          <property name="text">
+           <string>人脸子图路径</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QLineEdit" name="edDirCapture"/>
+        </item>
+        <item>
          <widget class="QLineEdit" name="edDirAvatar">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edDirFace"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QPushButton" name="btnCapturePath">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>...</string>
           </property>
          </widget>
         </item>
@@ -393,26 +407,16 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QPushButton" name="btnFacePath">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="textDirFace">
-     <property name="text">
-      <string>人脸子图路径</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLineEdit" name="edDirFace"/>
-   </item>
-   <item>
-    <widget class="QPushButton" name="btnFacePath">
-     <property name="text">
-      <string>...</string>
-     </property>
     </widget>
    </item>
    <item>

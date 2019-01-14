@@ -56,18 +56,19 @@ bool Database::closeConnect() {
 
 //增加记录
 bool Database::addRecord(QString applicant, QString idCapture,
-                         QString idAvatar, bool isStranger, float similar) {
+                         QString idAvatar, QString idFace, bool isStranger, float similar) {
     try{
         if(&db!=NULL) {
             //执行sql语句
             QSqlQuery query;
 
-            query.prepare("INSERT INTO record(applicant, capture_id, avatar_id, stranger, similar) "
-                          "VALUES(:applicant, :idCapture, :idAvatar, :isStranger, :similar)");
+            query.prepare("INSERT INTO record(applicant, capture_id, avatar_id, face_id, stranger, similar) "
+                          "VALUES(:applicant, :idCapture, :idAvatar, :idFace, :isStranger, :similar)");
 
             query.bindValue(":applicant", applicant);
             query.bindValue(":idCapture", idCapture);
             query.bindValue(":idAvatar", idAvatar);
+            query.bindValue(":idFace", idFace);
             query.bindValue(":isStranger", isStranger);
             query.bindValue(":similar", similar);
 

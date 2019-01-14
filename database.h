@@ -48,7 +48,7 @@ public:
     bool openConnect();
     bool closeConnect();
 
-    bool addRecord(QString applicant, QString idCapture, QString idAvatar, bool isStranger, float similar);
+    bool addRecord(QString applicant, QString idCapture, QString idFace, QString idAvatar, bool isStranger, float similar);
 
     void setQSqlDatabase(QSqlDatabase db);
 
