@@ -10,7 +10,6 @@
 #include <QList>
 #include "config.h"
 
-
 typedef struct tagRECORD{
     QDateTime timesamp;
     QString applicant;
@@ -32,6 +31,13 @@ typedef struct tagApplicantInfo {
     QString applicant;
 } ApplicantInfo;
 
+typedef struct tagADDRESS_INFO{
+    QString community;
+    QString building;
+    QString unit;
+    QString house;
+} ADDRESS_INFO;
+
 class Database
 {
 public:
@@ -48,6 +54,7 @@ public:
 
     RECORD selectRecord(QDateTime timesamp, QString applicant, QString idAvatar);
     QString selectFamilyRole(QString applicant, QString sfzno);
+    ADDRESS_INFO selectAddress(QString applicant, QString sfzno);
 
     void setDbConfig();
     bool openConnect();

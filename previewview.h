@@ -63,9 +63,15 @@ typedef struct tagALARM_INFO {
     QString applicant;
 
     bool isStranger;
-}ALARM_INFO;
-
-
+} ALARM_INFO;
+/*
+typedef struct tagADDRESS_INFO{
+    QString community;
+    QString building;
+    QString unit;
+    QString house;
+} ADDRESS_INFO;
+*/
 namespace Ui {
     class PreviewView;
 }
@@ -112,6 +118,8 @@ public:
     static QList<char*> avatarList;
     static QList<char*> captureList;
     static QString currentAlarmInfo;
+    //住址
+    static ADDRESS_INFO addressInfo;
 
     static int currentRow;
     static QString dirAvatar;

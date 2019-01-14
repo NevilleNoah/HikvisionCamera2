@@ -260,6 +260,29 @@ QString Database::selectFamilyRole(QString applicant, QString sfzno) {
     return query.value("familyrole").toString();
 }
 
+
+ADDRESS_INFO Database::selectAddress(QString applicant, QString sfzno) {
+    openConnect();
+    ADDRESS_INFO addressInfo;
+    QSqlQuery query;
+    QString sqlSentence = "SELECT  h.community,h.building,h.unit,h.house "
+                          "FROM applicant a,house h,houseapplicant ha "
+                          "WHERE a.applicant=:applicant AND a.sfzno=:sfzno "
+                          "AND a.id=ha.id AND ha.house_id=h.id";
+
+    query.prepare(sqlSentence);
+    query.bindValue(":applicant", applicant);
+    query.bindValue(":sfzno", sfzno);
+    query.exec();
+    query.next();
+    addressInfo.community = query.value("community").toString();
+    addressInfo.building = query.value("building").toString();
+    addressInfo.unit = query.value("unit").toString();
+    addressInfo.house = query.value("house").toString();
+    closeConnect();
+    return addressInfo;
+}
+
 ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {
      QSqlQuery query;
      QString sql = "select * from applicant where sfzno = :sfzNo";

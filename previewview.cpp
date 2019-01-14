@@ -53,6 +53,10 @@ bool PreviewView::isClickSearch = false;
 //搜索的名字
 QString PreviewView::inputName = "";
 
+
+//住址
+ADDRESS_INFO PreviewView::addressInfo;
+
 PreviewView::PreviewView(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PreviewView)
@@ -142,6 +146,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         ApplicantInfo applicantInfo = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo);
         database.closeConnect();
         alarmInfo.applicant = applicantInfo.applicant;
+        //住址
+        addressInfo = database.selectAddress(alarmInfo.applicant, alarmInfo.idAvatar);
         //人脸库头像图
         alarmInfo.idAvatar = alarmInfo.sfzNo;
         avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
@@ -434,7 +440,8 @@ void PreviewView::showPersonInfo(int option) {
             QImage imgSymbol(":/icon/correct.png", "PNG");
             QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
             ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
+            //住址
+            ui->edAddress->setText(addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house);
         } else {
 
             ui->edName->setText(QString::fromLocal8Bit("未知"));
@@ -475,6 +482,9 @@ void PreviewView::showPersonInfo(int option) {
             ui->edName->setText(alarmInfo.applicant);
             ui->edId->setText(alarmInfo.sfzNo);
             ui->edSimilarity->setText(QString::number(alarmInfo.similarity));
+            //住址
+            QString address = addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house;
+            ui->edAddress->setText(address);
 
         } else {
 
@@ -489,7 +499,7 @@ void PreviewView::showPersonInfo(int option) {
             ui->edName->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
-
+            ui->edAddress->setText(QString::fromLocal8Bit("未知"));
         }
         break;
     }
@@ -588,6 +598,7 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
     currentRow = ui->alarmList->currentRow();
     //alarmInfo = alarmList[alarmList.size()-1-currentRow];
     alarmInfo = alarmList[searchList[searchList.size()-1-currentRow]];
+    addressInfo = database.selectAddress(alarmInfo.applicant, alarmInfo.idAvatar);
     setAlarmInfo();
 }
 
