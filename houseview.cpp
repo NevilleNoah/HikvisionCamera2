@@ -232,43 +232,54 @@ void HouseView::on_flush_clicked()
     setHouseTable();
 }
 
-
-
 void HouseView::on_houseTable_itemDoubleClicked(QTableWidgetItem *item)
 {
     setRecordTable(item);
 }
 
+void HouseView::setCapturePic(QImage imgCapture) {
+    ui->picCapture->setPixmap(QPixmap::fromImage(imgCapture).scaled(ui->picCapture->size(),
+                              Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void HouseView::setAvatarPic(QImage imgAvatar) {
+    ui->picAvatar->setPixmap(QPixmap::fromImage(imgAvatar).scaled(ui->picAvatar->size(),
+                             Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void HouseView::setFacePic(QImage imgFace) {
+    ui->picFace->setPixmap(QPixmap::fromImage(imgFace).scaled(ui->picFace->size(),
+                           Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void HouseView::getPicDir(RECORD record) {
+    dirCapture = Config::getDirInfoCapture();
+    dirAvatar = Config::getDirInfoAvatar();
+    dirFace = Config::getDirInfoFace();
+    dirPicCapture = dirCapture.append(record.idCapture+".jpg");
+    dirPicFace = dirFace.append(record.idCapture+".jpg");
+    dirPicAvatar = dirAvatar.append(record.idAvatar+".jpg");
+}
+
+void HouseView::setPersonInfo(QString applicant, QString similar,
+                              QString idAvatar, QString familyRole) {
+    ui->edName->setText(applicant);
+    ui->edSimilarity->setText(similar);
+    ui->edNo->setText(idAvatar);
+    ui->edStatus->setText(familyRole);
+}
 
 void HouseView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
 {
     initDatabase();
-    database.openConnect();
-    RECORD record = database.selectRecord(records[item->row()].timesamp, records[item->row()].applicant, records[item->row()].idAvatar);
+    RECORD record = database.selectRecord(records[item->row()].timesamp,
+                                            records[item->row()].applicant, records[item->row()].idAvatar);
     QString familyRole = database.selectFamilyRole(record.applicant, record.idAvatar);
-    database.closeConnect();
-    dirCapture = Config::getDirInfoCapture();
-    dirAvatar = Config::getDirInfoAvatar();
-    dirFace = Config::getDirInfoFace();
 
-    dirPicCapture = dirCapture.append(record.idCapture+".jpg");
-    QImage imgCapture(dirPicCapture, "JPG");
-    QPixmap pixCapture = QPixmap::fromImage(imgCapture);
-    ui->picCapture->setPixmap(pixCapture.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    dirPicFace = dirFace.append(record.idCapture+".jpg");
-    QImage imgFace(dirPicFace, "JPG");
-    QPixmap pixFace = QPixmap::fromImage(imgFace);
-    ui->picFace->setPixmap(pixFace.scaled(ui->picFace->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-
-    dirPicAvatar = dirAvatar.append(record.idAvatar+".jpg");
-    QImage imgAvatar(dirPicAvatar, "JPG");
-    QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-    ui->picAvatar->setPixmap(pixAvatar.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-    ui->edName->setText(record.applicant);
-    ui->edSimilarity->setText(QString::number(record.similar));
-    ui->edNo->setText(record.idAvatar);
-    ui->edStatus->setText(familyRole);
+    getPicDir(record);
+    setCapturePic(QImage(dirPicCapture, "JPG"));
+    setFacePic(QImage(dirPicFace, "JPG"));
+    setAvatarPic(QImage(dirPicAvatar, "JPG"));
+    setPersonInfo(record.applicant, QString::number(record.similar),
+                  record.idAvatar, familyRole);
 }

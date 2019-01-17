@@ -1,13 +1,14 @@
 ﻿#ifndef HOUSEVIEW_H
 #define HOUSEVIEW_H
 
-#include <QWidget>
+//#include <QWidget>
+#include "headinfo.h"
 #include "database.h"
-#include <QtCore>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QString>
-#include <QTimer>
+//#include <QtCore>
+//#include <QTableWidget>
+//#include <QTableWidgetItem>
+//#include <QString>
+//#include <QTimer>
 
 namespace Ui {
 class HouseView;
@@ -44,6 +45,8 @@ private:
     static QString dirPicFace;
 
     static QList<RECORD> records;
+public:
+    static void getPicDir(RECORD record);
 
     void initUI();
     void initDatabase();
@@ -54,7 +57,10 @@ private:
     void setTimer();
     void changeHouseStatus();
     void changeRecordTableData();
-
+    void setCapturePic(QImage imgCapture);
+    void setAvatarPic(QImage imgAvatar);
+    void setFacePic(QImage imgFace);
+    void setPersonInfo(QString applicant, QString similar, QString idAvatar, QString familyRole);
  public slots:
     void setHouseTable();
     void setRecordTable(QTableWidgetItem *item);

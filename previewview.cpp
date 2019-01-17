@@ -4,6 +4,7 @@
 
 const int OPTION_FACE_COMPARE = 0;
 const int OPTION_DOUBLE_CLICK = 1;
+const QString UNKNOW = QString::fromLocal8Bit("未知");
 
 //预览属性设置
 LONG PreviewView::lUserID;//用户句柄
@@ -35,8 +36,8 @@ QString PreviewView::alarmText;
 //搜索信息
 QList<int> PreviewView::searchList;
 //信息列表
-QList<char*> PreviewView::avatarList;
-QList<char*> PreviewView::captureList;
+//QList<char*> PreviewView::avatarList;
+//QList<char*> PreviewView::captureList;
 QString PreviewView::currentAlarmInfo;
 //URL
 QString PreviewView::urlCapture;
@@ -53,7 +54,6 @@ bool PreviewView::isClickSearch = false;
 //搜索的名字
 QString PreviewView::inputName = "";
 
-
 //住址
 ADDRESS_INFO PreviewView::addressInfo;
 
@@ -63,7 +63,7 @@ PreviewView::PreviewView(QWidget *parent) :
 {
     previewView = this;
     ui->setupUi(this);
-    connect(this, SIGNAL(clearAlarmList()), this, SLOT(on_btnAlarmClear_clicked()));
+    //connect(this, SIGNAL(clearAlarmList()), this, SLOT(on_btnAlarmClear_clicked()));
     loadPreview();
 }
 
@@ -71,9 +71,36 @@ PreviewView::~PreviewView() {
     delete ui;
 }
 
-void PreviewView::initConfig() {
-    Config::initCameraConfig();
-    Config::initCompareConfig();
+void PreviewView::initDatabase() {
+    database.setQSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"));
+}
+
+void PreviewView::setCapturePic(QImage imgCapture) {
+    ui->picCapture->setPixmap(QPixmap::fromImage(imgCapture).scaled(ui->picCapture->size(),
+                              Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void PreviewView::setAvatarPic(QImage imgAvatar) {
+    ui->picAvatar->setPixmap(QPixmap::fromImage(imgAvatar).scaled(ui->picAvatar->size(),
+                             Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void PreviewView::setFacePic(QImage imgFace) {
+    ui->picFace->setPixmap(QPixmap::fromImage(imgFace).scaled(ui->picFace->size(),
+                           Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void PreviewView::setSymbolPic(QImage imgSymbol) {
+    ui->picSymbol->setPixmap(QPixmap::fromImage(imgSymbol).scaled(ui->picSymbol->size(),
+                             Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void PreviewView::setEdPersonInfo(QString applicantInfo, QString sfzNo, QString similarity, QString address) {
+    ui->edName->setText(applicantInfo);
+    ui->edId->setText(sfzNo);
+    ui->edSimilarity->setText(similarity);
+    //住址
+    ui->edAddress->setText(address);
 }
 
 void CALLBACK PreviewView::g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser) {
@@ -97,22 +124,75 @@ BOOL CALLBACK PreviewView::MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlar
         emit previewView->clearAlarmList();
     }
 
-    switch(lCommand)
-    {
-    case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
-    {
-        qDebug() << "PreviewView: Detected face";
-        memcpy(&struFaceMatchAlarm, pAlarmInfo, sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
-        //设置报警信息，用于记录所需用到的的报警数据
-        setAlarmInfo(struFaceMatchAlarm);
-        //设置报警文本，用于在下方列表区显示
-        setAlarmText();
-        //数据库操作
-        saveToDatabase();
-        break;
-    }
+    switch(lCommand) {
+        case COMM_SNAP_MATCH_ALARM: //人脸比对结果信息
+        {
+            qDebug() << "PreviewView: Detected face";
+            memcpy(&struFaceMatchAlarm, pAlarmInfo, sizeof(NET_VCA_FACESNAP_MATCH_ALARM));
+            //设置报警信息，用于记录所需用到的的报警数据
+            setAlarmInfo(struFaceMatchAlarm);
+            //设置报警文本，用于在下方列表区显示
+            setAlarmText();
+            //数据库操作
+            saveToDatabase();
+            break;
+        }
         return TRUE;
     }
+}
+
+void PreviewView::downLoadCapturePic() {
+    capture = (char*)struFaceMatchAlarm.pSnapPicBuffer;
+    int captureCutIndex = QString(capture).indexOf("SEl");
+    urlCapture = QString(capture).mid(0, captureCutIndex);
+    qDebug() << "urlCapture is " << urlCapture;
+
+    QEventLoop eventLoop;
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QUrl url(urlCapture);
+
+    url.setUserName(Config::getCameraInfoUserName());
+    url.setPassword(Config::getCameraInfoPassWord());
+    QNetworkReply* reply = manager->get(QNetworkRequest(url));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
+    eventLoop.exec();
+}
+
+void PreviewView::downLoadAvatarPic() {
+    avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
+    int avatarCutIndex = QString(avatar).indexOf("http://",1);
+    urlAvatar = QString(avatar).mid(0, avatarCutIndex);
+
+    QEventLoop eventLoop;
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+
+    QUrl url(urlAvatar);
+
+    url.setUserName(Config::getCameraInfoUserName());
+    url.setPassword(Config::getCameraInfoPassWord());
+    QNetworkReply* reply = manager->get(QNetworkRequest(url));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showAvatarPic(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    eventLoop.exec();
+}
+
+void PreviewView::downLoadFacePic() {
+    QString facePic = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struSnapInfo.pBuffer1);
+    //qDebug() << "FacePic: " << facePic;
+    int faceCutIndex = facePic.mid(6).indexOf("http://")+6;
+    QString urlFacePic = facePic.mid(0, faceCutIndex);
+    //qDebug() << "urlFacePic: " << urlFacePic;
+    QEventLoop eventLoop;
+    QNetworkAccessManager *manager = new QNetworkAccessManager();
+    QUrl url(urlFacePic);
+
+    url.setUserName(Config::getCameraInfoUserName());
+    url.setPassword(Config::getCameraInfoPassWord());
+    QNetworkReply* reply = manager->get(QNetworkRequest(url));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showFacePic(QNetworkReply*)));
+    eventLoop.exec();
 }
 
 /**
@@ -142,15 +222,17 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         alarmInfo.sfzNo = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName);
         //姓名
         initDatabase();
-        database.openConnect();
+        /*database.openConnect();
         ApplicantInfo applicantInfo = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo);
         database.closeConnect();
-        alarmInfo.applicant = applicantInfo.applicant;
+        alarmInfo.applicant = applicantInfo.applicant;*/
+        alarmInfo.applicant = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo).applicant;
         //住址
-        addressInfo = database.selectAddress(alarmInfo.applicant, alarmInfo.idAvatar);
+        addressInfo = database.selectAddress(alarmInfo.applicant, alarmInfo.sfzNo);
+        qDebug() << "addressInfo: " << addressInfo.community;
         //人脸库头像图
         alarmInfo.idAvatar = alarmInfo.sfzNo;
-        avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
+        /*avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
         int avatarCutIndex = QString(avatar).indexOf("http://",1);
         urlAvatar = QString(avatar).mid(0, avatarCutIndex);
 
@@ -164,7 +246,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         QNetworkReply* reply = manager->get(QNetworkRequest(url));
         connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showAvatarPic(QNetworkReply*)));
         connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
-        eventLoop.exec();
+        eventLoop.exec();*/
+        downLoadAvatarPic();
 
         //--------------------
         //姓名
@@ -177,7 +260,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
         //--------------------
         //性别
-        switch(struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.bySex) {
+        /*switch(struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.bySex) {
         case 0x0:
             strcpy(alarmInfo.sex, "男");
             break;
@@ -187,7 +270,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         case 0xff:
             strcpy(alarmInfo.sex, "未知");
             break;
-        }
+        }*/
     } else {
 
         //--------------------
@@ -203,7 +286,7 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     //--------------------
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
-
+    /*
     capture = (char*)struFaceMatchAlarm.pSnapPicBuffer;
     int captureCutIndex = QString(capture).indexOf("SEl");
     urlCapture = QString(capture).mid(0, captureCutIndex);
@@ -219,9 +302,10 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
     connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
     eventLoop.exec();
-
+    */
+    downLoadCapturePic();
     /**********人脸子图测试代码**********/
-    QString facePic = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struSnapInfo.pBuffer1);
+    /*QString facePic = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struSnapInfo.pBuffer1);
     qDebug() << "FacePic: " << facePic;
     int faceCutIndex = facePic.mid(6).indexOf("http://")+6;
     QString urlFacePic = facePic.mid(0, faceCutIndex);
@@ -235,7 +319,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     QNetworkReply* reply1 = manager1->get(QNetworkRequest(url1));
     connect(manager1, SIGNAL(finished(QNetworkReply*)), &eventLoop1, SLOT(quit()));
     connect(manager1, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showFacePic(QNetworkReply*)));
-    eventLoop1.exec();
+    eventLoop1.exec();*/
+    downLoadFacePic();
     /**********人脸子图测试代码**********/
 
     //显示个人信息
@@ -249,13 +334,16 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
 
 //判断是否设置报警信息
 bool PreviewView::isSetAlarmText() {
-    if(isClickSearch == false)
+    if(isClickSearch == false) {
         return true;
-    if(isClickSearch == true && (inputName.compare(QString::fromLocal8Bit(alarmInfo.name)) == 0))
+    }
+    if(isClickSearch == true && (inputName.compare(QString::fromLocal8Bit(alarmInfo.name)) == 0)) {
         return true;
+    }
     if(isClickSearch == true && inputName.compare(QString::fromLocal8Bit("陌生人")) == 0
-                             && alarmInfo.isStranger == true)
+            && alarmInfo.isStranger == true) {
         return true;
+    }
     return false;
 }
 
@@ -286,9 +374,7 @@ void PreviewView::setAlarmText() {
 void PreviewView::loadPreview() {
     qDebug() << "PreviewView: loadPreview exec";
     //重置图标
-    QImage imgSymbol("");
-    QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
-    ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    setSymbolPic(QImage(""));
 
     //---------------------------------------
     //关闭预览
@@ -426,58 +512,28 @@ void PreviewView::loadPreview() {
 void PreviewView::showPersonInfo(int option) {
     qDebug() << "PreviewView: showPersonInfo exec";
 
-
     /*********************************************显示个人信息******************************************/
     switch(option) {
     case OPTION_FACE_COMPARE:
 
         if(!alarmInfo.isStranger) {
-
-            ui->edName->setText(alarmInfo.applicant);
-            ui->edId->setText(alarmInfo.sfzNo);
-            ui->edSimilarity->setText(QString::number(alarmInfo.similarity));
-
-            QImage imgSymbol(":/icon/correct.png", "PNG");
-            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
-            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-            //住址
-            ui->edAddress->setText(addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house);
+            QString address = addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house;
+            setEdPersonInfo(alarmInfo.applicant, alarmInfo.sfzNo, QString::number(alarmInfo.similarity), address);
+            setSymbolPic(QImage(":/icon/correct.png", "PNG"));
         } else {
-
-            ui->edName->setText(QString::fromLocal8Bit("未知"));
-            //ui->edSex->setText(QString::fromLocal8Bit("未知"));
-            ui->edId->setText(QString::fromLocal8Bit("未知"));
-            ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
-
-            QImage imgSymbol(":/icon/error.png", "PNG");
-            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
-            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-            QImage imgAvatar("");
-            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-            ui->picAvatar->setPixmap(pixAvatar.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            setEdPersonInfo(UNKNOW, UNKNOW, UNKNOW, UNKNOW);
+            setSymbolPic(QImage(":/icon/error.png", "PNG"));
+            setAvatarPic(QImage(""));
         }
         break;
 
     case OPTION_DOUBLE_CLICK:
-
-        QImage imgCapture(dirPicCapture, "JPG");
-        QPixmap pixCapture = QPixmap::fromImage(imgCapture);
-        ui->picCapture->setPixmap(pixCapture.scaled(ui->picCapture->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-        QImage imgFace(dirPicFace, "JPG");
-        QPixmap pixFace = QPixmap::fromImage(imgFace);
-        ui->picFace->setPixmap(pixFace.scaled(ui->picFace->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        setCapturePic(QImage (dirPicCapture, "JPG"));
+        setFacePic(QImage(dirPicFace, "JPG"));
 
         if(!alarmInfo.isStranger) {
-
-            QImage imgAvatar(dirPicAvatar, "JPG");
-            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-            ui->picAvatar->setPixmap(pixAvatar.scaled(ui->picAvatar->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-            QImage imgSymbol(":/icon/correct.png", "PNG");
-            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
-            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            setAvatarPic(QImage(dirPicAvatar, "JPG"));
+            setSymbolPic(QImage(":/icon/correct.png", "PNG"));
 
             ui->edName->setText(alarmInfo.applicant);
             ui->edId->setText(alarmInfo.sfzNo);
@@ -485,45 +541,36 @@ void PreviewView::showPersonInfo(int option) {
             //住址
             QString address = addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house;
             ui->edAddress->setText(address);
+            /*QString address = addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house;
+            setEdPersonInfo(alarmInfo.applicant, alarmInfo.sfzNo, QString::number(alarmInfo.similarity), address);*/
 
         } else {
+            setAvatarPic(QImage(""));
+            setSymbolPic(QImage(":/icon/error.png", "PNG"));
 
-            QImage imgAvatar("");
-            QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-            ui->picAvatar->setPixmap(pixAvatar);
-
-            QImage imgSymbol(":/icon/error.png", "PNG");
-            QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
-            ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
-            ui->edName->setText(QString::fromLocal8Bit("未知"));
+            /*ui->edName->setText(QString::fromLocal8Bit("未知"));
             ui->edId->setText(QString::fromLocal8Bit("未知"));
             ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
-            ui->edAddress->setText(QString::fromLocal8Bit("未知"));
+            ui->edAddress->setText(QString::fromLocal8Bit("未知"));*/
+            setEdPersonInfo(UNKNOW, UNKNOW, UNKNOW, UNKNOW);
         }
         break;
     }
-
     /*********************************************显示个人信息 END******************************************/
 }
 
 void PreviewView::setAlarmInfo() {
     dirPicCapture = dirCapture;
     dirPicCapture.append(alarmInfo.idCapture + ".jpg");
-    //dirPicCapture.append(".jpg");
     dirPicFace = dirFace;
     dirPicFace.append(alarmInfo.idCapture + ".jpg");
 
     if(!alarmInfo.isStranger) {
         dirPicAvatar = dirAvatar;
         dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
-        //dirPicAvatar.append(".jpg");
     }
     emit previewView->showPersonInfo(OPTION_DOUBLE_CLICK);
 }
-
-
-
 
 /**
  * @brief PreviewView::addAlarmItem 在报警列表中添加报警信息
@@ -578,17 +625,14 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 }
 
 void PreviewView::saveToDatabase() {
-
     initDatabase();
-    database.openConnect();
-
+    //database.openConnect();
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.applicant, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.idCapture, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
         database.addRecord("", alarmInfo.idCapture, "", alarmInfo.idCapture,  alarmInfo.isStranger, alarmInfo.similarity);
     }
-    database.closeConnect();
-
+    //database.closeConnect();
 }
 
 
@@ -604,29 +648,22 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 
 void PreviewView::on_btnAlarmClear_clicked()
 {
-
+    //清空报警列表
     ui->alarmList->clear();
-
+    //清空个人信息
     ui->edId->setText("");
     ui->edName->setText("");
     ui->edSimilarity->setText("");
-
-    QImage imgCapture("");
-    QPixmap pixCapture = QPixmap::fromImage(imgCapture);
-    ui->picCapture->setPixmap(pixCapture);
-
-    QImage imgAvatar("");
-    QPixmap pixAvatar = QPixmap::fromImage(imgAvatar);
-    ui->picAvatar->setPixmap(pixAvatar);
-
-    QImage imgSymbol("");
-    QPixmap pixSymbol = QPixmap::fromImage(imgSymbol);
-    ui->picSymbol->setPixmap(pixSymbol.scaled(ui->picSymbol->size(),Qt::KeepAspectRatio, Qt::SmoothTransformation));
-
+    ui->edAddress->setText("");
+    //清空图片
+    setCapturePic(QImage(""));
+    setAvatarPic(QImage(""));
+    setSymbolPic(QImage(""));
+    setFacePic(QImage(""));
 
     alarmList.clear();
-    avatarList.clear();
-    captureList.clear();
+    //avatarList.clear();
+    //captureList.clear();
 }
 
 void PreviewView::showCapturePic(QNetworkReply* reply) {
@@ -639,8 +676,6 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
     ui->picCapture->setPixmap(pix);
 
     //抓拍图片路径设置
-    //QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-    //dirCapture = config->value("/Dir/dirCapture").toString();
     dirCapture = Config::getDirCaptureConfig();
 
     QDir qdirCapture(dirCapture);
@@ -650,7 +685,6 @@ void PreviewView::showCapturePic(QNetworkReply* reply) {
 
     dirPicCapture = dirCapture;
     dirPicCapture.append(alarmInfo.idCapture + ".jpg");
-    //dirPicCapture.append(".jpg");
 
     //保存抓拍图片文件
     QFile file(dirPicCapture);
@@ -670,18 +704,15 @@ void PreviewView::showFacePic(QNetworkReply* reply) {
     ui->picFace->setPixmap(pix);
 
     dirFace = Config::getDirInfoFace();
-    //QString dirFace = Config::getDirInfoFace();
     QDir qdirCapture(dirFace);
     qDebug() << "dirFace: " << dirFace;
     if(!qdirCapture.exists(dirFace)) {
         qdirCapture.mkpath(dirFace);
     }
 
-    //dirPicCapture = dirCapture;
-    //QString dirPicFace = dirFace;
     dirPicFace = dirFace;
     dirPicFace.append(alarmInfo.idCapture + ".jpg");
-   // dirPicFace.append(".jpg");
+
     qDebug() << "dirPicFace: " << dirPicFace;
     //保存人脸子图文件
     QFile file(dirPicFace);
@@ -701,8 +732,6 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
     ui->picAvatar->setPixmap(pix);
 
     //人脸图片路径设置
-    //QSettings *config = new QSettings("./config/config.ini", QSettings::IniFormat);
-    //dirAvatar = config->value("/Dir/dirAvatar").toString();
     dirAvatar = Config::getDirInfoAvatar();
     QDir qdirAvatar(dirAvatar);
     if(!qdirAvatar.exists(dirAvatar)) {
@@ -710,8 +739,6 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
     }
     dirPicAvatar = dirAvatar;
     dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
-   // dirPicAvatar.append(".jpg");
-
 
     qDebug() << "dirPicAvatar:" << dirPicAvatar;
 
@@ -721,10 +748,7 @@ void PreviewView::showAvatarPic(QNetworkReply* reply) {
         file.write(bytes);
         file.close();
     }
-
-    //delete config;
 }
-
 
 void PreviewView::on_btnSearch_clicked()
 {
@@ -768,24 +792,15 @@ void PreviewView::on_btnSearch_clicked()
                                       alarmList[index].dwMinute,
                                       alarmList[index].dwSecond);
         if(!alarmList[index].isStranger) {
-
             alarmText.append(QString::fromLocal8Bit("   姓名："));
             alarmText.append(alarmList[index].applicant);
 
             alarmText.append(QString::fromLocal8Bit("   编号："));
             alarmText.append(alarmList[index].sfzNo);
-
         } else {
-
             alarmText.append(QString::fromLocal8Bit("   陌生人"));
         }
         alarmInfo = alarmList[index];
         emit previewView->addAlarmItem();
-
     }
-}
-
-void PreviewView::initDatabase() {
-    QSqlDatabase qSqlDatabase = QSqlDatabase::addDatabase("QMYSQL");
-    database.setQSqlDatabase(qSqlDatabase);
 }

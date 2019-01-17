@@ -1,9 +1,8 @@
 ﻿#ifndef HISTORYVIEW_H
 #define HISTORYVIEW_H
 
-#include <QWidget>
+#include "headinfo.h"
 #include "database.h"
-#include <QTableWidgetItem>
 
 namespace  Ui{
 class HistoryView;
@@ -18,7 +17,6 @@ public:
 
     void initTimeEdit();
 
-    /************************zjb**********************/
     void initTableUI();
     void initDatabase();
     void setTextNowPageNum(int nowPageNum);
@@ -37,13 +35,11 @@ public:
     void clearTable();
     void setTextNowPageVal();
     void initComboBoxUI();
-    //void setComboBoxItemState(int index, bool state);
     void setComboBoxState(bool strangerState, bool sexState);
     void setComboBoxUI(int strangerIndex, int sexIndex);
     int getCmbStrangerIndex();
     int getCmbSexIndex();
     void cleanImage();
-    /*********************zjb END*********************/
 
     static Database database;
     static QList<RECORD> records;

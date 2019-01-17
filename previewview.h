@@ -1,77 +1,11 @@
 ﻿#ifndef PREVIEWVIEW_H
 #define PREVIEWVIEW_H
 
-#include <QWidget>
-#include <QtCore>
-#include <QMainWindow>
-#include <QSqlError>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QTabWidget>
-#include <QtUiTools/QUiLoader>
-#include <QFile>
-#include <QMessageBox>
-#include <QDebug>
-#include <QBuffer>
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <time.h>
-#include <qimage.h>
-#include <qimagereader.h>
-#include <QList>
-#include <QMap>
-#include <QString>
-#include <QListWidget>
-#include <QListWidgetItem>
-#include <QDir>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QStringList>
-#include <QtNetwork>
-#include <picthread.h>
-#include "HCNetSDK.h"
-#include "plaympeg4.h"
-#include "Windows.h"
+#include "headinfo.h"
 #include "database.h"
 #include "config.h"
 
-//时间解析宏定义
-#define GET_YEAR(_time_)      (((_time_)>>26) + 2000)
-#define GET_MONTH(_time_)     (((_time_)>>22) & 15)
-#define GET_DAY(_time_)       (((_time_)>>17) & 31)
-#define GET_HOUR(_time_)      (((_time_)>>12) & 31)
-#define GET_MINUTE(_time_)    (((_time_)>>6)  & 63)
-#define GET_SECOND(_time_)    (((_time_)>>0)  & 63)
 
-typedef struct tagALARM_INFO {
-    DWORD dwYear;
-    DWORD dwMonth;
-    DWORD dwDay;
-    DWORD dwHour;
-    DWORD dwMinute;
-    DWORD dwSecond;
-
-    char name[NAME_LEN];
-    char sex[4];
-    QString id;
-    float similarity;
-
-    QString idAvatar;
-    QString idCapture;
-    QString sfzNo;
-    QString applicant;
-
-    bool isStranger;
-} ALARM_INFO;
-/*
-typedef struct tagADDRESS_INFO{
-    QString community;
-    QString building;
-    QString unit;
-    QString house;
-} ADDRESS_INFO;
-*/
 namespace Ui {
     class PreviewView;
 }
@@ -132,7 +66,7 @@ public:
     static QString urlAvatar;
 
     void initAlarmTable();
-    static void initConfig();
+    //static void initConfig();
 
     static BOOL CALLBACK MessageCallback(LONG lCommand, NET_DVR_ALARMER *pAlarmer, char *pAlarmInfo, DWORD dwBufLen, void* pUser);
     static void CALLBACK g_ExceptionCallBack(DWORD dwType, LONG lUserID, LONG lHandle, void *pUser);
@@ -141,14 +75,28 @@ public:
     static void setAlarmInfo();
     static void setAlarmText();
     static void saveToDatabase();
-
     static bool isSetAlarmText();
-
     static void initDatabase();
+
+
+    //下载抓拍图并显示
+    static void downLoadCapturePic();
+    //下载人脸图并显示
+    static void downLoadAvatarPic();
+    //下载人脸子图并显示
+    static void downLoadFacePic();
+    //设置抓拍图的显示
+    void setCapturePic(QImage imgCapture);
+    //设置人脸图的显示
+    void setAvatarPic(QImage imgAvatar);
+    //设置人脸子图的显示
+    void setFacePic(QImage imgFace);
+    //设置标志的显示
+    void setSymbolPic(QImage imgSymbol);
+    //设置个人信息的显示
+    void setEdPersonInfo(QString applicantInfo, QString sfzNo, QString similarity, QString address);
+
 private:
-    //static Config config;
-    //static CAMERACONFIG_INFO cameraInfo;
-    //static COMPARECONFIG_INFO compareInfo;
 
 signals:
     void clearAlarmList();

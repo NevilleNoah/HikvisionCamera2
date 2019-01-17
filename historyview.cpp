@@ -240,7 +240,6 @@ void HistoryView::on_btnSearchByCondition_clicked()
     qDebug() << "calPageNum: " << pageNum;
     //pageNum = calPageNum();
 
-
     //显示总页数
     setTextPageNumUI(pageNum);
     //显示当前页码

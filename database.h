@@ -1,42 +1,9 @@
 ﻿#ifndef DATABASE_H
 #define DATABASE_H
 
-#include <QtCore>
-#include <QString>
-#include <QDebug>
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QDateTime>
-#include <QList>
+#include "headinfo.h"
 #include "config.h"
 
-typedef struct tagRECORD{
-    QDateTime timesamp;
-    QString applicant;
-    QString idAvatar;
-    QString idCapture;
-    int similar;
-    bool isStranger;
-} RECORD;
-
-typedef struct tagHouse {
-    QString community;
-    QString building;
-    QString unit;
-    QString house;
-    double area;
-} House;
-
-typedef struct tagApplicantInfo {
-    QString applicant;
-} ApplicantInfo;
-
-typedef struct tagADDRESS_INFO{
-    QString community;
-    QString building;
-    QString unit;
-    QString house;
-} ADDRESS_INFO;
 
 class Database
 {
@@ -69,17 +36,13 @@ public:
     QList<House> selectHouse(QDateTime start, QDateTime end);
     QList<House> selectHouseAsTimer();
 
-
-
     House selectSingleHouse();
 
     ApplicantInfo selectApplicantInfoBySfzNo(QString sfzNo);
-    ApplicantInfo setSingleApplicantInfo(QSqlQuery query);
+    //ApplicantInfo setSingleApplicantInfo(QSqlQuery query);
 
 private:
     static QSqlDatabase db;
-
-    //static DATABASECONFIG_INFO dataBaseInfo;
 
 };
 

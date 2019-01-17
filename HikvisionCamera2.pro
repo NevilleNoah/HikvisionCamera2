@@ -56,7 +56,8 @@ HEADERS += \
     settingsthread.h \
     database.h \
     config.h \
-    houseview.h
+    houseview.h \
+    headinfo.h
 
 
 FORMS += \

@@ -2,37 +2,7 @@
 #define CONFIG_H
 #include <QString>
 #include <QSettings>
-
-//摄像头配置
-typedef struct tagCAMERACONFIG_INFO {
-    QString ip;
-    int port;
-    int *channel;
-    QString userName;
-    QString passWord;
-} CAMERACONFIG_INFO;
-
-//数据库配置
-typedef struct tagDATABASECONFIG_INFO {
-    QString ip;
-    int port;
-    QString model;
-    QString userName;
-    QString passWord;
-} DATABASECONFIG_INFO;
-
-//路径配置
-typedef struct tagDIRCONFIG_INFO {
-    QString dirAvatar;
-    QString dirCapture;
-    QString dirFace;
-    QString dirStranger;
-} DIRCONFIG_INFO;
-
-//相似度配置
-typedef struct tagCOMPARECONFIG_INFO {
-    float similarity;
-} COMPARECONFIG_INFO;
+#include "headinfo.h"
 
 class Config
 {
