@@ -222,31 +222,12 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         alarmInfo.sfzNo = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName);
         //姓名
         initDatabase();
-        /*database.openConnect();
-        ApplicantInfo applicantInfo = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo);
-        database.closeConnect();
-        alarmInfo.applicant = applicantInfo.applicant;*/
         alarmInfo.applicant = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo).applicant;
         //住址
         addressInfo = database.selectAddress(alarmInfo.applicant, alarmInfo.sfzNo);
         qDebug() << "addressInfo: " << addressInfo.community;
         //人脸库头像图
         alarmInfo.idAvatar = alarmInfo.sfzNo;
-        /*avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
-        int avatarCutIndex = QString(avatar).indexOf("http://",1);
-        urlAvatar = QString(avatar).mid(0, avatarCutIndex);
-
-        QEventLoop eventLoop;
-        QNetworkAccessManager *manager = new QNetworkAccessManager();
-
-        QUrl url(urlAvatar);
-
-        url.setUserName(Config::getCameraInfoUserName());
-        url.setPassword(Config::getCameraInfoPassWord());
-        QNetworkReply* reply = manager->get(QNetworkRequest(url));
-        connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showAvatarPic(QNetworkReply*)));
-        connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
-        eventLoop.exec();*/
         downLoadAvatarPic();
 
         //--------------------
@@ -257,20 +238,6 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
             nameBytes[i] = struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName[i];
         }
         convertUnCharToStr(nameBytes, nameHexStr, alarmInfo.name, sizeof(nameBytes));*/
-
-        //--------------------
-        //性别
-        /*switch(struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.bySex) {
-        case 0x0:
-            strcpy(alarmInfo.sex, "男");
-            break;
-        case 0x1:
-            strcpy(alarmInfo.sex, "女");
-            break;
-        case 0xff:
-            strcpy(alarmInfo.sex, "未知");
-            break;
-        }*/
     } else {
 
         //--------------------
@@ -286,42 +253,9 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     //--------------------
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
-    /*
-    capture = (char*)struFaceMatchAlarm.pSnapPicBuffer;
-    int captureCutIndex = QString(capture).indexOf("SEl");
-    urlCapture = QString(capture).mid(0, captureCutIndex);
-    qDebug() << "urlCapture is " << urlCapture;
-
-    QEventLoop eventLoop;
-    QNetworkAccessManager *manager = new QNetworkAccessManager();
-    QUrl url(urlCapture);
-
-    url.setUserName(Config::getCameraInfoUserName());
-    url.setPassword(Config::getCameraInfoPassWord());
-    QNetworkReply* reply = manager->get(QNetworkRequest(url));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), &eventLoop, SLOT(quit()));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showCapturePic(QNetworkReply*)));
-    eventLoop.exec();
-    */
     downLoadCapturePic();
-    /**********人脸子图测试代码**********/
-    /*QString facePic = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struSnapInfo.pBuffer1);
-    qDebug() << "FacePic: " << facePic;
-    int faceCutIndex = facePic.mid(6).indexOf("http://")+6;
-    QString urlFacePic = facePic.mid(0, faceCutIndex);
-    qDebug() << "urlFacePic: " << urlFacePic;
-    QEventLoop eventLoop1;
-    QNetworkAccessManager *manager1 = new QNetworkAccessManager();
-    QUrl url1(urlFacePic);
-
-    url1.setUserName(Config::getCameraInfoUserName());
-    url1.setPassword(Config::getCameraInfoPassWord());
-    QNetworkReply* reply1 = manager1->get(QNetworkRequest(url1));
-    connect(manager1, SIGNAL(finished(QNetworkReply*)), &eventLoop1, SLOT(quit()));
-    connect(manager1, SIGNAL(finished(QNetworkReply*)), previewView, SLOT(showFacePic(QNetworkReply*)));
-    eventLoop1.exec();*/
+    //人脸子图
     downLoadFacePic();
-    /**********人脸子图测试代码**********/
 
     //显示个人信息
     emit previewView->showPersonInfo(OPTION_FACE_COMPARE);
@@ -547,11 +481,6 @@ void PreviewView::showPersonInfo(int option) {
         } else {
             setAvatarPic(QImage(""));
             setSymbolPic(QImage(":/icon/error.png", "PNG"));
-
-            /*ui->edName->setText(QString::fromLocal8Bit("未知"));
-            ui->edId->setText(QString::fromLocal8Bit("未知"));
-            ui->edSimilarity->setText(QString::fromLocal8Bit("未知"));
-            ui->edAddress->setText(QString::fromLocal8Bit("未知"));*/
             setEdPersonInfo(UNKNOW, UNKNOW, UNKNOW, UNKNOW);
         }
         break;
