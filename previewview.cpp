@@ -25,10 +25,12 @@ int PreviewView::currentRow;
 //保存路径
 QString PreviewView::dirAvatar;
 QString PreviewView::dirCapture;
-QString PreviewView::dirFace;
+//QString PreviewView::dirFace;
+//QString PreviewView::dirStranger;
 QString PreviewView::dirPicAvatar;
 QString PreviewView::dirPicCapture;
-QString PreviewView::dirPicFace;
+//QString PreviewView::dirPicFace;
+//QString PreviewView::dirPicStranger;
 //报警信息
 QList<ALARM_INFO> PreviewView::alarmList;
 ALARM_INFO PreviewView::alarmInfo;
@@ -57,12 +59,14 @@ QString PreviewView::inputName = "";
 //住址
 ADDRESS_INFO PreviewView::addressInfo;
 
+
 PreviewView::PreviewView(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::PreviewView)
 {
     previewView = this;
     ui->setupUi(this);
+
     //connect(this, SIGNAL(clearAlarmList()), this, SLOT(on_btnAlarmClear_clicked()));
     loadPreview();
 }
@@ -99,7 +103,6 @@ void PreviewView::setEdPersonInfo(QString applicantInfo, QString sfzNo, QString 
     ui->edName->setText(applicantInfo);
     ui->edId->setText(sfzNo);
     ui->edSimilarity->setText(similarity);
-    //住址
     ui->edAddress->setText(address);
 }
 
@@ -145,12 +148,9 @@ void PreviewView::downLoadCapturePic() {
     capture = (char*)struFaceMatchAlarm.pSnapPicBuffer;
     int captureCutIndex = QString(capture).indexOf("SEl");
     urlCapture = QString(capture).mid(0, captureCutIndex);
-    qDebug() << "urlCapture is " << urlCapture;
-
     QEventLoop eventLoop;
     QNetworkAccessManager *manager = new QNetworkAccessManager();
     QUrl url(urlCapture);
-
     url.setUserName(Config::getCameraInfoUserName());
     url.setPassword(Config::getCameraInfoPassWord());
     QNetworkReply* reply = manager->get(QNetworkRequest(url));
@@ -163,12 +163,9 @@ void PreviewView::downLoadAvatarPic() {
     avatar = (char*)struFaceMatchAlarm.struBlackListInfo.pBuffer1;
     int avatarCutIndex = QString(avatar).indexOf("http://",1);
     urlAvatar = QString(avatar).mid(0, avatarCutIndex);
-
     QEventLoop eventLoop;
     QNetworkAccessManager *manager = new QNetworkAccessManager();
-
     QUrl url(urlAvatar);
-
     url.setUserName(Config::getCameraInfoUserName());
     url.setPassword(Config::getCameraInfoPassWord());
     QNetworkReply* reply = manager->get(QNetworkRequest(url));
@@ -179,14 +176,11 @@ void PreviewView::downLoadAvatarPic() {
 
 void PreviewView::downLoadFacePic() {
     QString facePic = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struSnapInfo.pBuffer1);
-    //qDebug() << "FacePic: " << facePic;
     int faceCutIndex = facePic.mid(6).indexOf("http://")+6;
     QString urlFacePic = facePic.mid(0, faceCutIndex);
-    //qDebug() << "urlFacePic: " << urlFacePic;
     QEventLoop eventLoop;
     QNetworkAccessManager *manager = new QNetworkAccessManager();
     QUrl url(urlFacePic);
-
     url.setUserName(Config::getCameraInfoUserName());
     url.setPassword(Config::getCameraInfoPassWord());
     QNetworkReply* reply = manager->get(QNetworkRequest(url));
@@ -239,7 +233,8 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         }
         convertUnCharToStr(nameBytes, nameHexStr, alarmInfo.name, sizeof(nameBytes));*/
     } else {
-
+        //lUserID, IMPORT_DATA_TO_FACELIB, NET_DVR_FACELIB_COND(), 1024, NULL, NULL, 1024
+        //NET_DVR_UploadFile_V40(lUserID,IMPORT_DATA_TO_FACELIB,NET_DVR_FACELIB_COND(),111,NULL,NULL,0);
         //--------------------
         //设置为陌生人
         alarmInfo.isStranger = true;
@@ -304,6 +299,82 @@ void PreviewView::setAlarmText() {
     }
 }
 
+void PreviewView::getNET_DVR_STDXMLConfig() {
+    NET_DVR_XML_CONFIG_INPUT  lpInputParam = {0};
+    NET_DVR_XML_CONFIG_OUTPUT lpOutputParam = {0};
+    qDebug() << "enter getNET_DVR_STDXMLConfig";//不要删除这条输出
+    lpInputParam.dwSize = sizeof(lpInputParam);
+    char szUrl[256] = { 0 };
+    sprintf(szUrl, "GET /ISAPI/Intelligent/FDLib\r\n");
+    lpInputParam.lpRequestUrl = szUrl;
+    lpInputParam.dwRequestUrlLen = strlen(szUrl);
+    lpInputParam.lpInBuffer = NULL;
+    lpInputParam.dwInBufferSize = 0;
+    lpInputParam.dwRecvTimeOut = 0;
+    lpInputParam.byForceEncrpt = 0;
+    lpInputParam.byNumOfMultiPart = 0;
+    memset(lpInputParam.byRes, 0, sizeof (lpInputParam.byRes));
+    /********************lpOutBuffer********************/
+    void  *lpOutBuffer;
+    lpOutputParam.dwSize = sizeof(lpOutputParam);
+    lpOutputParam.lpOutBuffer = lpOutBuffer;
+    lpOutputParam.dwOutBufferSize = 1024;
+    DWORD  dwReturnedXMLSize;
+    lpOutputParam.dwReturnedXMLSize = dwReturnedXMLSize;
+    void  *lpStatusBuffer;
+    lpOutputParam.lpStatusBuffer = lpStatusBuffer;
+    lpOutputParam.dwStatusSize = 0;
+    memset(lpOutputParam.byRes, 0, sizeof (lpOutputParam.byRes));
+    /********************lpOutBuffer********************/
+
+    bool f = NET_DVR_STDXMLConfig(lUserID, &lpInputParam, &lpOutputParam);
+    qDebug() << "dwReturnedXMLSize: " << dwReturnedXMLSize;
+    qDebug() << "lpOutBuffer: " << (char*)lpOutBuffer;
+    qDebug() << "lpStatusBuffer: " << (char*)lpStatusBuffer;
+    qDebug() << "flag: " << f << " errorCode: " << NET_DVR_GetLastError();
+}
+
+void PreviewView::uploadStrangerFacePic() {
+    qDebug() << "enter uploadStrangerFacePic";
+    char FDID[256] = "0A949258191A4154B09E16FE95DF6FE1";
+    NET_DVR_FACELIB_COND ndfc = {0};
+    ndfc.dwSize = sizeof(ndfc);
+    strcpy_s(ndfc.szFDID, FDID);
+    LONG nduv = NET_DVR_UploadFile_V40(lUserID,IMPORT_DATA_TO_FACELIB,
+                                    &ndfc,sizeof(ndfc),
+                                    NULL,
+                                    NULL,0);
+    qDebug() << "nduv: " << nduv;
+    NET_DVR_SEND_PARAM_IN m_struSendParam;
+    memset(&m_struSendParam, 0, sizeof(m_struSendParam));
+    BYTE    *pSendAppendData;
+    BYTE    *pSendPicData;
+    char szPicFileName[256] = "D:\\Hikvision\\Camera\\stranger\\766.jpg";
+    char szXMLFileName[256] = "C:\\Users\\admin\\Desktop\\test.xml";
+    FILE *fp = fopen(szPicFileName, "r");
+    fseek(fp, 0, SEEK_END);
+    DWORD dwFileSize = ftell(fp);
+    rewind(fp);
+    qDebug() << "dwFileSize: " << dwFileSize;
+    pSendPicData = new BYTE[dwFileSize];
+    fread(pSendPicData, 1, dwFileSize, fp);
+    m_struSendParam.pSendData = pSendPicData;
+    m_struSendParam.dwSendDataLen = dwFileSize;
+    m_struSendParam.byPicType = 1;
+    m_struSendParam.byPicURL = false;
+    fclose(fp);
+    fp = fopen(szXMLFileName, "r");
+    fseek(fp, 0, SEEK_END);
+    dwFileSize = ftell(fp);
+    rewind(fp);
+    pSendAppendData = new BYTE[dwFileSize];
+    fread(pSendAppendData, 1, dwFileSize, fp);
+    m_struSendParam.pSendAppendData = pSendAppendData;
+    m_struSendParam.dwSendAppendDataLen = dwFileSize;
+    fclose(fp);
+    LONG flag = NET_DVR_UploadSend(nduv, &m_struSendParam, NULL);
+    qDebug() << "flag: " << flag;
+}
 
 void PreviewView::loadPreview() {
     qDebug() << "PreviewView: loadPreview exec";
@@ -352,8 +423,7 @@ void PreviewView::loadPreview() {
 
         qDebug()<<"lUserID is "<<lUserID<<endl;
 
-        if (lUserID < 0)
-        {
+        if (lUserID < 0) {
             printf("Login failed, error code: %d\n", NET_DVR_GetLastError());
             NET_DVR_Cleanup();
             return;
@@ -463,21 +533,19 @@ void PreviewView::showPersonInfo(int option) {
 
     case OPTION_DOUBLE_CLICK:
         setCapturePic(QImage (dirPicCapture, "JPG"));
-        setFacePic(QImage(dirPicFace, "JPG"));
+        if(!alarmInfo.isStranger) {
+            //setFacePic(QImage(dirPicFace, "JPG"));
+            setFacePic(QImage(Config::getDirInfoFace().append(alarmInfo.idCapture), "JPG"));
+        } else {
+            setFacePic(QImage(Config::getDirInfoStranger().append(alarmInfo.idCapture), "JPG"));
+        }
+
 
         if(!alarmInfo.isStranger) {
             setAvatarPic(QImage(dirPicAvatar, "JPG"));
             setSymbolPic(QImage(":/icon/correct.png", "PNG"));
-
-            ui->edName->setText(alarmInfo.applicant);
-            ui->edId->setText(alarmInfo.sfzNo);
-            ui->edSimilarity->setText(QString::number(alarmInfo.similarity));
-            //住址
             QString address = addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house;
-            ui->edAddress->setText(address);
-            /*QString address = addressInfo.community+" "+addressInfo.building+" "+addressInfo.unit+" "+addressInfo.house;
-            setEdPersonInfo(alarmInfo.applicant, alarmInfo.sfzNo, QString::number(alarmInfo.similarity), address);*/
-
+            setEdPersonInfo(alarmInfo.applicant, alarmInfo.sfzNo, QString::number(alarmInfo.similarity), address);
         } else {
             setAvatarPic(QImage(""));
             setSymbolPic(QImage(":/icon/error.png", "PNG"));
@@ -488,16 +556,24 @@ void PreviewView::showPersonInfo(int option) {
     /*********************************************显示个人信息 END******************************************/
 }
 
+/**
+ * 双击报警列表后 设置报警信息
+ */
 void PreviewView::setAlarmInfo() {
     dirPicCapture = dirCapture;
     dirPicCapture.append(alarmInfo.idCapture + ".jpg");
-    dirPicFace = dirFace;
-    dirPicFace.append(alarmInfo.idCapture + ".jpg");
+    QString dirPicFace = Config::getDirInfoFace();
+    //dirPicFace.append(alarmInfo.idCapture + ".jpg");
 
     if(!alarmInfo.isStranger) {
+        //dirPicFace = dirFace;
         dirPicAvatar = dirAvatar;
         dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
+    } else {
+        dirPicFace = Config::getDirInfoStranger();
+       // dirPicFace = dirStranger;
     }
+    dirPicFace.append(alarmInfo.idCapture + ".jpg");
     emit previewView->showPersonInfo(OPTION_DOUBLE_CLICK);
 }
 
@@ -555,13 +631,11 @@ void PreviewView::convertUnCharToStr(BYTE *UnChar,char *hexStr, char *str, int l
 
 void PreviewView::saveToDatabase() {
     initDatabase();
-    //database.openConnect();
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.applicant, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.idCapture, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
         database.addRecord("", alarmInfo.idCapture, "", alarmInfo.idCapture,  alarmInfo.isStranger, alarmInfo.similarity);
     }
-    //database.closeConnect();
 }
 
 
@@ -577,6 +651,8 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 
 void PreviewView::on_btnAlarmClear_clicked()
 {
+    //getNET_DVR_STDXMLConfig();
+    uploadStrangerFacePic();
     //清空报警列表
     ui->alarmList->clear();
     //清空个人信息
@@ -591,8 +667,6 @@ void PreviewView::on_btnAlarmClear_clicked()
     setFacePic(QImage(""));
 
     alarmList.clear();
-    //avatarList.clear();
-    //captureList.clear();
 }
 
 void PreviewView::showCapturePic(QNetworkReply* reply) {
@@ -631,20 +705,27 @@ void PreviewView::showFacePic(QNetworkReply* reply) {
     QByteArray bytes = reply->readAll();
     pix.loadFromData(bytes);
     ui->picFace->setPixmap(pix);
+    QString dirFace;// = Config::getDirInfoFace();
+    //QString dirStranger = Config::getDirInfoStranger();
 
-    dirFace = Config::getDirInfoFace();
+    //如果是陌生人，将人脸子图存至陌生人文件夹，否则存入人脸子图(face)文件夹
+    if(!alarmInfo.isStranger) {
+        dirFace = Config::getDirInfoFace();
+        qDebug() << "dirFace: " << dirFace;
+    } else {
+        dirFace = Config::getDirInfoStranger();
+        qDebug() << "dirFace: " << dirFace;
+    }
     QDir qdirCapture(dirFace);
-    qDebug() << "dirFace: " << dirFace;
     if(!qdirCapture.exists(dirFace)) {
         qdirCapture.mkpath(dirFace);
     }
+    //dirPicFace = dirFace;
+    dirFace.append(alarmInfo.idCapture + ".jpg");
 
-    dirPicFace = dirFace;
-    dirPicFace.append(alarmInfo.idCapture + ".jpg");
-
-    qDebug() << "dirPicFace: " << dirPicFace;
+    qDebug() << "dirPicFace: " << dirFace;
     //保存人脸子图文件
-    QFile file(dirPicFace);
+    QFile file(dirFace);
     if(file.open(QIODevice::WriteOnly)) {
         file.write(bytes);
         file.close();

@@ -119,9 +119,9 @@ void HouseView::setRecordTable(QTableWidgetItem *item) {
     QString doorPlate = item->text();
 
     initDatabase();
-    database.openConnect();
+    //database.openConnect();
     records = database.selectByTimeDoorplate(start, end, doorPlate);
-    database.closeConnect();
+   // database.closeConnect();
 
     recordRowSum = records.size();
 
@@ -178,8 +178,8 @@ void HouseView::changeHouseStatus() {
             houseRow = houseRowSum-rowString.toInt()+1;
             houseCol = colString.toInt()-1;
 
-            qDebug() << "HouseView::front:" << houseRow;
-            qDebug() << "HouseView::end" << houseCol;
+            //qDebug() << "HouseView::front:" << houseRow;
+            //qDebug() << "HouseView::end" << houseCol;
 
             QTableWidgetItem *item = ui->houseTable->takeItem(houseRow, houseCol);
             item->setBackgroundColor(green);
@@ -193,8 +193,8 @@ void HouseView::changeHouseStatus() {
             houseRow = houseRowSum-rowString.toInt()+1;
             houseCol = colString.toInt()-1;
 
-            qDebug() << "HouseView::front:" << houseRow;
-            qDebug() << "HouseView::end" << houseCol;
+            //qDebug() << "HouseView::front:" << houseRow;
+            //qDebug() << "HouseView::end" << houseCol;
 
             QTableWidgetItem *item = ui->houseTable->takeItem(houseRow, houseCol);
             item->setBackgroundColor(green);
@@ -227,13 +227,17 @@ void HouseView::initDateTime() {
 }
 
 
-void HouseView::on_flush_clicked()
-{
+void HouseView::on_flush_clicked() {
     setHouseTable();
 }
 
-void HouseView::on_houseTable_itemDoubleClicked(QTableWidgetItem *item)
-{
+void HouseView::on_houseTable_itemDoubleClicked(QTableWidgetItem *item) {
+    //双击之后清空显示的图片与个人信息
+    setCapturePic(QImage(""));
+    setAvatarPic(QImage(""));
+    setFacePic(QImage(""));
+    setPersonInfo("", "", "", "");
+
     setRecordTable(item);
 }
 

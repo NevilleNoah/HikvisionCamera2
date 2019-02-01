@@ -5,7 +5,6 @@
 #include "database.h"
 #include "config.h"
 
-
 namespace Ui {
     class PreviewView;
 }
@@ -58,10 +57,12 @@ public:
     static int currentRow;
     static QString dirAvatar;
     static QString dirCapture;
-    static QString dirFace;
+    //static QString dirFace;
+    //static QString dirStranger;
     static QString dirPicAvatar;
     static QString dirPicCapture;
-    static QString dirPicFace;
+    //static QString dirPicFace;
+    //static QString dirPicStranger;
     static QString urlCapture;
     static QString urlAvatar;
 
@@ -95,6 +96,12 @@ public:
     void setSymbolPic(QImage imgSymbol);
     //设置个人信息的显示
     void setEdPersonInfo(QString applicantInfo, QString sfzNo, QString similarity, QString address);
+    //上传陌生人人脸子图
+    static void uploadStrangerFacePic();
+
+    //批量查询人脸比对库信息 输出为xml信息
+    static void getNET_DVR_STDXMLConfig();
+
 
 private:
 

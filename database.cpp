@@ -72,6 +72,13 @@ bool Database::addRecord(QString applicant, QString idCapture,
             query.bindValue(":similar", similar);
             query.exec();
             closeConnect();
+
+            //调试代码
+            QString sql = "INSERT INTO record(applicant, capture_id, avatar_id, face_id, stranger, similar) "
+                    "VALUES("+applicant+","+idCapture+","+idAvatar+","+idFace+","+isStranger+","+similar+")";
+            qDebug() << "Test code:"<<sql;
+            //End调试代码
+
             return true;
         }
         return false;
