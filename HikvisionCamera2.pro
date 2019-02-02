@@ -8,6 +8,7 @@ QT += core gui
 QT += sql
 QT += network
 QT += uitools
+QT += xml
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HikvisionCamera2
@@ -37,7 +38,8 @@ SOURCES += \
     settingsthread.cpp \
     database.cpp \
     config.cpp \
-    houseview.cpp
+    houseview.cpp \
+    xmlset.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -57,7 +59,8 @@ HEADERS += \
     database.h \
     config.h \
     houseview.h \
-    headinfo.h
+    headinfo.h \
+    xmlset.h
 
 
 FORMS += \

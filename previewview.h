@@ -4,6 +4,7 @@
 #include "headinfo.h"
 #include "database.h"
 #include "config.h"
+#include "xmlset.h"
 
 namespace Ui {
     class PreviewView;

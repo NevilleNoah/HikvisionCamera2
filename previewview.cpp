@@ -337,20 +337,16 @@ void PreviewView::getNET_DVR_STDXMLConfig() {
 void PreviewView::uploadStrangerFacePic() {
     qDebug() << "enter uploadStrangerFacePic";
     char FDID[256] = "0A949258191A4154B09E16FE95DF6FE1";
+    char szPicFileName[256] = "D:\\Hikvision\\Camera\\stranger\\766.jpg";
+    char szXMLFileName[256] = "C:\\Users\\admin\\Desktop\\test.xml";
     NET_DVR_FACELIB_COND ndfc = {0};
     ndfc.dwSize = sizeof(ndfc);
     strcpy_s(ndfc.szFDID, FDID);
-    LONG nduv = NET_DVR_UploadFile_V40(lUserID,IMPORT_DATA_TO_FACELIB,
-                                    &ndfc,sizeof(ndfc),
-                                    NULL,
-                                    NULL,0);
-    qDebug() << "nduv: " << nduv;
+    LONG nduv = NET_DVR_UploadFile_V40(lUserID,IMPORT_DATA_TO_FACELIB, &ndfc,sizeof(ndfc), NULL, NULL,0);
     NET_DVR_SEND_PARAM_IN m_struSendParam;
     memset(&m_struSendParam, 0, sizeof(m_struSendParam));
     BYTE    *pSendAppendData;
     BYTE    *pSendPicData;
-    char szPicFileName[256] = "D:\\Hikvision\\Camera\\stranger\\766.jpg";
-    char szXMLFileName[256] = "C:\\Users\\admin\\Desktop\\test.xml";
     FILE *fp = fopen(szPicFileName, "r");
     fseek(fp, 0, SEEK_END);
     DWORD dwFileSize = ftell(fp);
@@ -372,8 +368,9 @@ void PreviewView::uploadStrangerFacePic() {
     m_struSendParam.pSendAppendData = pSendAppendData;
     m_struSendParam.dwSendAppendDataLen = dwFileSize;
     fclose(fp);
-    LONG flag = NET_DVR_UploadSend(nduv, &m_struSendParam, NULL);
-    qDebug() << "flag: " << flag;
+    XMLSet::setUploadStrangerXML();
+    //LONG flag = NET_DVR_UploadSend(nduv, &m_struSendParam, NULL);
+    //qDebug() << "flag: " << flag;
 }
 
 void PreviewView::loadPreview() {
