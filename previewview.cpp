@@ -334,11 +334,18 @@ void PreviewView::getNET_DVR_STDXMLConfig() {
     qDebug() << "flag: " << f << " errorCode: " << NET_DVR_GetLastError();
 }
 
-void PreviewView::uploadStrangerFacePic() {
+void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
+    XMLSet::setUploadStrangerXML(stName);
     qDebug() << "enter uploadStrangerFacePic";
     char FDID[256] = "0A949258191A4154B09E16FE95DF6FE1";
-    char szPicFileName[256] = "D:\\Hikvision\\Camera\\stranger\\766.jpg";
-    char szXMLFileName[256] = "C:\\Users\\admin\\Desktop\\test.xml";
+    QByteArray qArray = picFileName.toLocal8Bit();
+    char szPicFileName[256];
+    strcpy(szPicFileName, qArray.data());
+
+    qArray = XMLSet::strangerXMLFile.toLocal8Bit();
+    char szXMLFileName[256];
+    strcpy(szXMLFileName, qArray.data());
+
     NET_DVR_FACELIB_COND ndfc = {0};
     ndfc.dwSize = sizeof(ndfc);
     strcpy_s(ndfc.szFDID, FDID);
@@ -368,9 +375,8 @@ void PreviewView::uploadStrangerFacePic() {
     m_struSendParam.pSendAppendData = pSendAppendData;
     m_struSendParam.dwSendAppendDataLen = dwFileSize;
     fclose(fp);
-    XMLSet::setUploadStrangerXML();
-    //LONG flag = NET_DVR_UploadSend(nduv, &m_struSendParam, NULL);
-    //qDebug() << "flag: " << flag;
+    LONG flag = NET_DVR_UploadSend(nduv, &m_struSendParam, NULL);
+    qDebug() << "flag: " << flag;
 }
 
 void PreviewView::loadPreview() {
@@ -649,7 +655,7 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 void PreviewView::on_btnAlarmClear_clicked()
 {
     //getNET_DVR_STDXMLConfig();
-    uploadStrangerFacePic();
+    uploadStrangerFacePic("2019-01-09m", "D:\\Hikvision\\Camera\\stranger\\803.jpg");
     //清空报警列表
     ui->alarmList->clear();
     //清空个人信息

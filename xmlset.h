@@ -8,9 +8,10 @@ class XMLSet
 {
 public:
     XMLSet();
-    static void setUploadStrangerXML();
-private:
+    static void setUploadStrangerXML(QString stName);
     static QString strangerXMLFile;
+private:
+
 
 };
 

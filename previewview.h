@@ -98,7 +98,7 @@ public:
     //设置个人信息的显示
     void setEdPersonInfo(QString applicantInfo, QString sfzNo, QString similarity, QString address);
     //上传陌生人人脸子图
-    static void uploadStrangerFacePic();
+    static void uploadStrangerFacePic(QString stName, QString picFileName);
 
     //批量查询人脸比对库信息 输出为xml信息
     static void getNET_DVR_STDXMLConfig();

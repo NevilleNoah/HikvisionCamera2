@@ -1,11 +1,12 @@
 ﻿#include "xmlset.h"
-QString XMLSet::strangerXMLFile = "C:\\Users\\admin\\Desktop\\strangerXML.xml";
+
+QString XMLSet::strangerXMLFile = "D:\\Hikvision\\strangerXML.xml";
 
 XMLSet::XMLSet() {
 
 }
 
-void XMLSet::setUploadStrangerXML() {
+void XMLSet::setUploadStrangerXML(QString stName) {
     qDebug() << "enter setUploadStrangerXML";
     QFile file(strangerXMLFile);
     if (!file.open(QFile::WriteOnly|QFile::Truncate)) {
@@ -24,13 +25,11 @@ void XMLSet::setUploadStrangerXML() {
     doc.appendChild(root);
     //添加时间节点
     QDomElement bornTime = doc.createElement("bornTime");
-    QDomText text = doc.createTextNode("this is time"); //设置括号标签中间的值
-    bornTime.appendChild(text);
     root.appendChild(bornTime);
 
     //添加姓名节点
     QDomElement name = doc.createElement("name");
-    text = doc.createTextNode("this is stranger name");
+    QDomText text = doc.createTextNode(stName);
     name.appendChild(text);
     root.appendChild(name);
 
@@ -41,6 +40,7 @@ void XMLSet::setUploadStrangerXML() {
     //添加省份、城市节点
     QDomElement province = doc.createElement("province");
     root.appendChild(province);
+
     QDomElement city = doc.createElement("city");
     root.appendChild(city);
 
@@ -56,18 +56,20 @@ void XMLSet::setUploadStrangerXML() {
 
     /****************该模块可重复多次************/
     for(int i = 0; i < 2; i++) {
-    QDomElement PersonInfoExtend = doc.createElement("PersonInfoExtend");//添加个人信息扩展子节点
-    PersonInfoExtendList.appendChild(PersonInfoExtend);
-    QDomElement id = doc.createElement("id");//添加id子节点
-    PersonInfoExtend.appendChild(id);
-    QDomElement enable = doc.createElement("enable");//添加enable子节点
-    text = doc.createTextNode("false");//enable赋值为false
-    enable.appendChild(text);
-    PersonInfoExtend.appendChild(enable);
-    name = doc.createElement("name");//添加name子节点
-    PersonInfoExtend.appendChild(name);
-    QDomElement value = doc.createElement("value");//添加value子节点
-    PersonInfoExtend.appendChild(value);
+        QDomElement PersonInfoExtend = doc.createElement("PersonInfoExtend");//添加个人信息扩展子节点
+        PersonInfoExtendList.appendChild(PersonInfoExtend);
+        QDomElement id = doc.createElement("id");//添加id子节点
+        text = doc.createTextNode(QString::number(i+1));
+        id.appendChild(text);
+        PersonInfoExtend.appendChild(id);
+        QDomElement enable = doc.createElement("enable");//添加enable子节点
+        text = doc.createTextNode("false");//enable赋值为false
+        enable.appendChild(text);
+        PersonInfoExtend.appendChild(enable);
+        name = doc.createElement("name");//添加name子节点
+        PersonInfoExtend.appendChild(name);
+        QDomElement value = doc.createElement("value");//添加value子节点
+        PersonInfoExtend.appendChild(value);
     }
     /***************************************/
 
