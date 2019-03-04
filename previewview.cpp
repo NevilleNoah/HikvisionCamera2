@@ -334,6 +334,7 @@ void PreviewView::getNET_DVR_STDXMLConfig() {
     qDebug() << "flag: " << f << " errorCode: " << NET_DVR_GetLastError();
 }
 
+
 void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
     XMLSet::setUploadStrangerXML(stName);
     qDebug() << "enter uploadStrangerFacePic";
@@ -346,37 +347,74 @@ void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
     char szXMLFileName[256];
     strcpy(szXMLFileName, qArray.data());
 
-    NET_DVR_FACELIB_COND ndfc = {0};
-    ndfc.dwSize = sizeof(ndfc);
-    strcpy_s(ndfc.szFDID, FDID);
-    LONG nduv = NET_DVR_UploadFile_V40(lUserID,IMPORT_DATA_TO_FACELIB, &ndfc,sizeof(ndfc), NULL, NULL,0);
+    NET_DVR_FACELIB_COND struFaceLibCond = { 0 };
+    struFaceLibCond.dwSize = sizeof(NET_DVR_FACELIB_COND);
+    strcpy(struFaceLibCond.szFDID, FDID);
+    struFaceLibCond.byConcurrent = 0;
+    struFaceLibCond.byCover = 0;
+    struFaceLibCond.byCustomFaceLibID = 0;
+    //建立连接
+    LONG m_lUploadHandle = NET_DVR_UploadFile_V40(lUserID, IMPORT_DATA_TO_FACELIB, &struFaceLibCond, sizeof(NET_DVR_FACELIB_COND),
+                                                  NULL, NULL, 0);
+
+
     NET_DVR_SEND_PARAM_IN m_struSendParam;
     memset(&m_struSendParam, 0, sizeof(m_struSendParam));
-    BYTE    *pSendAppendData;
-    BYTE    *pSendPicData;
-    FILE *fp = fopen(szPicFileName, "r");
-    fseek(fp, 0, SEEK_END);
-    DWORD dwFileSize = ftell(fp);
-    rewind(fp);
-    qDebug() << "dwFileSize: " << dwFileSize;
-    pSendPicData = new BYTE[dwFileSize];
-    fread(pSendPicData, 1, dwFileSize, fp);
+    BYTE    *pSendAppendData = nullptr;
+    BYTE    *pSendPicData = nullptr;
+    //读图片文件
+    QFileInfo fileinfo(szPicFileName);
+    DWORD picFileSize = fileinfo.size();
+    pSendPicData = new BYTE[picFileSize];
+    QFile picFile(szPicFileName);
+    if(!picFile.open(QIODevice::ReadOnly)) {
+        qDebug()<<"Can't open the pic file!"<<endl;
+    }
+    QByteArray qbt = picFile.readAll();
+    pSendPicData = reinterpret_cast<byte*>(qbt.data());
+    //pSendPicData = (byte*)(qbt.data());
+
+    qDebug() << "picFileSize: " << picFileSize;
+    qDebug() << "qbt.size(): " << qbt.size();
     m_struSendParam.pSendData = pSendPicData;
-    m_struSendParam.dwSendDataLen = dwFileSize;
+    m_struSendParam.dwSendDataLen = picFileSize;
     m_struSendParam.byPicType = 1;
-    m_struSendParam.byPicURL = false;
-    fclose(fp);
-    fp = fopen(szXMLFileName, "r");
-    fseek(fp, 0, SEEK_END);
-    dwFileSize = ftell(fp);
-    rewind(fp);
-    pSendAppendData = new BYTE[dwFileSize];
-    fread(pSendAppendData, 1, dwFileSize, fp);
+
+    //读XML文件
+    QFileInfo xmlinfo(szXMLFileName);
+    DWORD xmlFileSize = xmlinfo.size();
+    pSendAppendData = new BYTE[xmlFileSize];
+    QFile xmlFile(szXMLFileName);
+    if(!xmlFile.open(QIODevice::ReadOnly)) {
+        qDebug()<<"Can't open the xml file!"<<endl;
+    }
+    QByteArray xmlArray = xmlFile.readAll();
+    pSendAppendData = (byte*)(xmlArray.data());
     m_struSendParam.pSendAppendData = pSendAppendData;
-    m_struSendParam.dwSendAppendDataLen = dwFileSize;
-    fclose(fp);
-    LONG flag = NET_DVR_UploadSend(nduv, &m_struSendParam, NULL);
+    m_struSendParam.dwSendAppendDataLen = xmlFileSize;
+    //上传文件
+    LONG flag = NET_DVR_UploadSend(m_lUploadHandle, &m_struSendParam, NULL);
     qDebug() << "flag: " << flag;
+    qDebug() << "errorCode: " << NET_DVR_GetLastError();
+    LONG iStatus = -1;
+    while(1) {
+        DWORD dwProgress = 0;
+        iStatus = NET_DVR_GetUploadState(m_lUploadHandle, &dwProgress);
+       // qDebug() << "iStatus: " << iStatus;
+        if (1 == iStatus) {
+            NET_DVR_UPLOAD_FILE_RET m_struPicRet;
+            memset(&m_struPicRet, 0, sizeof(m_struPicRet));
+            NET_DVR_GetUploadResult(m_lUploadHandle, &m_struPicRet, sizeof(m_struPicRet));
+            qDebug() << "sUrl: " << (char*)(m_struPicRet.sUrl);
+            break;
+        }
+        else if ((iStatus >= 3 && iStatus <= 10) || iStatus == 31 || iStatus == -1) {
+
+            break;
+        }
+    }
+    qDebug() << "errorCode: " << NET_DVR_GetLastError();
+    NET_DVR_UploadClose(m_lUploadHandle);
 }
 
 void PreviewView::loadPreview() {
@@ -655,7 +693,7 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 void PreviewView::on_btnAlarmClear_clicked()
 {
     //getNET_DVR_STDXMLConfig();
-    uploadStrangerFacePic("2019-01-09m", "D:\\Hikvision\\Camera\\stranger\\803.jpg");
+    uploadStrangerFacePic("2019-03-01m", "D:\\Hikvision\\Camera\\stranger\\766.jpg");
     //清空报警列表
     ui->alarmList->clear();
     //清空个人信息
