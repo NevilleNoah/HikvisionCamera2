@@ -313,6 +313,44 @@ ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {
      applicantInfo.applicant = query.value("applicant").toString();
      return applicantInfo;
 }
+
+int Database::selectStrQuantityByTime(int dwYear, int dwMonth, int dwDay) {
+    QDate date = QDate(dwYear, dwMonth, dwDay);
+    QTime time = QTime(0, 0, 0);
+    QDateTime dateTime = QDateTime(date, time);
+    qDebug() << "dateTime: " << dateTime.toString("yyyy-MM-dd hh:mm:ss");
+    openConnect();
+    QSqlQuery query;
+    QString sqlSentence = "select count(*) from stranger_quantity where time_value=:dateTime";
+    query.prepare(sqlSentence);
+    query.bindValue(":dateTime", dateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.exec();
+    query.next();
+    int hasRecord = query.value(0).toInt();
+    qDebug() << "hasRecord: " << hasRecord;
+    if(hasRecord == 0) {
+        query.prepare("INSERT INTO stranger_quantity(time_value, quantity) "
+                      "VALUES(:time_value, :strQuantity)");
+        query.bindValue(":time_value", dateTime.toString("yyyy-MM-dd hh:mm:ss"));
+        query.bindValue(":strQuantity", 1);
+        query.exec();
+        closeConnect();
+        return 1;
+    } else {
+        query.prepare("SELECT quantity FROM stranger_quantity WHERE time_value=:dateTime");
+        query.bindValue(":dateTime", dateTime.toString("yyyy-MM-dd hh:mm:ss"));
+        query.exec();
+        query.next();
+        int strangerQuantity = query.value("quantity").toInt() + 1;
+        qDebug() << "dataBase Quantity: " << strangerQuantity;
+        query.prepare("UPDATE stranger_quantity SET quantity=:strQuantity WHERE time_value=:dateTime");
+        query.bindValue(":strQuantity", strangerQuantity);
+        query.bindValue(":dateTime", dateTime.toString("yyyy-MM-dd hh:mm:ss"));
+        query.exec();
+        closeConnect();
+        return strangerQuantity;
+    }
+}
 /*
 ApplicantInfo Database::setSingleApplicantInfo(QSqlQuery query) {
     ApplicantInfo applicantInfo;

@@ -207,7 +207,40 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     /*********************************************设置时间 END******************************************/
 
     /*********************************************设置个人信息******************************************/
+    QString strName = "";
+    bool hasUpload = true;//如果是陌生人，判断是否已经上传至超脑进行建模
     if(struFaceMatchAlarm.fSimilarity > Config::getCompareInfoSimilarity()) {
+        QString applicantName = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName);
+        if(applicantName[applicantName.length()-1] == 'm') {
+            //设置为陌生人
+            alarmInfo.isStranger = true;
+            //相似度
+            alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
+            //姓名
+            initDatabase();
+            int strQuantity = database.selectStrQuantityByTime(alarmInfo.dwYear, alarmInfo.dwMonth, alarmInfo.dwDay);
+            int idx = applicantName.lastIndexOf('m');
+            alarmInfo.applicant = applicantName.mid(0, idx+1) + (QString::number(strQuantity).sprintf("%06d",strQuantity));
+        } else {
+            //设置不为陌生人
+            alarmInfo.isStranger = false;
+            //相似度
+            alarmInfo.similarity = struFaceMatchAlarm.fSimilarity*100;
+            //获取身份证号
+            alarmInfo.sfzNo = QString::fromLocal8Bit((char*)struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName);
+            //姓名
+            initDatabase();
+            alarmInfo.applicant = database.selectApplicantInfoBySfzNo(alarmInfo.sfzNo).applicant;
+            //住址
+            addressInfo = database.selectAddress(alarmInfo.applicant, alarmInfo.sfzNo);
+            qDebug() << "addressInfo: " << addressInfo.community;
+            //身份证号
+            alarmInfo.idAvatar = alarmInfo.sfzNo;
+        }
+        //人脸库头像图
+        downLoadAvatarPic();
+
+        /*
         //设置不为陌生人
         alarmInfo.isStranger = false;
         //相似度
@@ -223,22 +256,20 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
         //人脸库头像图
         alarmInfo.idAvatar = alarmInfo.sfzNo;
         downLoadAvatarPic();
-
-        //--------------------
-        //姓名
-        /*char nameHexStr[32];
-        BYTE nameBytes[NAME_LEN];
-        for(int i =0 ;i<NAME_LEN; i++) {
-            nameBytes[i] = struFaceMatchAlarm.struBlackListInfo.struBlackListInfo.struAttribute.byName[i];
-        }
-        convertUnCharToStr(nameBytes, nameHexStr, alarmInfo.name, sizeof(nameBytes));*/
+        */
     } else {
-        //lUserID, IMPORT_DATA_TO_FACELIB, NET_DVR_FACELIB_COND(), 1024, NULL, NULL, 1024
-        //NET_DVR_UploadFile_V40(lUserID,IMPORT_DATA_TO_FACELIB,NET_DVR_FACELIB_COND(),111,NULL,NULL,0);
-        //--------------------
+        hasUpload = false;
+        strName = QString::number(alarmInfo.dwYear)+QString::number(alarmInfo.dwMonth).sprintf("%02d",alarmInfo.dwMonth)+
+                        QString::number(alarmInfo.dwDay).sprintf("%02d",alarmInfo.dwDay)+
+                        QString::number(alarmInfo.dwHour).sprintf("%02d",alarmInfo.dwHour)+QString::number(alarmInfo.dwMinute).sprintf("%02d",alarmInfo.dwMinute)+
+                        QString::number(alarmInfo.dwSecond).sprintf("%02d",alarmInfo.dwSecond);
+        //姓名
+        initDatabase();
+        int strQuantity = database.selectStrQuantityByTime(alarmInfo.dwYear, alarmInfo.dwMonth, alarmInfo.dwDay);
+        alarmInfo.applicant = strName + QString::number(strQuantity).sprintf("%06d",strQuantity);
+        qDebug() << "strName: " << strName;
         //设置为陌生人
         alarmInfo.isStranger = true;
-        //--------------------
         //相似度
         alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
     }
@@ -249,9 +280,20 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
     //抓拍图
     alarmInfo.idCapture = QString::number(struFaceMatchAlarm.struSnapInfo.dwSnapFacePicID);
     downLoadCapturePic();
+
     //人脸子图
     downLoadFacePic();
 
+    //等图片下载至本地后再进行上传
+    Sleep(300);
+    //如果是陌生人那么把人脸子图上传至超脑进行建模
+    if(hasUpload == false) {
+        QString dirFace = Config::getDirInfoStranger();
+        dirFace.append(alarmInfo.idCapture + ".jpg");
+        qDebug() << "xxx: dirFace path: " << dirFace;
+        bool isSuccess = uploadStrangerFacePic(strName+"m", dirFace);
+        qDebug() << "isSuccess: " << isSuccess;
+    }
     //显示个人信息
     emit previewView->showPersonInfo(OPTION_FACE_COMPARE);
 
@@ -294,6 +336,8 @@ void PreviewView::setAlarmText() {
             alarmText.append(alarmInfo.sfzNo);
         } else {
             alarmText.append(QString::fromLocal8Bit("   陌生人"));
+            alarmText.append(QString::fromLocal8Bit("   编号："));
+            alarmText.append(alarmInfo.applicant);
         }
         emit previewView->addAlarmItem();
     }
@@ -335,7 +379,7 @@ void PreviewView::getNET_DVR_STDXMLConfig() {
 }
 
 
-void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
+bool PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
     XMLSet::setUploadStrangerXML(stName);
     qDebug() << "enter uploadStrangerFacePic";
     char FDID[256] = "0A949258191A4154B09E16FE95DF6FE1";
@@ -356,26 +400,27 @@ void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
     //建立连接
     LONG m_lUploadHandle = NET_DVR_UploadFile_V40(lUserID, IMPORT_DATA_TO_FACELIB, &struFaceLibCond, sizeof(NET_DVR_FACELIB_COND),
                                                   NULL, NULL, 0);
-
-
     NET_DVR_SEND_PARAM_IN m_struSendParam;
     memset(&m_struSendParam, 0, sizeof(m_struSendParam));
     BYTE    *pSendAppendData = nullptr;
     BYTE    *pSendPicData = nullptr;
     //读图片文件
+    //D:/Hikvision/Camera/stranger/3977.jpg
+    //D:/Hikvision/Camera/stranger/3962.jpg
+    qDebug() << "szPicFileName: " << szPicFileName;
     QFileInfo fileinfo(szPicFileName);
     DWORD picFileSize = fileinfo.size();
     pSendPicData = new BYTE[picFileSize];
     QFile picFile(szPicFileName);
     if(!picFile.open(QIODevice::ReadOnly)) {
         qDebug()<<"Can't open the pic file!"<<endl;
+        return false;
     }
     QByteArray qbt = picFile.readAll();
+    picFile.close();
     pSendPicData = reinterpret_cast<byte*>(qbt.data());
-    //pSendPicData = (byte*)(qbt.data());
 
-    qDebug() << "picFileSize: " << picFileSize;
-    qDebug() << "qbt.size(): " << qbt.size();
+    //qDebug() << "picFileSize: " << picFileSize;
     m_struSendParam.pSendData = pSendPicData;
     m_struSendParam.dwSendDataLen = picFileSize;
     m_struSendParam.byPicType = 1;
@@ -387,6 +432,7 @@ void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
     QFile xmlFile(szXMLFileName);
     if(!xmlFile.open(QIODevice::ReadOnly)) {
         qDebug()<<"Can't open the xml file!"<<endl;
+        return false;
     }
     QByteArray xmlArray = xmlFile.readAll();
     pSendAppendData = (byte*)(xmlArray.data());
@@ -394,27 +440,27 @@ void PreviewView::uploadStrangerFacePic(QString stName, QString picFileName) {
     m_struSendParam.dwSendAppendDataLen = xmlFileSize;
     //上传文件
     LONG flag = NET_DVR_UploadSend(m_lUploadHandle, &m_struSendParam, NULL);
-    qDebug() << "flag: " << flag;
-    qDebug() << "errorCode: " << NET_DVR_GetLastError();
+    /*qDebug() << "flag: " << flag;
+    qDebug() << "errorCode: " << NET_DVR_GetLastError();*/
     LONG iStatus = -1;
     while(1) {
         DWORD dwProgress = 0;
         iStatus = NET_DVR_GetUploadState(m_lUploadHandle, &dwProgress);
-       // qDebug() << "iStatus: " << iStatus;
         if (1 == iStatus) {
-            NET_DVR_UPLOAD_FILE_RET m_struPicRet;
+            /*NET_DVR_UPLOAD_FILE_RET m_struPicRet;
             memset(&m_struPicRet, 0, sizeof(m_struPicRet));
             NET_DVR_GetUploadResult(m_lUploadHandle, &m_struPicRet, sizeof(m_struPicRet));
-            qDebug() << "sUrl: " << (char*)(m_struPicRet.sUrl);
+            qDebug() << "sUrl: " << (char*)(m_struPicRet.sUrl);*/
+            break;
+        } else if(iStatus != 2) {
             break;
         }
-        else if ((iStatus >= 3 && iStatus <= 10) || iStatus == 31 || iStatus == -1) {
-
+       /* else if ((iStatus >= 3 && iStatus <= 10) || iStatus == 31 || iStatus == -1) {
             break;
-        }
+        }*/
     }
-    qDebug() << "errorCode: " << NET_DVR_GetLastError();
     NET_DVR_UploadClose(m_lUploadHandle);
+    return iStatus == 1;
 }
 
 void PreviewView::loadPreview() {
@@ -566,7 +612,7 @@ void PreviewView::showPersonInfo(int option) {
             setEdPersonInfo(alarmInfo.applicant, alarmInfo.sfzNo, QString::number(alarmInfo.similarity), address);
             setSymbolPic(QImage(":/icon/correct.png", "PNG"));
         } else {
-            setEdPersonInfo(UNKNOW, UNKNOW, UNKNOW, UNKNOW);
+            setEdPersonInfo(QString::fromLocal8Bit("陌生人"), alarmInfo.applicant, UNKNOW, UNKNOW);
             setSymbolPic(QImage(":/icon/error.png", "PNG"));
             setAvatarPic(QImage(""));
         }
@@ -590,7 +636,7 @@ void PreviewView::showPersonInfo(int option) {
         } else {
             setAvatarPic(QImage(""));
             setSymbolPic(QImage(":/icon/error.png", "PNG"));
-            setEdPersonInfo(UNKNOW, UNKNOW, UNKNOW, UNKNOW);
+            setEdPersonInfo(QString::fromLocal8Bit("陌生人"), alarmInfo.applicant, UNKNOW, UNKNOW);
         }
         break;
     }
@@ -675,7 +721,7 @@ void PreviewView::saveToDatabase() {
     if(!alarmInfo.isStranger) {
         database.addRecord(alarmInfo.applicant, alarmInfo.idCapture, alarmInfo.idAvatar, alarmInfo.idCapture, alarmInfo.isStranger, alarmInfo.similarity);
     } else {
-        database.addRecord("", alarmInfo.idCapture, "", alarmInfo.idCapture,  alarmInfo.isStranger, alarmInfo.similarity);
+        database.addRecord("", alarmInfo.idCapture, alarmInfo.applicant, alarmInfo.idCapture,  alarmInfo.isStranger, alarmInfo.similarity);
     }
 }
 
@@ -693,7 +739,9 @@ void PreviewView::on_alarmList_itemDoubleClicked(QListWidgetItem *item)
 void PreviewView::on_btnAlarmClear_clicked()
 {
     //getNET_DVR_STDXMLConfig();
-    uploadStrangerFacePic("2019-03-01m", "D:\\Hikvision\\Camera\\stranger\\766.jpg");
+    //uploadStrangerFacePic("2019-03-01m", "D:/Hikvision/Camera/stranger/3962.jpg");
+    //initDatabase();
+    //qDebug() << "strangerQuantity: " << database.selectStrQuantityByTime(2019, 3, 5);
     //清空报警列表
     ui->alarmList->clear();
     //清空个人信息
