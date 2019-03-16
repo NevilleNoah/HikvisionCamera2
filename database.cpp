@@ -197,7 +197,7 @@ QList<House> Database::selectHouseAsTimer() {
 }
 
 //获取记录总条数
-void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
+void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, QString idNumber,
                                  int startId, int pageSize, int &totalRecordNum) {
     openConnect();
     QSqlQuery query;
@@ -207,9 +207,13 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
     } else if(strangerIndex == 1) {
         sqlSentence += " and stranger=0";
     }
+    if(idNumber.length() > 0) {
+         sqlSentence += " and avatar_id=:idNumber";
+    }
     query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":idNumber", idNumber);
     query.exec();
     closeConnect();
     query.next();
@@ -217,9 +221,9 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
 }
 
 //根据条件筛查记录
-QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
+QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, QString idNumber,
                                           int startId, int pageSize, int &totalRecordNum) {
-    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, startId, pageSize, totalRecordNum);
+    getTotalRecordNum(startDateTime, endDateTime, strangerIndex, idNumber, startId, pageSize, totalRecordNum);
     openConnect();
     QSqlQuery query;
     QString sqlSentence = "select * from record where time_value>=:startDateTime and time_value<=:endDateTime";
@@ -228,10 +232,14 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     } else if(strangerIndex == 1) {
         sqlSentence += " and stranger=0";
     }
+    if(idNumber.length() > 0) {
+        sqlSentence += " and avatar_id=:idNumber";
+    }
     sqlSentence += " limit :startId, :pageSize";
     query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":endDateTime", endDateTime.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":idNumber", idNumber);
     query.bindValue(":startId", (startId-1)*pageSize);
     query.bindValue(":pageSize", pageSize);
     query.exec();

@@ -12,9 +12,9 @@ public:
     QList<RECORD> setRecord(QSqlQuery query);
     QList<RECORD> selectRecord();
     //根据条件查找历史纪录
-    QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
+    QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, QString idNumber,
                                     int startId, int pageSize, int &totalRecordNum);
-    void getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex,
+    void getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, QString idNumber,
                                      int startId, int pageSize, int &totalRecordNum);
     //根据时间与门牌号来查找记录
     QList<RECORD> selectByTimeDoorplate(QDateTime startDateTime, QDateTime endDateTime, QString doorPlate);

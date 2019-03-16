@@ -9,6 +9,7 @@ QDateTime HistoryView::endDateTime;
 int HistoryView::pageNum = 0;
 int HistoryView::totalRecordNum = 0;
 int HistoryView::nowPage = 0;
+QString HistoryView::idNumber = "";
 const int HistoryView::fieldNum = 3;
 
 HistoryView::HistoryView(QWidget *parent) :
@@ -114,6 +115,10 @@ QDateTime HistoryView::getEdEndTime() {
     return ui->edEndTime->dateTime();
 }
 
+//获取用户输入的身份证/陌生人编号
+QString HistoryView::getEdIdNumber() {
+    return ui->edIdNumber->text();
+}
 //获取陌生人复选框中当前选项的下标
 int HistoryView::getCmbStrangerIndex() {
     return ui->cmbStranger->currentIndex();
@@ -177,7 +182,7 @@ int HistoryView::calPageNum() {
 int HistoryView::getRecordByPageNum(int startId) {
     initDatabase();
     database.openConnect();
-    records = database.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(),
+    records = database.selectByCondition(startDateTime, endDateTime, getCmbStrangerIndex(), idNumber,
                                    startId, pageSize, totalRecordNum);
     database.closeConnect();
     return records.size();
@@ -232,7 +237,9 @@ void HistoryView::on_btnSearchByCondition_clicked()
     //获取开始时间与结束时间
     startDateTime = getEdStartTime();
     endDateTime = getEdEndTime();
-
+    //获取用户输入的身份证/陌生人编号
+    idNumber = getEdIdNumber();
+    qDebug() << "idNumber' length:" << idNumber.length();
     //获取当前页面要显示的数据
     int recordNum = getRecordByPageNum(1);
     //计算总页数

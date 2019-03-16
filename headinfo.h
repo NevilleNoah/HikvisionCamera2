@@ -63,6 +63,9 @@ typedef struct tagALARM_INFO {
     QString applicant;
 
     bool isStranger;
+
+    //对于陌生人，判断是否已经上传至超脑
+    bool isUpload;
 } ALARM_INFO;
 
 //历史记录

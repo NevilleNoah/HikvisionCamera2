@@ -212,6 +212,23 @@
          </layout>
         </item>
         <item>
+         <widget class="QLabel" name="textId">
+          <property name="text">
+           <string>身份证/陌生人编号</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="edIdNumber">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btnSearchByCondition">
           <property name="font">
            <font>

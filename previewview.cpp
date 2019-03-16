@@ -218,9 +218,12 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
             alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
             //姓名
             initDatabase();
-            int strQuantity = database.selectStrQuantityByTime(alarmInfo.dwYear, alarmInfo.dwMonth, alarmInfo.dwDay);
-            int idx = applicantName.lastIndexOf('m');
-            alarmInfo.applicant = applicantName.mid(0, idx+1) + (QString::number(strQuantity).sprintf("%06d",strQuantity));
+            //int strQuantity = database.selectStrQuantityByTime(alarmInfo.dwYear, alarmInfo.dwMonth, alarmInfo.dwDay);
+            //int idx = applicantName.lastIndexOf('m');
+            //alarmInfo.applicant = applicantName + (QString::number(strQuantity).sprintf("%06d",strQuantity));
+            alarmInfo.applicant = applicantName.mid(0, applicantName.length()-1);
+            alarmInfo.idAvatar = alarmInfo.applicant;
+            alarmInfo.isUpload = true;
         } else {
             //设置不为陌生人
             alarmInfo.isStranger = false;
@@ -264,14 +267,16 @@ void PreviewView::setAlarmInfo(NET_VCA_FACESNAP_MATCH_ALARM struFaceMatchAlarm) 
                         QString::number(alarmInfo.dwHour).sprintf("%02d",alarmInfo.dwHour)+QString::number(alarmInfo.dwMinute).sprintf("%02d",alarmInfo.dwMinute)+
                         QString::number(alarmInfo.dwSecond).sprintf("%02d",alarmInfo.dwSecond);
         //姓名
-        initDatabase();
-        int strQuantity = database.selectStrQuantityByTime(alarmInfo.dwYear, alarmInfo.dwMonth, alarmInfo.dwDay);
-        alarmInfo.applicant = strName + QString::number(strQuantity).sprintf("%06d",strQuantity);
+        //initDatabase();
+        //int strQuantity = database.selectStrQuantityByTime(alarmInfo.dwYear, alarmInfo.dwMonth, alarmInfo.dwDay);
+        //alarmInfo.applicant = strName + QString::number(strQuantity).sprintf("%06d",strQuantity);
+        alarmInfo.applicant = strName;
         qDebug() << "strName: " << strName;
         //设置为陌生人
         alarmInfo.isStranger = true;
         //相似度
         alarmInfo.similarity = struFaceMatchAlarm.fSimilarity;
+        alarmInfo.isUpload = false;
     }
 
     Sleep(300);
@@ -656,7 +661,11 @@ void PreviewView::setAlarmInfo() {
         //dirPicFace = dirFace;
         dirPicAvatar = dirAvatar;
         dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
-    } else {
+    } //else if(alarmInfo.isUpload == true) {
+      //  dirPicAvatar = dirAvatar;
+       // dirPicAvatar.append(alarmInfo.idAvatar + ".jpg");
+    //}
+    else {
         dirPicFace = Config::getDirInfoStranger();
        // dirPicFace = dirStranger;
     }

@@ -30,6 +30,7 @@ public:
     QDateTime getEdEndTime();
     int calPageNum();
     int getRecordByPageNum(int startId);
+    QString getEdIdNumber();//获取用户输入的身份证/陌生人编号
     void initDataShow();
     void initUI();
     void clearTable();
@@ -45,6 +46,7 @@ public:
     static QList<RECORD> records;
     static QDateTime startDateTime;
     static QDateTime endDateTime;
+    static QString idNumber;
 
 signals:
 
