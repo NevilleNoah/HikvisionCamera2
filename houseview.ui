@@ -38,6 +38,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="exportbtn">
+            <property name="text">
+             <string>导出</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>

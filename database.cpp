@@ -179,6 +179,37 @@ QList<House> Database::selectHouse(QDateTime start, QDateTime end) {
     return setHouse(query);
 }
 
+//根据出入时间获取需要导出的记录
+QList<ExcelExportInfo> Database::selectExportRecord(QDateTime start, QDateTime end) {
+    openConnect();
+    QSqlQuery query;
+    QString sqlSentence = "SELECT h.community, h.building, h.unit, h.house, a.applicant, a.sfzno, a.familyrole, r.time_value, r.similar\
+                           FROM record r, applicant a, house h, houseapplicant ha WHERE         \
+                           r.time_value >= :start AND r.time_value <= :end AND                  \
+                           a.sfzno=r.avatar_id AND a.status=1 AND                               \
+                           a.id = ha.id AND ha.applicant_id AND ha.house_id = h.id";
+    query.prepare(sqlSentence);
+    query.bindValue(":start",start.toString("yyyy-MM-dd hh:mm:ss"));
+    query.bindValue(":end", end.toString("yyyy-MM-dd hh:mm:ss"));
+    query.exec();
+    closeConnect();
+    QList<ExcelExportInfo> exportInfo;
+    while(query.next()) {
+        ExcelExportInfo info;
+        info.community = query.value("community").toString();
+        info.building = query.value("building").toString();
+        info.unit = query.value("unit").toString();
+        info.house = query.value("house").toString();
+        info.applicant = query.value("applicant").toString();
+        info.sfzno = query.value("sfzno").toString();
+        info.familyrole = query.value("familyrole").toString();
+        info.similar = query.value("similar").toInt();
+        info.time_value = query.value("time_value").toDateTime();
+        exportInfo.append(info);
+    }
+    return exportInfo;
+}
+
 //根据计时器来获取出入情况
 QList<House> Database::selectHouseAsTimer() {
     QDateTime curr = QDateTime::currentDateTime();

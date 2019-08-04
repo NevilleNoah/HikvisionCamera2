@@ -9,7 +9,6 @@
 //#include <QTableWidgetItem>
 //#include <QString>
 //#include <QTimer>
-
 namespace Ui {
 class HouseView;
 }
@@ -43,7 +42,6 @@ private:
     static QString dirPicAvatar;
     static QString dirPicCapture;
     static QString dirPicFace;
-
     static QList<RECORD> records;
 public:
     static void getPicDir(RECORD record);
@@ -70,6 +68,7 @@ private slots:
     void on_houseTable_itemDoubleClicked(QTableWidgetItem *item);
 
     void on_recordTable_itemDoubleClicked(QTableWidgetItem *item);
+    void on_exportbtn_clicked();
 };
 
 #endif // HOUSEVIEW_H

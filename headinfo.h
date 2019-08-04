@@ -91,6 +91,18 @@ typedef struct tagApplicantInfo {
     QString applicant;
 } ApplicantInfo;
 
+typedef struct tagExcelExportInfo {
+    QString community;
+    QString building;
+    QString unit;
+    QString house;
+    QString applicant;
+    QString sfzno;
+    QString familyrole;
+    QDateTime time_value;
+    int similar;
+} ExcelExportInfo;
+
 //该结构体冗余
 typedef struct tagADDRESS_INFO{
     QString community;

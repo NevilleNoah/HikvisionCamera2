@@ -287,3 +287,20 @@ void HouseView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
     setPersonInfo(record.applicant, QString::number(record.similar),
                   record.idAvatar, familyRole);
 }
+
+#include "excelutil.h"
+#include <QFileDialog>
+void HouseView::on_exportbtn_clicked()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Exceld导出路径"),  "", tr("*.xlsx;;")); //选择路径
+    ExcelUtil *pWorker = new ExcelUtil();
+    //connect(pWorker, SIGNAL(errorSignal(QString)), this, SLOT(onError(QString)));
+    //connect(pWorker, SIGNAL(progressData(int, QString)), this, SLOT(onProgress(int, QString)));
+    //connect(pWorker, SIGNAL(finish()), this, SLOT(onFinish()));
+    pWorker->setPath(filename);
+    QThread *thread = new QThread;
+    pWorker->moveToThread(thread);
+    //处理数据
+    connect(thread, SIGNAL(started()), pWorker, SLOT(startTrans()), Qt::QueuedConnection);
+    thread->start();
+}

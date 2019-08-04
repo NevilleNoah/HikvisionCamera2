@@ -35,6 +35,7 @@ public:
 
     QList<House> selectHouse(QDateTime start, QDateTime end);
     QList<House> selectHouseAsTimer();
+    QList<ExcelExportInfo>selectExportRecord(QDateTime start, QDateTime end);
 
     House selectSingleHouse();
 

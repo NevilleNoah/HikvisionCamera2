@@ -9,6 +9,7 @@ QT += sql
 QT += network
 QT += uitools
 QT += xml
+QT += axcontainer
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HikvisionCamera2
@@ -28,6 +29,7 @@ DEFINES += QT_DEPRECATED_WARNI NGS
 CONFIG += c++11
 
 SOURCES += \
+    excelutil.cpp \
         main.cpp \
         mainwindow.cpp \
     main.cpp \
@@ -39,9 +41,11 @@ SOURCES += \
     database.cpp \
     config.cpp \
     houseview.cpp \
-    xmlset.cpp
+    xmlset.cpp  \
+    excelutil.cpp
 
 HEADERS += \
+    excelutil.h \
         mainwindow.h \
     DataType.h \
     DecodeCardSdk.h \
@@ -60,7 +64,8 @@ HEADERS += \
     config.h \
     houseview.h \
     headinfo.h \
-    xmlset.h
+    xmlset.h  \
+    excelutil.h
 
 
 FORMS += \
@@ -70,13 +75,13 @@ FORMS += \
     settingsview.ui \
     houseview.ui
 # Hikvision Camera SDK
-LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/GdiPlus.lib"
-LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/HCCore.lib"
-LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/HCNetSDK.lib"
-LIBS += "C:/Users/admin/Documents/GitHub/HikvisionCamera2/Library/PlayCtrl.lib"
+LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/GdiPlus.lib"
+LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/HCCore.lib"
+LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/HCNetSDK.lib"
+LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/PlayCtrl.lib"
 
 # Config
-#CONFIG += uitools
+# CONFIG += uitools
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
