@@ -34,6 +34,7 @@ SOURCES += \
         mainwindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    peopleview.cpp \
     previewview.cpp \
     historyview.cpp \
     settingsview.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     DataType.h \
     DecodeCardSdk.h \
     HCNetSDK.h \
+    peopleview.h \
     plaympeg4.h \
     DataType.h \
     DecodeCardSdk.h \
@@ -70,6 +72,7 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui \
+    peopleview.ui \
     previewview.ui \
     historyview.ui \
     settingsview.ui \

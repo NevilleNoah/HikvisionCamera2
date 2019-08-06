@@ -5,6 +5,7 @@ PreviewView *MainWindow::previewView = nullptr;
 HistoryView *MainWindow::historyView = nullptr;
 SettingsView *MainWindow::settingsView = nullptr;
 HouseView *MainWindow::houseView = nullptr;
+PeopleView *MainWindow::peopleView = nullptr;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,14 +26,19 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->tabView->addTab(historyView, QString::fromLocal8Bit("历史记录"));
     }
 
-    if(settingsView==nullptr) {
-        settingsView = new SettingsView();
-        ui->tabView->addTab(settingsView, QString::fromLocal8Bit("设置"));
-    }
-
     if(houseView==nullptr) {
         houseView = new HouseView();
         ui->tabView->addTab(houseView, QString::fromLocal8Bit("住房状况"));
+    }
+
+    if(peopleView == nullptr) {
+        peopleView = new PeopleView();
+        ui->tabView->addTab(peopleView, QString::fromLocal8Bit("住户信息"));
+    }
+
+    if(settingsView==nullptr) {
+        settingsView = new SettingsView();
+        ui->tabView->addTab(settingsView, QString::fromLocal8Bit("设置"));
     }
 
     settingsView->runReadSettingsThread();

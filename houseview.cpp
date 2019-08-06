@@ -292,12 +292,16 @@ void HouseView::on_recordTable_itemDoubleClicked(QTableWidgetItem *item)
 #include <QFileDialog>
 void HouseView::on_exportbtn_clicked()
 {
+    QDateTime start = ui->startDateTime->dateTime();
+    QDateTime end = ui->endDateTime->dateTime();
     QString filename = QFileDialog::getSaveFileName(this, tr("Exceld导出路径"),  "", tr("*.xlsx;;")); //选择路径
     ExcelUtil *pWorker = new ExcelUtil();
     //connect(pWorker, SIGNAL(errorSignal(QString)), this, SLOT(onError(QString)));
     //connect(pWorker, SIGNAL(progressData(int, QString)), this, SLOT(onProgress(int, QString)));
     //connect(pWorker, SIGNAL(finish()), this, SLOT(onFinish()));
     pWorker->setPath(filename);
+    pWorker->setStartTime(start);
+    pWorker->setEndTime(end);
     QThread *thread = new QThread;
     pWorker->moveToThread(thread);
     //处理数据

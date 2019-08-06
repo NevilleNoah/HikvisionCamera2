@@ -182,6 +182,7 @@ QList<House> Database::selectHouse(QDateTime start, QDateTime end) {
 //根据出入时间获取需要导出的记录
 QList<ExcelExportInfo> Database::selectExportRecord(QDateTime start, QDateTime end) {
     openConnect();
+    qDebug() << start.toString("yyyy-MM-dd hh:mm:ss") <<" " << end.toString("yyyy-MM-dd hh:mm:ss");
     QSqlQuery query;
     QString sqlSentence = "SELECT h.community, h.building, h.unit, h.house, a.applicant, a.sfzno, a.familyrole, r.time_value, r.similar\
                            FROM record r, applicant a, house h, houseapplicant ha WHERE         \
@@ -207,6 +208,7 @@ QList<ExcelExportInfo> Database::selectExportRecord(QDateTime start, QDateTime e
         info.time_value = query.value("time_value").toDateTime();
         exportInfo.append(info);
     }
+    qDebug() <<"exportInfo.size():" <<exportInfo.size();
     return exportInfo;
 }
 
