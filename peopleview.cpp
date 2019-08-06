@@ -12,3 +12,10 @@ PeopleView::~PeopleView()
 {
     delete ui;
 }
+
+void PeopleView::on_pushButton_clicked()
+{
+    addPersonDialog = new AddPersonDialog(this);
+    addPersonDialog->setModal(false);
+    addPersonDialog->show();
+}

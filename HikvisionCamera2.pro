@@ -29,6 +29,7 @@ DEFINES += QT_DEPRECATED_WARNI NGS
 CONFIG += c++11
 
 SOURCES += \
+    addpersondialog.cpp \
     excelutil.cpp \
         main.cpp \
         mainwindow.cpp \
@@ -46,6 +47,7 @@ SOURCES += \
     excelutil.cpp
 
 HEADERS += \
+    addpersondialog.h \
     excelutil.h \
         mainwindow.h \
     DataType.h \
@@ -71,6 +73,7 @@ HEADERS += \
 
 
 FORMS += \
+    addpersondialog.ui \
         mainwindow.ui \
     peopleview.ui \
     previewview.ui \

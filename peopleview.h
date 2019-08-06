@@ -2,7 +2,7 @@
 #define PEOPLEVIEW_H
 
 #include <QWidget>
-
+#include "addpersondialog.h"
 namespace Ui {
 class PeopleView;
 }
@@ -15,8 +15,12 @@ public:
     explicit PeopleView(QWidget *parent = nullptr);
     ~PeopleView();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::PeopleView *ui;
+    AddPersonDialog *addPersonDialog;
 };
 
 #endif // PEOPLEVIEW_H
