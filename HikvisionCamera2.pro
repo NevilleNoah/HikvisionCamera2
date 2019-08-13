@@ -10,6 +10,7 @@ QT += network
 QT += uitools
 QT += xml
 QT += axcontainer
+# QT += xlsx
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = HikvisionCamera2
@@ -29,13 +30,11 @@ DEFINES += QT_DEPRECATED_WARNI NGS
 CONFIG += c++11
 
 SOURCES += \
-    addpersondialog.cpp \
     excelutil.cpp \
         main.cpp \
         mainwindow.cpp \
     main.cpp \
     mainwindow.cpp \
-    peopleview.cpp \
     previewview.cpp \
     historyview.cpp \
     settingsview.cpp \
@@ -47,13 +46,11 @@ SOURCES += \
     excelutil.cpp
 
 HEADERS += \
-    addpersondialog.h \
     excelutil.h \
         mainwindow.h \
     DataType.h \
     DecodeCardSdk.h \
     HCNetSDK.h \
-    peopleview.h \
     plaympeg4.h \
     DataType.h \
     DecodeCardSdk.h \
@@ -73,9 +70,7 @@ HEADERS += \
 
 
 FORMS += \
-    addpersondialog.ui \
         mainwindow.ui \
-    peopleview.ui \
     previewview.ui \
     historyview.ui \
     settingsview.ui \

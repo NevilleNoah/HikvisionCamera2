@@ -355,6 +355,22 @@ ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {
      return applicantInfo;
 }
 
+ApplicantInfo Database::selectApplicantInfo() {
+     openConnect();
+     ApplicantInfo applicantInfo;
+     QSqlQuery query;
+     QString sql = "SELECT a.applicant,a.sfzno,a.contact,a.status FROM applicant a";
+     query.prepare(sql);
+     query.exec();
+     closeConnect();
+     query.next();
+     applicantInfo.applicant = query.value("applicant").toString();
+     applicantInfo.contact = query.value("contact").toString();
+     applicantInfo.sfzno = query.value("sfzno").toString();
+     applicantInfo.status = query.value("status").toInt();
+     return applicantInfo;
+}
+
 int Database::selectStrQuantityByTime(int dwYear, int dwMonth, int dwDay) {
     QDate date = QDate(dwYear, dwMonth, dwDay);
     QTime time = QTime(0, 0, 0);

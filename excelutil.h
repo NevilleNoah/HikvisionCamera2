@@ -33,7 +33,8 @@ public slots:
     void startTrans();
 
 private:
-    QList<QList<QVariant>> m_oDate;
+    QList<QList<QVariant>> m_oData;
+    QList<QVariant> allRowData;
     QString detFileName;
 };
 

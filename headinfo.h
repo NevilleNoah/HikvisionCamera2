@@ -87,8 +87,12 @@ typedef struct tagHouse {
     double area;
 } House;
 
+//住户信息
 typedef struct tagApplicantInfo {
     QString applicant;
+    QString contact;
+    QString sfzno;
+    int status;
 } ApplicantInfo;
 
 typedef struct tagExcelExportInfo {

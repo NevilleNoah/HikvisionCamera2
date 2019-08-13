@@ -546,7 +546,7 @@ void PreviewView::loadPreview() {
 
         //---------------2-----------------------
         //启动预览并设置回调数据流
-        /*HWND hWnd2 = (HWND)ui->picPreview2->winId();
+        HWND hWnd2 = (HWND)ui->picPreview2->winId();
         NET_DVR_PREVIEWINFO struPlayInfo2 = {0};
         struPlayInfo2.hPlayWnd     = hWnd2;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
         struPlayInfo2.lChannel     = channels[1];       //预览通道号
@@ -559,7 +559,7 @@ void PreviewView::loadPreview() {
 
         //---------------3-----------------------
         //启动预览并设置回调数据流
-        HWND hWnd3 = (HWND)ui->picPreview3->winId();
+        /*HWND hWnd3 = (HWND)ui->picPreview3->winId();
         NET_DVR_PREVIEWINFO struPlayInfo3 = {0};
         struPlayInfo3.hPlayWnd = hWnd3;         //需要SDK解码时句柄设为有效值，仅取流不解码时可设为空
         struPlayInfo3.lChannel     = channels[2];       //预览通道号

@@ -40,6 +40,7 @@ public:
     House selectSingleHouse();
 
     ApplicantInfo selectApplicantInfoBySfzNo(QString sfzNo);
+    ApplicantInfo selectApplicantInfo();
     //ApplicantInfo setSingleApplicantInfo(QSqlQuery query);
     //获取该日的陌生人数量
     int selectStrQuantityByTime(int dwYear, int dwMonth, int dwDay);
