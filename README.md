@@ -1,4 +1,4 @@
 # HikvisionCamera2
-开发工具：Qt Creator 4.8.0-beta(Community)
-工具框架：Qt 5.11
-管理工具：Git
+寮�鍙戝伐鍏凤細Qt Creator 4.8.2
+宸ュ叿妗嗘灦锛歈t 5.11.3
+绠＄悊宸ュ叿锛欸it

@@ -25,6 +25,8 @@
 #include "historyview.h"
 #include "settingsview.h"
 #include "houseview.h"
+#include "searchview.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -41,6 +43,7 @@ public:
     static HistoryView* historyView;
     static SettingsView* settingsView;
     static HouseView* houseView;
+    static SearchView* searchview;
 
 public slots:
     //void clickBtnLogin();

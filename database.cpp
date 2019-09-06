@@ -1,6 +1,8 @@
 ﻿#include "database.h"
-
+#include <QDateTime>
+#include <QString>
 QSqlDatabase Database::db;
+int id;
 
 Database::Database() {
 
@@ -79,6 +81,118 @@ bool Database::addRecord(QString applicant, QString idCapture,
             qDebug() << "Test code:"<<sql;
             //End调试代码
 
+            return true;
+        }
+        return false;
+    }catch(std::exception &e)
+    {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+}
+//增加记录
+bool Database::addApplicant(QString NameEdit, QString IdNumEdit,QString PhoneEdit, QString IdentityEdit) {
+    try{
+        if(&db!=NULL) {
+            //执行sql语句
+            QSqlQuery query;
+            openConnect();
+            query.prepare("INSERT INTO applicant(applicant, sfzno, contact, familyrole) "
+                          "VALUES(:applicant, :sfzno, :contact, :familyrole)");
+            query.bindValue(":applicant", NameEdit);
+            query.bindValue(":sfzno", IdNumEdit);
+            query.bindValue(":contact", PhoneEdit);
+            query.bindValue(":familyrole", IdentityEdit);
+
+            query.exec();
+            closeConnect();
+
+            //调试代码
+//            QString sql = "INSERT INTO record(applicant, sfzno, contact, familyrole) "
+//                    "VALUES("+applicant+","+idCapture+","+idAvatar+","+idFace+","+isStranger+","+similar+")";
+            //qDebug() << "Test code:"<<sql;
+            //End调试代码
+
+            return true;
+        }
+        return false;
+    }catch(std::exception &e)
+    {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+}
+
+
+//查找记录
+bool Database::searchRecord(QString applicant,QString idAvatar) {
+    try{
+        if(&db!=NULL) {
+            //执行sql语句
+            QSqlQuery query;
+            QString str= QString("SELECT * FROM applicant where applicant= '%1' AND sfzno= '%2'")
+                    .arg(applicant).arg(idAvatar);
+            qDebug() << "searchRecord:"<<applicant<<" "<<idAvatar;
+            openConnect();
+            query.exec(str);
+            closeConnect();
+            query.next();
+            id=query.value(0).toInt();
+            //调试代码
+            qDebug() << "Test code:"<<str;
+            qDebug() << "Test id:"<<id;
+            //End调试代码
+            return true;
+        }
+        return false;
+    }catch(std::exception &e)
+    {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+}
+
+//编辑记录
+bool Database::editApplicant(QString NameEdit, QString IdNumEdit,QString PhoneEdit, QString IdentityEdit) {
+    try{
+        if(&db!=NULL) {
+            //执行sql语句
+            QSqlQuery query;
+            QString str = QString("UPDATE applicant SET applicant = '%1', sfzno = '%2', contact = '%3', familyrole = '%4' WHERE id = %5")
+                    .arg(NameEdit).arg(IdNumEdit).arg(PhoneEdit).arg(IdentityEdit).arg(id);
+            openConnect();
+            query.prepare(str);
+            query.exec();
+            closeConnect();
+            //调试代码
+            qDebug() << "Test code:"<<str;
+            //End调试代码
+            return true;
+        }
+        return false;
+    }catch(std::exception &e)
+    {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+}
+
+
+//删除记录
+bool Database::delRecord() {
+    try{
+        if(&db!=NULL) {
+            //执行sql语句
+            QSqlQuery query;
+            QString str = QString("UPDATE applicant SET isdel = '%1' WHERE id = %2")
+                    .arg(1).arg(id);
+            openConnect();
+            query.prepare(str);
+            query.exec();
+            closeConnect();
+            //调试代码
+            qDebug() << "Test code:"<<str;
+            //End调试代码
             return true;
         }
         return false;
@@ -229,6 +343,67 @@ QList<House> Database::selectHouseAsTimer() {
     return setHouse(query);
 }
 
+//根据条件筛查
+QList<ApplicantInfo> Database::selectById(int startId, int pageSize, QString applicant, QString idNumber, QString contact, QString status, int &totalRecordNum){
+    getMaxapplicantNum(applicant,idNumber,contact,status,totalRecordNum);
+    openConnect();
+    QSqlQuery query;
+    QString sqlSentence;
+    if(!applicant.isEmpty()) {
+        sqlSentence = "select * from applicant where applicant=:applicant and isdel=0";
+    } else if(!idNumber.isEmpty()) {
+        sqlSentence = "select * from applicant where sfzno=:idNumber and isdel=0";
+    }else {
+        sqlSentence = "select * from applicant where isdel=0";
+    }
+    sqlSentence += " limit :startId, :pageSize";
+    query.prepare(sqlSentence);
+    query.bindValue(":idNumber", idNumber);
+    query.bindValue(":startId", (startId-1)*pageSize);
+    query.bindValue(":pageSize", pageSize);
+    query.bindValue(":applicant", applicant);
+    query.exec();
+    closeConnect();
+    qDebug() << "selectById: " << sqlSentence;
+    return setApplicant(query);
+}
+
+//获取记录总条数
+void Database::getMaxapplicantNum(QString applicant, QString idNumber, QString contact, QString status, int &totalRecordNum){
+    openConnect();
+    QSqlQuery query;
+    QString sqlSentence;
+    if(!applicant.isEmpty()) {
+        sqlSentence = "select count(*) from applicant where applicant=:applicant and isdel=0";
+    } else if(!idNumber.isEmpty()) {
+        sqlSentence = "select count(*) from applicant where isdel=0";
+    }else {
+        sqlSentence = "select count(*) from applicant where isdel=0";
+    }
+    query.prepare(sqlSentence);
+    query.exec();
+    closeConnect();
+    query.next();
+    totalRecordNum = query.value(0).toInt();
+
+        qDebug() << "getMaxapplicantNum: " << totalRecordNum;
+}
+
+//设置记录内容
+QList<ApplicantInfo> Database::setApplicant(QSqlQuery query) {
+    QList<ApplicantInfo> applicantInfos;
+    while(query.next())
+    {
+        ApplicantInfo applicantInfo;
+        applicantInfo.applicant = query.value("applicant").toString();
+        applicantInfo.sfzno = query.value("sfzno").toString();
+        applicantInfo.contact = query.value("contact").toString();
+        applicantInfo.status = query.value("familyrole").toString();
+        applicantInfos.append(applicantInfo);
+    }
+    return applicantInfos;
+}
+
 //获取记录总条数
 void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, QString idNumber,
                                  int startId, int pageSize, int &totalRecordNum) {
@@ -259,7 +434,7 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
     getTotalRecordNum(startDateTime, endDateTime, strangerIndex, idNumber, startId, pageSize, totalRecordNum);
     openConnect();
     QSqlQuery query;
-    QString sqlSentence = "select * from record where time_value>=:startDateTime and time_value<=:endDateTime";
+    QString sqlSentence = "select * from record where time_value>=:startDateTime and time_value<=:endDateTime and del = 0";
     if(strangerIndex == 0) {
         sqlSentence += " and stranger=1";
     } else if(strangerIndex == 1) {

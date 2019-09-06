@@ -10,7 +10,12 @@ class Database
 public:
     explicit Database();
     QList<RECORD> setRecord(QSqlQuery query);
+    QList<ApplicantInfo> setApplicant(QSqlQuery query);
+
+
     QList<RECORD> selectRecord();
+
+    QList<ApplicantInfo> selectById(int startId,int pageSize, QString applicant, QString idNumber, QString contact, QString status, int &totalRecordNum);
     //根据条件查找历史纪录
     QList<RECORD> selectByCondition(QDateTime startDateTime, QDateTime endDateTime, int strangerIndex, QString idNumber,
                                     int startId, int pageSize, int &totalRecordNum);
@@ -26,11 +31,15 @@ public:
     void setDbConfig();
     bool openConnect();
     bool closeConnect();
+ bool addRecord(QString applicant, QString idCapture, QString idFace, QString idAvatar, bool isStranger, float similar);
 
-    bool addRecord(QString applicant, QString idCapture, QString idFace, QString idAvatar, bool isStranger, float similar);
+    bool addApplicant(QString NameEdit, QString IdNumEdit, QString PhoneEdit, QString IdentityEdit);
+    bool editApplicant(QString NameEdit, QString IdNumEdit, QString PhoneEdit, QString IdentityEdit);
+    bool searchRecord(QString applicant, QString idAvatar);
+    bool delRecord();
 
     void setQSqlDatabase(QSqlDatabase db);
-
+ void getMaxapplicantNum(QString applicant, QString idNumber, QString contact, QString status, int &totalRecordNum);
     QList<House> setHouse(QSqlQuery query);
 
     QList<House> selectHouse(QDateTime start, QDateTime end);

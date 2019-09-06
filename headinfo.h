@@ -76,6 +76,7 @@ typedef struct tagRECORD{
     QString idCapture;
     int similar;
     bool isStranger;
+    bool del;
 } RECORD;
 
 //住址信息 XX小区 X幢 X单元 XX室 XX面积
@@ -92,7 +93,8 @@ typedef struct tagApplicantInfo {
     QString applicant;
     QString contact;
     QString sfzno;
-    int status;
+    QString status;
+    bool isdel;
 } ApplicantInfo;
 
 typedef struct tagExcelExportInfo {

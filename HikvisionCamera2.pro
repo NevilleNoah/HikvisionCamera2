@@ -31,21 +31,25 @@ CONFIG += c++11
 
 SOURCES += \
     excelutil.cpp \
+    changeview.cpp \
         main.cpp \
         mainwindow.cpp \
     main.cpp \
     mainwindow.cpp \
     previewview.cpp \
     historyview.cpp \
+    searchview.cpp \
     settingsview.cpp \
     settingsthread.cpp \
     database.cpp \
     config.cpp \
     houseview.cpp \
+    treechoose.cpp \
     xmlset.cpp  \
     excelutil.cpp
 
 HEADERS += \
+    changeview.h \
     excelutil.h \
         mainwindow.h \
     DataType.h \
@@ -59,27 +63,32 @@ HEADERS += \
     plaympeg4.h \
     previewview.h \
     historyview.h \
+    searchview.h \
     settingsview.h \
     settingsthread.h \
     database.h \
     config.h \
     houseview.h \
     headinfo.h \
+    treechoose.h \
     xmlset.h  \
     excelutil.h
 
 
 FORMS += \
+    changeview.ui \
         mainwindow.ui \
     previewview.ui \
     historyview.ui \
+    searchview.ui \
     settingsview.ui \
-    houseview.ui
+    houseview.ui \
+    treechoose.ui
 # Hikvision Camera SDK
-LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/GdiPlus.lib"
-LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/HCCore.lib"
-LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/HCNetSDK.lib"
-LIBS += "C:/Users/zhp/Documents/GitHub/HikvisionCamera2/Library/PlayCtrl.lib"
+LIBS += $$PWD/Library/GdiPlus.lib
+LIBS += $$PWD/Library/HCCore.lib
+LIBS += $$PWD/Library/HCNetSDK.lib
+LIBS += $$PWD/Library/PlayCtrl.lib
 
 # Config
 # CONFIG += uitools
