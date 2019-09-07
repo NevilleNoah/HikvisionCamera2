@@ -27,10 +27,10 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->tabView->addTab(historyView, QString::fromLocal8Bit("历史记录"));
     }
 
-    if(settingsView==nullptr) {
-        settingsView = new SettingsView();
-        ui->tabView->addTab(settingsView, QString::fromLocal8Bit("设置"));
-    }
+//    if(settingsView==nullptr) {
+//        settingsView = new SettingsView();
+//        ui->tabView->addTab(settingsView, QString::fromLocal8Bit("设置"));
+//    }
 
     if(houseView==nullptr) {
         houseView = new HouseView();

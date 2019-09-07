@@ -35,6 +35,7 @@ private:
     void closeEvent(QCloseEvent *event);
     OperateType operate;
     TreeChoose* treechoose;
+    void insert2SuperBrain(); //将添加的住户信息 同步添加至超脑中(人脸图片与身份证)
 
 signals:
     //    void signalInfo(QVariantMap Info);

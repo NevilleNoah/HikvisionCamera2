@@ -73,6 +73,7 @@ void ChangeView::on_buttonBox_accepted()
         sign=database.addApplicant(ui->NameEdit->text(), ui->IdNumEdit->text(), ui->PhoneEdit->text(),ui->IdentityEdit->text());
         close();
         if(sign==true){
+            insert2SuperBrain(); //添加成功 住户信息上传至超脑
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("添加成功!"));
         }else {
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("添加失败!"));
@@ -109,6 +110,7 @@ void ChangeView::on_toolButton_clicked()
     ui->lineEdit->setText(fileName);
     QPixmap pix(fileName);
     ui->imagelab->setPixmap(pix);
+
 }
 
 void ChangeView::on_toolButton_2_clicked()
@@ -117,4 +119,11 @@ void ChangeView::on_toolButton_2_clicked()
     treechoose->activateWindow();
     treechoose->setWindowTitle(QStringLiteral("选择房间"));
     treechoose->exec();
+}
+
+#include "previewview.h"
+void ChangeView::insert2SuperBrain() {
+    QString fileName = ui->lineEdit->text();
+    QString idNumber = ui->IdNumEdit->text();
+    PreviewView::uploadStrangerFacePic(idNumber, fileName);
 }
