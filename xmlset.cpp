@@ -7,7 +7,7 @@ XMLSet::XMLSet() {
 }
 
 void XMLSet::setUploadStrangerXML(QString stName) {
-    qDebug() << "enter setUploadStrangerXML";
+    qDebug() << "enter setUploadStrangerXML: " << stName;
     QFile file(strangerXMLFile);
     if (!file.open(QFile::WriteOnly|QFile::Truncate)) {
         qDebug() << "cannot create strangerXML File";

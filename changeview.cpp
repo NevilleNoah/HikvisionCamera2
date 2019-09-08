@@ -71,13 +71,14 @@ void ChangeView::on_buttonBox_accepted()
     if(operate == Add)
     {
         sign=database.addApplicant(ui->NameEdit->text(), ui->IdNumEdit->text(), ui->PhoneEdit->text(),ui->IdentityEdit->text());
-        close();
         if(sign==true){
+            qDebug() << "asdugasiuashgdiuadsasdasd: " << ui->IdNumEdit->text();
             insert2SuperBrain(); //添加成功 住户信息上传至超脑
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("添加成功!"));
         }else {
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("添加失败!"));
         }
+        close();
     }
     else if(operate == Edit)
     {
@@ -85,12 +86,12 @@ void ChangeView::on_buttonBox_accepted()
 
 
         sign=database.editApplicant(ui->NameEdit->text(), ui->IdNumEdit->text(), ui->PhoneEdit->text(),ui->IdentityEdit->text());
-        close();
         if(sign==true){
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("成功!"));
         }else {
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("失败!"));
         }
+        close();
     }
 }
 
