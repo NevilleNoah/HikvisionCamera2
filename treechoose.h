@@ -3,6 +3,8 @@
 
 #include "database.h"
 #include <QDialog>
+#include <QString>
+#include <QTreeWidget>
 
 namespace Ui {
 class TreeChoose;
@@ -22,6 +24,10 @@ public:
 private:
     Ui::TreeChoose *ui;
     TreeChoose* treechoose;
+    QTreeWidget *tree;
+
+    QTreeWidgetItem* addTreeRoot(QString name, int colNum);
+    QTreeWidgetItem* addTreeChild(QTreeWidgetItem *parent, QString name, int colNum);
 };
 
 #endif // TREECHOOSE_H
