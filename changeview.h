@@ -27,6 +27,7 @@ public:
     ~ChangeView();
     void setEditData(QStringList rowData);
     static QDateTime dateEdit;
+    static QList<HouseInfo> houseInfos;
 private:
     Ui::ChangeView *ui;
     static Database database;
@@ -44,10 +45,10 @@ public slots:
     void on_buttonBox_accepted();
     void on_buttonBox_rejected();
     void Exec(OperateType operateType);
+    void Refresh(HouseInfo);
 
 private slots:
     void on_toolButton_clicked();
     void on_toolButton_2_clicked();
 };
-
 #endif // CHANGEVIEW_H

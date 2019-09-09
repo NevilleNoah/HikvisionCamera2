@@ -3,7 +3,7 @@
 #include <QString>
 QSqlDatabase Database::db;
 int id;
-
+int houseid;
 Database::Database() {
 
 }
@@ -77,7 +77,7 @@ bool Database::addRecord(QString applicant, QString idCapture,
 
             //调试代码
             QString sql = "INSERT INTO record(applicant, capture_id, avatar_id, face_id, stranger, similar) "
-                    "VALUES("+applicant+","+idCapture+","+idAvatar+","+idFace+","+isStranger+","+similar+")";
+                          "VALUES("+applicant+","+idCapture+","+idAvatar+","+idFace+","+isStranger+","+similar+")";
             qDebug() << "Test code:"<<sql;
             //End调试代码
 
@@ -108,8 +108,8 @@ bool Database::addApplicant(QString NameEdit, QString IdNumEdit,QString PhoneEdi
             closeConnect();
 
             //调试代码
-//            QString sql = "INSERT INTO record(applicant, sfzno, contact, familyrole) "
-//                    "VALUES("+applicant+","+idCapture+","+idAvatar+","+idFace+","+isStranger+","+similar+")";
+            //            QString sql = "INSERT INTO record(applicant, sfzno, contact, familyrole) "
+            //                    "VALUES("+applicant+","+idCapture+","+idAvatar+","+idFace+","+isStranger+","+similar+")";
             //qDebug() << "Test code:"<<sql;
             //End调试代码
 
@@ -152,6 +152,42 @@ bool Database::searchRecord(QString applicant,QString idAvatar) {
     }
 }
 
+//根据id查找房间
+QList<HouseInfo> Database::searchHouse(QString state) {
+    try{
+        QSqlQuery query;
+        QString str;
+        if(state=="search"){
+            //执行sql语句
+            str= QString("select community,building,unit,house from applicant,houseapplicant,house where applicant.id = houseapplicant.applicant_id and houseapplicant.house_id=house.id and applicant.id= '%1';")
+                    .arg(id);
+            qDebug() << "searchHouse:"<<str;
+            qDebug() << "searchHouse id:"<<id;
+        }else{
+            str= QString("select community,building,unit,house from house;");
+        }
+        openConnect();
+        query.exec(str);
+        closeConnect();
+        QList<HouseInfo> houseInfos;
+        while(query.next())
+        {
+            HouseInfo houseInfo;
+            houseInfo.community = query.value("community").toString();
+            houseInfo.building = query.value("building").toString();
+            houseInfo.unit = query.value("unit").toString();
+            houseInfo.house = query.value("house").toString();
+            houseInfos.append(houseInfo);
+        }
+        //End调试代码
+        return houseInfos;
+    }catch(std::exception &e)
+    {
+        qDebug()<<"# ERR: SQLException:" <<e.what();
+        //TAD：进行ui提示
+    }
+}
+
 //编辑记录
 bool Database::editApplicant(QString NameEdit, QString IdNumEdit,QString PhoneEdit, QString IdentityEdit) {
     try{
@@ -176,6 +212,39 @@ bool Database::editApplicant(QString NameEdit, QString IdNumEdit,QString PhoneEd
         //TAD：进行ui提示
     }
 }
+
+
+
+bool Database::updatehouseInfo(HouseInfo houseInfo){
+    if(&db!=NULL) {
+        //执行sql语句
+        QSqlQuery query;
+        QString str = QString("select id from house where community='%1' and building='%2' and unit ='%3' and house ='%4'")
+                .arg(houseInfo.community).arg(houseInfo.building).arg(houseInfo.unit).arg(houseInfo.house);
+        openConnect();
+        query.prepare(str);
+        query.exec();
+        closeConnect();
+        query.next();
+        houseid= query.value(0).toInt();;
+        str = QString("UPDATE houseapplicant set house_id = '%1' where  applicant_id = '%2'")
+                .arg(houseid).arg(id);
+        openConnect();
+        query.prepare(str);
+        query.exec();
+        closeConnect();
+
+        //调试代码
+        qDebug() << "Test houseid:"<<houseid;
+        //End调试代码
+        return true;
+    }
+    return false;
+
+
+
+}
+
 
 
 //删除记录
@@ -219,7 +288,7 @@ QList<RECORD> Database::setRecord(QSqlQuery query) {
     return records;
 }
 
-//根据时间、姓名、省份证号来获取记录
+//根据时间、姓名、身份证号来获取记录
 RECORD Database::selectRecord(QDateTime timesamp, QString applicant, QString idAvatar) {
     RECORD record;
     try{
@@ -299,11 +368,11 @@ QList<ExcelExportInfo> Database::selectExportRecord(QDateTime start, QDateTime e
     qDebug() << start.toString("yyyy-MM-dd hh:mm:ss") <<" " << end.toString("yyyy-MM-dd hh:mm:ss");
     QSqlQuery query;
     QString sqlSentence = "SELECT h.community, h.building, h.unit, h.house, a.applicant, a.sfzno, a.familyrole, r.time_value, r.similar\
-                           FROM record r, applicant a, house h, houseapplicant ha WHERE         \
-                           r.time_value >= :start AND r.time_value <= :end AND                  \
-                           a.sfzno=r.avatar_id AND a.status=1 AND                               \
-                           a.id = ha.id AND ha.applicant_id AND ha.house_id = h.id";
-    query.prepare(sqlSentence);
+            FROM record r, applicant a, house h, houseapplicant ha WHERE         \
+            r.time_value >= :start AND r.time_value <= :end AND                  \
+                             a.sfzno=r.avatar_id AND a.status=1 AND                               \
+                             a.id = ha.id AND ha.applicant_id AND ha.house_id = h.id";
+                             query.prepare(sqlSentence);
     query.bindValue(":start",start.toString("yyyy-MM-dd hh:mm:ss"));
     query.bindValue(":end", end.toString("yyyy-MM-dd hh:mm:ss"));
     query.exec();
@@ -350,11 +419,11 @@ QList<ApplicantInfo> Database::selectById(int startId, int pageSize, QString app
     QSqlQuery query;
     QString sqlSentence;
     if(!applicant.isEmpty()) {
-        sqlSentence = "select * from applicant where applicant=:applicant and isdel=0";
+        sqlSentence = "select applicant.id,applicant,sfzno,contact,familyrole,isdel,community,building,unit,house from applicant,houseapplicant,house where applicant.id = houseapplicant.applicant_id and houseapplicant.house_id=house.id and applicant=:applicant and isdel=0";
     } else if(!idNumber.isEmpty()) {
-        sqlSentence = "select * from applicant where sfzno=:idNumber and isdel=0";
+        sqlSentence = "select applicant.id,applicant,sfzno,contact,familyrole,isdel,community,building,unit,house from applicant,houseapplicant,house where applicant.id = houseapplicant.applicant_id and houseapplicant.house_id=house.id and sfzno=:idNumber and isdel=0";
     }else {
-        sqlSentence = "select * from applicant where isdel=0";
+        sqlSentence = "select applicant.id,applicant,sfzno,contact,familyrole,isdel,community,building,unit,house from applicant,houseapplicant,house where applicant.id = houseapplicant.applicant_id and houseapplicant.house_id=house.id and isdel = 0";
     }
     sqlSentence += " limit :startId, :pageSize";
     query.prepare(sqlSentence);
@@ -386,7 +455,7 @@ void Database::getMaxapplicantNum(QString applicant, QString idNumber, QString c
     query.next();
     totalRecordNum = query.value(0).toInt();
 
-        qDebug() << "getMaxapplicantNum: " << totalRecordNum;
+    qDebug() << "getMaxapplicantNum: " << totalRecordNum;
 }
 
 //设置记录内容
@@ -399,6 +468,7 @@ QList<ApplicantInfo> Database::setApplicant(QSqlQuery query) {
         applicantInfo.sfzno = query.value("sfzno").toString();
         applicantInfo.contact = query.value("contact").toString();
         applicantInfo.status = query.value("familyrole").toString();
+        applicantInfo.house = query.value("community").toString()+query.value("building").toString()+QStringLiteral("幢")+query.value("unit").toString()+QStringLiteral("单元")+query.value("house").toString();
         applicantInfos.append(applicantInfo);
     }
     return applicantInfos;
@@ -416,7 +486,7 @@ void Database::getTotalRecordNum(QDateTime startDateTime, QDateTime endDateTime,
         sqlSentence += " and stranger=0";
     }
     if(idNumber.length() > 0) {
-         sqlSentence += " and avatar_id=:idNumber";
+        sqlSentence += " and avatar_id=:idNumber";
     }
     query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
@@ -458,15 +528,15 @@ QList<RECORD> Database::selectByCondition(QDateTime startDateTime, QDateTime end
 
 //根据时间与门牌号来筛查记录
 QList<RECORD> Database::selectByTimeDoorplate(QDateTime startDateTime, QDateTime endDateTime,
-                                    QString doorPlate) {
+                                              QString doorPlate) {
     openConnect();
     QSqlQuery query;
     QString sqlSentence = "SELECT r.time_value,r.applicant,r.avatar_id,r.capture_id,r.stranger "
-            "FROM record r,house h,applicant a, houseapplicant ha "
-            "WHERE r.time_value>=:startDateTime AND r.time_value<=:endDateTime "
-            "AND h.house=:doorPlate "
-            "AND r.avatar_id=a.sfzno "
-            "AND ha.house_id=h.id AND ha.applicant_id=a.id";
+                          "FROM record r,house h,applicant a, houseapplicant ha "
+                          "WHERE r.time_value>=:startDateTime AND r.time_value<=:endDateTime "
+                          "AND h.house=:doorPlate "
+                          "AND r.avatar_id=a.sfzno "
+                          "AND ha.house_id=h.id AND ha.applicant_id=a.id";
 
     query.prepare(sqlSentence);
     query.bindValue(":startDateTime", startDateTime.toString("yyyy-MM-dd hh:mm:ss"));
@@ -517,33 +587,33 @@ ADDRESS_INFO Database::selectAddress(QString applicant, QString sfzno) {
 }
 
 ApplicantInfo Database::selectApplicantInfoBySfzNo(QString sfzNo) {
-     openConnect();
-     ApplicantInfo applicantInfo;
-     QSqlQuery query;
-     QString sql = "select * from applicant where sfzno = :sfzNo";
-     query.prepare(sql);
-     query.bindValue(":sfzNo", sfzNo);
-     query.exec();
-     closeConnect();
-     query.next();
-     applicantInfo.applicant = query.value("applicant").toString();
-     return applicantInfo;
+    openConnect();
+    ApplicantInfo applicantInfo;
+    QSqlQuery query;
+    QString sql = "select * from applicant where sfzno = :sfzNo";
+    query.prepare(sql);
+    query.bindValue(":sfzNo", sfzNo);
+    query.exec();
+    closeConnect();
+    query.next();
+    applicantInfo.applicant = query.value("applicant").toString();
+    return applicantInfo;
 }
 
 ApplicantInfo Database::selectApplicantInfo() {
-     openConnect();
-     ApplicantInfo applicantInfo;
-     QSqlQuery query;
-     QString sql = "SELECT a.applicant,a.sfzno,a.contact,a.status FROM applicant a";
-     query.prepare(sql);
-     query.exec();
-     closeConnect();
-     query.next();
-     applicantInfo.applicant = query.value("applicant").toString();
-     applicantInfo.contact = query.value("contact").toString();
-     applicantInfo.sfzno = query.value("sfzno").toString();
-     applicantInfo.status = query.value("status").toInt();
-     return applicantInfo;
+    openConnect();
+    ApplicantInfo applicantInfo;
+    QSqlQuery query;
+    QString sql = "SELECT a.applicant,a.sfzno,a.contact,a.status FROM applicant a";
+    query.prepare(sql);
+    query.exec();
+    closeConnect();
+    query.next();
+    applicantInfo.applicant = query.value("applicant").toString();
+    applicantInfo.contact = query.value("contact").toString();
+    applicantInfo.sfzno = query.value("sfzno").toString();
+    applicantInfo.status = query.value("status").toInt();
+    return applicantInfo;
 }
 
 int Database::selectStrQuantityByTime(int dwYear, int dwMonth, int dwDay) {

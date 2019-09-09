@@ -9,7 +9,7 @@ QList<ApplicantInfo> SearchView::applicantInfos;
 QString SearchView::Name;
 QString SearchView::idNumber = "";
 int SearchView::totalRecordNum = 0;
-const int SearchView::fieldNum = 4;
+const int SearchView::fieldNum = 5;
 
 SearchView::SearchView(QWidget *parent) : QWidget(parent),
     ui(new Ui::SearchView) {
@@ -171,6 +171,8 @@ void SearchView::showDataByCondition() {
             case 2: item[j] = new QTableWidgetItem(applicantInfos[i].contact);
                 break;
             case 3: item[j] = new QTableWidgetItem(applicantInfos[i].status);
+                break;
+            case 4: item[j] = new QTableWidgetItem(applicantInfos[i].house);
                 break;
             }
             //设置只读

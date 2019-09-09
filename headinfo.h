@@ -94,8 +94,18 @@ typedef struct tagApplicantInfo {
     QString contact;
     QString sfzno;
     QString status;
+    QString house;
     bool isdel;
 } ApplicantInfo;
+
+
+//房间信息
+typedef struct tagHouseInfo {
+    QString community;
+    QString building;
+    QString unit;
+    QString house;
+} HouseInfo;
 
 typedef struct tagExcelExportInfo {
     QString community;
