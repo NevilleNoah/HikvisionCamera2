@@ -36,6 +36,7 @@ public:
     bool addApplicant(QString NameEdit, QString IdNumEdit, QString PhoneEdit, QString IdentityEdit);
     bool editApplicant(QString NameEdit, QString IdNumEdit, QString PhoneEdit, QString IdentityEdit);
     bool updatehouseInfo(HouseInfo houseInfo);
+    bool addhouseInfo(HouseInfo houseInfo);
     bool searchRecord(QString applicant, QString idAvatar);
     QList<HouseInfo> searchHouse(QString state);
 

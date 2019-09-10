@@ -105,8 +105,7 @@ void ChangeView::on_buttonBox_accepted()
         }else {
             QMessageBox::information(this ,QStringLiteral("提示") , QStringLiteral("添加失败!"));
         }
-
-        database.updatehouseInfo(houseInfotemp);
+        database.addhouseInfo(houseInfotemp);
         close();
     }
     else if(operate == Edit)

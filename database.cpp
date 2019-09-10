@@ -240,9 +240,37 @@ bool Database::updatehouseInfo(HouseInfo houseInfo){
         return true;
     }
     return false;
+}
 
-
-
+bool Database::addhouseInfo(HouseInfo houseInfo){
+    if(&db!=NULL) {
+        //执行sql语句
+        QSqlQuery query;
+        QString str = QString("select id from house where community='%1' and building='%2' and unit ='%3' and house ='%4'")
+                .arg(houseInfo.community).arg(houseInfo.building).arg(houseInfo.unit).arg(houseInfo.house);
+        openConnect();
+        query.prepare(str);
+        query.exec();
+        closeConnect();
+        query.next();
+        houseid= query.value(0).toInt();
+        str = QString("select max(id) from applicant where isdel=0");
+        openConnect();
+        query.prepare(str);
+        query.exec();
+        closeConnect();
+        query.next();
+        int tempid= query.value(0).toInt();
+        qDebug() << "addhouseInfo houseid:"<<houseid<<"id:"<<tempid;
+        openConnect();
+        query.prepare("INSERT INTO houseapplicant (applicant_id, house_id) VALUES(:applicant_id, :house_id)");
+        query.bindValue(":applicant_id", tempid);
+        query.bindValue(":house_id", houseid);
+        query.exec();
+        closeConnect();
+        return true;
+    }
+    return false;
 }
 
 
